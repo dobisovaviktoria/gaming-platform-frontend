@@ -3,6 +3,9 @@ import LandingPage from './pages/LandingPage.tsx';
 import Dashboard from './pages/Dashboard';
 import './theme/global.scss';
 import {AuthProvider} from "./contexts/AuthContext.tsx";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 function AppContent() {
     const { isAuthenticated } = useKeycloak();
@@ -16,9 +19,11 @@ function AppContent() {
 
 function App() {
     return (
-        <AuthProvider>
-            <AppContent />
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <AppContent />
+            </AuthProvider>
+        </QueryClientProvider>
     );
 }
 
