@@ -10,8 +10,8 @@ export default function GameCard({ game }: Props) {
             <h3>{game.description}</h3>
             <p>Max Players: {game.maxPlayers}</p>
             <span className={`status ${game.isAvailable ? 'available' : 'unavailable'}`}>
-        {game.isAvailable ? 'Available' : 'Unavailable'}
-      </span>
+                {game.isAvailable ? 'Available' : 'Unavailable'}
+            </span>
         </div>
     );
 }

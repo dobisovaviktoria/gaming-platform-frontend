@@ -1,4 +1,4 @@
-import api from './api';
+import api from './apiPython';
 
 export interface PythonGame {
     gameId: string;
@@ -6,19 +6,20 @@ export interface PythonGame {
     currentTurn: 'X' | 'O' | null;
     winner?: 'X' | 'O' | null;
     isDraw: boolean;
+    status: string;
 }
 
 export const createPythonGame = async (playerX: string, playerO: string): Promise<{ gameId: string }> => {
-    const response = await api.post('/python-games', null, { params: { playerX, playerO } });
+    const response = await api.post(`/api/python-games`, null, { params: { playerX, playerO } });
     return response.data;
 };
 
 export const getPythonGameState = async (gameId: string): Promise<PythonGame> => {
-    const response = await api.get(`/python-games/${gameId}`);
+    const response = await api.get(`/api/python-games/${gameId}`);
     return response.data;
 };
 
 export const makePythonMove = async (gameId: string, position: number): Promise<PythonGame> => {
-    const response = await api.post(`/python-games/${gameId}/move`, null, { params: { position } });
+    const response = await api.post(`/api/python-games/${gameId}/move`, null, { params: { position } });
     return response.data;
 };
