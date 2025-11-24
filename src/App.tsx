@@ -1,20 +1,22 @@
-import { useKeycloak } from './hooks/useKeycloak';
-import LandingPage from './pages/LandingPage.tsx';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider, useKeycloak } from './contexts/AuthContext';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import './theme/global.scss';
-import {AuthProvider} from "./contexts/AuthContext.tsx";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import PythonGamesSection from "./components/PythonGamesSection.tsx";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
     const { isAuthenticated } = useKeycloak();
-
-    return (
+    return <>{isAuthenticated ? (
         <>
-            {isAuthenticated ? <Dashboard /> : <LandingPage />}
+            <Dashboard />
+            <PythonGamesSection />
         </>
-    );
+    ) : (
+        <LandingPage />
+    )}</>;
 }
 
 function App() {
