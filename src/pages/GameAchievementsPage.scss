@@ -1,0 +1,94 @@
+.game-achievements-page {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  color: var(--text);
+  min-height: 100vh;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+
+    .btn-back {
+      background: transparent;
+      border: none;
+      font-size: 2rem;
+      color: var(--text);
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: transform 0.2s;
+      line-height: 1;
+      margin-left: -0.5rem;
+
+      &:hover {
+        transform: translateX(-4px);
+      }
+
+      &:active {
+        transform: translateX(-2px);
+      }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .achievements-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    .achievement-section {
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+      }
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 1.25rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .game-achievements-page {
+    padding: 1.5rem;
+
+    .page-header {
+      margin-bottom: 2rem;
+
+      .btn-back {
+        font-size: 1.75rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .achievements-sections {
+      gap: 2.5rem;
+
+      .achievement-section {
+        h2 {
+          font-size: 1rem;
+        }
+
+        .achievements-grid {
+          grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+          gap: 1rem;
+        }
+      }
+    }
+  }
+}

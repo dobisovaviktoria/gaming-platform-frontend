@@ -1,0 +1,124 @@
+.achievement {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  transition: transform 0.2s;
+  cursor: pointer;
+  position: relative;
+
+  &.achieved {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+    .achievement-icon {
+      font-size: 2rem;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  &.locked {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    opacity: 0.4;
+
+    .achievement-icon {
+      font-size: 2rem;
+      filter: grayscale(100%);
+    }
+
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+
+  .achievement-tooltip {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    min-width: 200px;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    pointer-events: none;
+    animation: fadeIn 0.2s ease;
+
+    // Arrow pointing down
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--card);
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: var(--text);
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .locked-badge {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-radius: 0.25rem;
+      font-weight: 600;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .achievement {
+    .achievement-icon {
+      font-size: 1.5rem;
+    }
+
+    .achievement-tooltip {
+      min-width: 180px;
+      max-width: 250px;
+      padding: 0.5rem 0.75rem;
+
+      h4 {
+        font-size: 0.85rem;
+      }
+
+      p {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
