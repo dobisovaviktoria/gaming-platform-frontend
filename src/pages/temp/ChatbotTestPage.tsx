@@ -1,9 +1,9 @@
 // Example: Add to any page
 import React, { useState } from 'react';
-import ChatbotOverlay from '../components/ChatbotOverlay';
-import './TestPage.scss';
+import ChatbotOverlay from '../../components/overlays/ChatbotOverlay.tsx';
+import './ChatbotTestPage.scss';
 
-const TestPage: React.FC = () => {
+const ChatbotTestPage: React.FC = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
 
     return (
@@ -27,4 +27,4 @@ const TestPage: React.FC = () => {
 );
 };
 
-export default TestPage;
+export default ChatbotTestPage;

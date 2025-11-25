@@ -115,3 +115,32 @@
 body.menu-open {
   overflow: hidden;
 }
+
+
+.menu-content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 60px); // Adjust based on your header height
+
+  ul {
+    flex: 1; // Takes up remaining space
+  }
+
+  .btn-logout {
+    margin: 1rem;
+    padding: 0.875rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.5rem;
+    color: #f87171;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+  }
+}

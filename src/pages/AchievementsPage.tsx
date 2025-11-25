@@ -1,7 +1,7 @@
 // pages/AchievementsPage.tsx
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import SideMenu from '../components/SideMenu';
+import SideMenu from '../components/overlays/SideMenu.tsx';
 import Achievement from '../components/Achievement';
 import { useSearch } from '../hooks/useSearch';
 import './AchievementsPage.scss';

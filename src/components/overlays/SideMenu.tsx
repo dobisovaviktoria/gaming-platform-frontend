@@ -1,6 +1,7 @@
 import React from 'react';
 import './SideMenu.scss';
 import { Link } from "react-router";
+import {useKeycloak} from "../../contexts/AuthContext.tsx";
 
 interface SideMenuProps {
     isOpen: boolean;
@@ -8,6 +9,8 @@ interface SideMenuProps {
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
+    const { logout } = useKeycloak();
+
     const menuItems = [
         { label: 'Dashboard', path: '/' },
         { label: 'Friends', path: '/friends' },
@@ -15,6 +18,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         { label: 'Achievements', path: '/achievements' },
         { label: 'Profile', path: '/profile' },
     ];
+
+    const handleLogout = () => {
+        logout();
+        onClose();
+    };
 
     return (
         <>
@@ -43,6 +51,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
                             </li>
                         ))}
                     </ul>
+
+                    <button className="btn-logout" onClick={handleLogout}>
+                        Logout
+                    </button>
                 </nav>
             </div>
         </>

@@ -1,7 +1,7 @@
 // pages/NotificationsPage.tsx
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import SideMenu from '../components/SideMenu';
+import SideMenu from '../components/overlays/SideMenu.tsx';
 import Notification from '../components/Notification';
 import './NotificationsPage.scss';
 import {useSearch} from "../hooks/useSearch.ts";
