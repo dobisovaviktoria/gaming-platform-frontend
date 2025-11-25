@@ -1,5 +1,6 @@
-import { useKeycloak } from './hooks/useKeycloak';
-import LandingPage from './pages/LandingPage.tsx';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider, useKeycloak } from './contexts/AuthContext';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import './theme/global.scss';
 import {AuthProvider} from "./contexts/AuthContext.tsx";
@@ -16,6 +17,7 @@ import GameAchievementsPage from "./pages/GameAchievementsPage.tsx";
 import GameStatsPage from "./pages/GameStatsPage.tsx";
 import AddFriendsPage from "./pages/AddFriendsPage.tsx";
 import AddingGamePage from "./pages/AddingGamePage.tsx";
+import PythonGamesSection from "./components/PythonGamesSection.tsx";
 
 const queryClient = new QueryClient();
 
@@ -42,12 +44,14 @@ function AuthenticatedRouting() {
 
 function AppContent() {
     const { isAuthenticated } = useKeycloak();
-
-    return (
+    return <>{isAuthenticated ? (
         <>
-            {isAuthenticated ? <AuthenticatedRouting /> : <LandingPage />}
+            <AuthenticatedRouting />
+            <PythonGamesSection />
         </>
-    );
+    ) : (
+        <LandingPage />
+    )}</>;
 }
 
 function App() {

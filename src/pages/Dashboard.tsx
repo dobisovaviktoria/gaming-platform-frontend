@@ -1,26 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
-import { useKeycloak } from '../hooks/useKeycloak';
-import { getCurrentPlayer, getGames } from '../services/api';
+import { getCurrentPlayer } from '../services/player';
+import { getGames } from '../services/game';
+import { useKeycloak } from '../contexts/AuthContext';
+import GameCard from '../components/GameCard';
+import type {Game, Player} from '../model/types.ts';
 import './Dashboard.scss';
 
 export default function Dashboard() {
     const { logout } = useKeycloak();
 
-    const { data: player, isLoading: isLoadingPlayer } = useQuery({
+    const { data: player, isLoading: isLoadingPlayer } = useQuery<Player, Error>({
         queryKey: ['player'],
         queryFn: getCurrentPlayer
     });
 
-    const { data: games, isLoading: isLoadingGames } = useQuery({
+    const { data: games, isLoading: isLoadingGames } = useQuery<Game[], Error>({
         queryKey: ['games'],
         queryFn: getGames
     });
 
-    if (isLoadingPlayer || isLoadingGames) {
-        return <div className="dashboard">Loading...</div>;
-    }
+    if (isLoadingPlayer || isLoadingGames) return <div className="dashboard">Loading...</div>;
 
-    const favoriteGames = games?.filter(game => player?.favoriteGameIds.includes(game.gameId)) || [];
+    const favoriteGames = games?.filter((g) => player?.favoriteGameIds.includes(g.gameId)) || [];
 
     return (
         <div className="dashboard">
@@ -33,14 +34,8 @@ export default function Dashboard() {
                 <h2>Your Favorite Games</h2>
                 {favoriteGames.length > 0 ? (
                     <div className="game-grid">
-                        {favoriteGames.map(game => (
-                            <div key={game.gameId} className="game-card">
-                                <h3>{game.description}</h3>
-                                <p>Max Players: {game.maxPlayers}</p>
-                                <span className={`status ${game.isAvailable ? 'available' : 'unavailable'}`}>
-                                    {game.isAvailable ? 'Available' : 'Unavailable'}
-                                </span>
-                            </div>
+                        {favoriteGames.map((game) => (
+                            <GameCard key={game.gameId} game={game} />
                         ))}
                     </div>
                 ) : (
@@ -51,14 +46,8 @@ export default function Dashboard() {
             <section>
                 <h2>All Games</h2>
                 <div className="game-grid">
-                    {games?.map(game => (
-                        <div key={game.gameId} className="game-card">
-                            <h3>{game.description}</h3>
-                            <p>Max Players: {game.maxPlayers}</p>
-                            <span className={`status ${game.isAvailable ? 'available' : 'unavailable'}`}>
-                                {game.isAvailable ? 'Available' : 'Unavailable'}
-                            </span>
-                        </div>
+                    {games?.map((game) => (
+                        <GameCard key={game.gameId} game={game} />
                     ))}
                 </div>
             </section>
