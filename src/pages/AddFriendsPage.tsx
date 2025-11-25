@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getAllPlayers, addFriend, type PlayerSearchResponse } from '../services/player';
 import { useSearch } from '../hooks/useSearch';
 import './AddFriendsPage.scss';
 
@@ -7,23 +9,24 @@ interface User {
     id: string;
     username: string;
     avatarUrl: string;
+    alreadyConnected: boolean;
 }
 
 const AddFriendsPage: React.FC = () => {
     const navigate = useNavigate();
     const [addedFriends, setAddedFriends] = useState<Set<string>>(new Set());
 
-    // Mock data - replace with API call
-    const allUsers: User[] = [
-        { id: '1', username: 'Brittany Dinan', avatarUrl: '/avatars/brittany1.jpg' },
-        { id: '2', username: 'John Smith', avatarUrl: '/avatars/john.jpg' },
-        { id: '3', username: 'Sarah Johnson', avatarUrl: '/avatars/sarah.jpg' },
-        { id: '4', username: 'Mike Wilson', avatarUrl: '/avatars/mike.jpg' },
-        { id: '5', username: 'Emily Brown', avatarUrl: '/avatars/emily.jpg' },
-        { id: '6', username: 'David Lee', avatarUrl: '/avatars/david.jpg' },
-        { id: '7', username: 'Lisa Anderson', avatarUrl: '/avatars/lisa.jpg' },
-        { id: '8', username: 'James Taylor', avatarUrl: '/avatars/james.jpg' },
-    ];
+    const { data: players, isLoading, error } = useQuery<PlayerSearchResponse[], Error>({
+        queryKey: ['players'],
+        queryFn: getAllPlayers
+    });
+
+    const allUsers: User[] = players?.map(p => ({
+        id: p.playerId,
+        username: p.username,
+        avatarUrl: '/avatars/default.jpg',
+        alreadyConnected: p.alreadyConnected
+    })) || [];
 
     const { searchQuery, searchResults, handleSearch } = useSearch<User>({
         data: allUsers,
@@ -34,19 +37,24 @@ const AddFriendsPage: React.FC = () => {
         navigate('/friends');
     };
 
-    const handleAddFriend = (userId: string) => {
-        setAddedFriends((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(userId)) {
-                newSet.delete(userId);
-            } else {
-                newSet.add(userId);
-            }
-            return newSet;
-        });
+    const addFriendMutation = useMutation({
+        mutationFn: addFriend,
+        onSuccess: (_, variables) => {
+            setAddedFriends((prev) => {
+                const newSet = new Set(prev);
+                newSet.add(variables);
+                return newSet;
+            });
+        },
+        onError: (error) => {
+            console.error('Failed to send friend request:', error);
+            alert('Failed to send friend request. Please try again.');
+        }
+    });
 
-        console.log('Friend request sent to user:', userId);
-        // Add API call to send friend request
+    const handleAddFriend = (userId: string) => {
+        if (addedFriends.has(userId)) return;
+        addFriendMutation.mutate(userId);
     };
 
     const shouldShowResults = searchQuery.trim().length > 2;
@@ -69,7 +77,10 @@ const AddFriendsPage: React.FC = () => {
                     onChange={(e) => handleSearch(e.target.value)}
                     className="search-input"
                 />
+                {isLoading && <span className="loading-spinner">⏳</span>}
             </div>
+
+            {error && <div className="error-message">Error loading players: {error.message}</div>}
 
             {shouldShowResults && (
                 <div className="users-list">
@@ -83,17 +94,22 @@ const AddFriendsPage: React.FC = () => {
 
                             return (
                                 <div key={user.id} className="user-item">
-                                    <div className="user-avatar">
-                                        <img src={user.avatarUrl} alt={user.username} />
+                                    <div className="user-info">
+                                        <div className="user-avatar">
+                                            <img src={user.avatarUrl} alt={user.username} />
+                                        </div>
+                                        <span className="user-name">{user.username}</span>
                                     </div>
-                                    <span className="user-name">{user.username}</span>
-                                    <button
-                                        className={`btn-add ${isAdded ? 'added' : ''}`}
-                                        onClick={() => handleAddFriend(user.id)}
-                                        aria-label={isAdded ? 'Remove friend request' : 'Add friend'}
-                                    >
-                                        {isAdded ? '✓' : '+'}
-                                    </button>
+                                    {!user.alreadyConnected && (
+                                        <button
+                                            className={`btn-add ${isAdded ? 'added' : ''}`}
+                                            onClick={() => handleAddFriend(user.id)}
+                                            disabled={isAdded || addFriendMutation.isPending}
+                                            aria-label={isAdded ? 'Friend request sent' : 'Add friend'}
+                                        >
+                                            {isAdded ? 'Sent' : '+'}
+                                        </button>
+                                    )}
                                 </div>
                             );
                         })
