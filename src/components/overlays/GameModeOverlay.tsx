@@ -5,21 +5,22 @@ import './GameModeOverlay.scss';
 interface GameModeOverlayProps {
     isOpen: boolean;
     gameId: string;
+    showLobby: () => void;
     onClose: () => void;
 }
 
-const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, gameId, onClose }) => {
+const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, gameId, onClose }) => {
     const navigate = useNavigate();
 
     const handleAgainstAI = () => {
         console.log('Starting game against AI...');
-        navigate(`/game/${gameId}/play?mode=ai`);
+        navigate(`http://localhost:5172/`);
         onClose();
     };
 
     const handleHumanGame = () => {
         console.log('Starting human game...');
-        navigate(`/game/${gameId}/play?mode=human`);
+        showLobby();
         onClose();
     };
 

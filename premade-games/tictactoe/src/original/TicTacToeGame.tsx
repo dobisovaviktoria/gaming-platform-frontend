@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPythonGame, getPythonGameState, makePythonMove } from '../../services/pythonApi';
-import GameEndOverlay from '../../components/overlays/GameEndOverlay';
+import { createPythonGame, getPythonGameState, makePythonMove } from '../../../frontend/src/services/pythonApi';
+import GameEndOverlay from '../../../frontend/src/components/overlays/GameEndOverlay';
 import './TicTacToeGame.scss';
 
 function TicTacToeGame() {
@@ -77,7 +77,7 @@ function TicTacToeGame() {
     };
 
     return (
-        <div className="tic-tac-toe-game">
+        <div className="tic-tac-toe-page">
             <div className="game-container-wrapper">
                 <div className="game-header">
                     <div className="decorative-pattern" />
@@ -146,7 +146,7 @@ function TicTacToeGame() {
                 result={gameResult}
                 gameId="tic-tac-toe"
                 onPlayAgain={handleNewGame}
-                onClose={() => {}}
+                onClose={() => setShowEndOverlay(false)}
             />
         </div>
     );

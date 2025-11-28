@@ -86,7 +86,6 @@ const FriendsPage: React.FC = () => {
     return (
         <div className="friends-page">
             <Navbar onMenuToggle={handleMenuToggle} />
-
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
             <div className="search-input-container">
@@ -99,7 +98,7 @@ const FriendsPage: React.FC = () => {
                 {isLoadingFriends && <span className="loading-spinner">⏳</span>}
             </div>
 
-            {requests && requests.length > 0 && (
+            {!isLoadingRequests && requests && requests.length > 0 && (
                 <div className="friend-requests-section">
                     <h2>Friend Requests</h2>
                     <div className="requests-list">
@@ -140,6 +139,13 @@ const FriendsPage: React.FC = () => {
                     </div>
                 )}
 
+                <div className="friends-header">
+                    <h1>My Friends</h1>
+                    <Link className="btn-add" to="/friends/add" >
+                        Add
+                    </Link>
+                </div>
+
                 {showNoResults && (
                     <div className="no-results">
                         <div className="sad-face">☹️</div>
@@ -148,12 +154,6 @@ const FriendsPage: React.FC = () => {
                     </div>
                 )}
 
-                <div className="friends-header">
-                    <h1>My Friends</h1>
-                    <Link className="btn-add" to="/friends/add" >
-                        Add
-                    </Link>
-                </div>
 
                 {searchResults.length > 0 ? (
                     <div className="friends-grid">

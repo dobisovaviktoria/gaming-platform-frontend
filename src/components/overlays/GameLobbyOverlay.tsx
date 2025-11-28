@@ -1,12 +1,13 @@
 // components/overlays/GameLobbyOverlay.tsx
 import React, { useState } from 'react';
 import './GameLobbyOverlay.scss';
+import {useNavigate} from "react-router-dom";
 
 interface Player {
     id: string;
     username: string;
     avatarUrl: string;
-    status: 'waiting' | 'ready' | 'invited';
+    status: 'waiting' | 'ready' | 'invited' | 'not-invited';
 }
 
 interface GameLobbyOverlayProps {
@@ -23,10 +24,10 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
                                                                gameId,
                                                                gameName,
                                                                maxPlayers,
-                                                               onClose,
-                                                               onStartGame
+                                                               onClose
                                                            }) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
     const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([
         {
             id: '1',
@@ -42,39 +43,35 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
             id: '2',
             username: 'Brittany Dinan',
             avatarUrl: '/avatars/brittany2.jpg',
-            status: 'invited',
+            status: 'not-invited',
         },
         {
             id: '3',
             username: 'John Smith',
             avatarUrl: '/avatars/john.jpg',
-            status: 'invited',
+            status: 'not-invited',
         },
         {
             id: '4',
             username: 'Sarah Johnson',
             avatarUrl: '/avatars/sarah.jpg',
-            status: 'invited',
+            status: 'not-invited',
         },
         {
             id: '5',
             username: 'Mike Wilson',
             avatarUrl: '/avatars/mike.jpg',
-            status: 'invited',
+            status: 'not-invited',
         },
         {
             id: '6',
             username: 'Emily Brown',
             avatarUrl: '/avatars/emily.jpg',
-            status: 'invited',
+            status: 'not-invited',
         },
     ]);
 
-    const [invitedPlayers, setInvitedPlayers] = useState<Player[]>([
-        allPlayers[0], // Brittany Dinan
-        allPlayers[2], // Sarah Johnson
-        allPlayers[3], // Mike Wilson
-    ]);
+    const [invitedPlayers, setInvitedPlayers] = useState<Player[]>([]);
 
     const currentPlayerCount = waitingPlayers.length + invitedPlayers.filter(p => p.status === 'invited').length;
 
@@ -101,16 +98,22 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
     };
 
     const handleAddRandom = () => {
-        setWaitingPlayers([...waitingPlayers, {
-            id: Math.floor(Math.random() * 1000)+"",
-            username: 'Brittany Dinan',
-            avatarUrl: '/avatars/brittany1.jpg',
-            status: 'waiting',
-        },])
+        // Invite player
+        if (currentPlayerCount < maxPlayers) {
+            setWaitingPlayers([...waitingPlayers, {
+                id: Math.floor(Math.random() * 1000)+"",
+                username: 'Brittany Dinan',
+                avatarUrl: '/avatars/brittany1.jpg',
+                status: 'waiting',
+            },])
+        } else {
+            alert(`Maximum ${maxPlayers} players allowed!`);
+        }
     };
 
     const handleStart = () => {
-        if (waitingPlayers.length === maxPlayers) onStartGame();
+        if (waitingPlayers.length === maxPlayers)
+            navigate(`http://localhost:5172/`);
     };
 
     if (!isOpen) return null;

@@ -1,0 +1,273 @@
+.tic-tac-toe-game {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text);
+
+  .game-container-wrapper {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card);
+    border-radius: 2rem;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+    .game-header {
+      height: 100px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      position: relative;
+      overflow: hidden;
+
+      .decorative-pattern {
+        position: absolute;
+        top: -50%;
+        left: -10%;
+        right: -10%;
+        bottom: 50%;
+        background: linear-gradient(
+                        135deg,
+                        transparent 0%,
+                        rgba(255, 255, 255, 0.03) 25%,
+                        rgba(255, 255, 255, 0.05) 50%,
+                        rgba(255, 255, 255, 0.03) 75%,
+                        transparent 100%
+        );
+        transform: skewY(-5deg);
+      }
+    }
+
+    .game-content {
+      padding: 2rem;
+      background: var(--background);
+      position: relative;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+
+      .btn-back {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        background: transparent;
+        border: none;
+        font-size: 2rem;
+        color: var(--text);
+        cursor: pointer;
+        padding: 0.5rem;
+        transition: transform 0.2s;
+        line-height: 1;
+        z-index: 10;
+
+        &:hover {
+          transform: translateX(-4px);
+        }
+
+        &:active {
+          transform: translateX(-2px);
+        }
+      }
+
+      .game-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 2rem 0;
+        text-align: center;
+        color: var(--text);
+      }
+
+      .start-section {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .btn-start {
+          padding: 1rem 2.5rem;
+          background: var(--primary);
+          color: white;
+          border: none;
+          border-radius: 2rem;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .game-info {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.75rem;
+
+        .info-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+
+          .info-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+          }
+
+          .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+
+            &.status {
+              text-transform: capitalize;
+
+              &.in_progress {
+                color: #22c55e;
+              }
+            }
+          }
+        }
+      }
+
+      .game-board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        max-width: 350px;
+        width: 100%;
+        margin: 0 auto;
+
+        .cell {
+          aspect-ratio: 1 / 1; // Force square cells
+          width: 100%; // Take full width of grid column
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.05);
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          border-radius: 0.75rem;
+          font-size: 3rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: background 0.2s, border-color 0.2s, transform 0.2s;
+          user-select: none;
+          min-height: 100px; // Minimum size fallback
+
+          &.empty:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            transform: scale(1.05);
+          }
+
+          &.filled {
+            cursor: not-allowed;
+          }
+
+          &.cell-x {
+            color: #22c55e;
+            animation: popIn 0.3s ease;
+          }
+
+          &.cell-o {
+            color: #f87171;
+            animation: popIn 0.3s ease;
+          }
+        }
+      }
+    }
+
+    .game-footer {
+      height: 80px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.1) 100%);
+      position: relative;
+      overflow: hidden;
+
+      .decorative-pattern {
+        position: absolute;
+        top: 50%;
+        left: -10%;
+        right: -10%;
+        bottom: -50%;
+        background: linear-gradient(
+                        135deg,
+                        transparent 0%,
+                        rgba(255, 255, 255, 0.03) 25%,
+                        rgba(255, 255, 255, 0.05) 50%,
+                        rgba(255, 255, 255, 0.03) 75%,
+                        transparent 100%
+        );
+        transform: skewY(-5deg);
+      }
+    }
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .tic-tac-toe-game {
+    padding: 0;
+    align-items: flex-start;
+
+    .game-container-wrapper {
+      max-width: 100%;
+      min-height: 100vh;
+      border-radius: 0;
+
+      .game-content {
+        padding: 1.5rem;
+        min-height: calc(100vh - 180px);
+
+        .btn-back {
+          top: 1.5rem;
+          left: 1.5rem;
+          font-size: 1.75rem;
+        }
+
+        .game-title {
+          font-size: 1.5rem;
+          margin-top: 2rem;
+        }
+
+        .game-board {
+          max-width: 300px;
+          gap: 0.5rem;
+
+          .cell {
+            font-size: 2.5rem;
+            min-height: 90px;
+          }
+        }
+      }
+    }
+  }
+}

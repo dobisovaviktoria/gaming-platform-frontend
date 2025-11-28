@@ -1,13 +1,18 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import Navbar from '../components/Navbar';
+import SideMenu from '../components/overlays/SideMenu.tsx';
+import GameCard from '../components/GameCard.tsx';
 import { getCurrentPlayer } from '../services/player';
 import { getGames } from '../services/game';
-import { useKeycloak } from '../contexts/AuthContext';
-import GameCard from '../components/GameCard';
-import type {Game, Player} from '../model/types.ts';
+import type { Game, Player } from '../model/types';
 import './Dashboard.scss';
 
-export default function Dashboard() {
-    const { logout } = useKeycloak();
+const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
     const { data: player, isLoading: isLoadingPlayer } = useQuery<Player, Error>({
         queryKey: ['player'],
@@ -19,38 +24,72 @@ export default function Dashboard() {
         queryFn: getGames
     });
 
-    if (isLoadingPlayer || isLoadingGames) return <div className="dashboard">Loading...</div>;
+    const handleMenuToggle = () => {
+        setIsMenuOpen(!isMenuOpen);
+        if (!isMenuOpen) {
+            document.body.classList.add('menu-open');
+        } else {
+            document.body.classList.remove('menu-open');
+        }
+    };
+
+    const handleMenuClose = () => {
+        setIsMenuOpen(false);
+        document.body.classList.remove('menu-open');
+    };
+
+    const handleSearchClick = () => {
+        navigate('/search');
+    };
 
     const favoriteGames = games?.filter((g) => player?.favoriteGameIds.includes(g.gameId)) || [];
+    const availableGames = games?.filter(g => g.isAvailable) || [];
 
     return (
         <div className="dashboard">
-            <header>
-                <h1>Welcome, {player?.username}!</h1>
-                <button onClick={logout} className="btn-logout">Logout</button>
-            </header>
+            <Navbar onMenuToggle={handleMenuToggle} />
+            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
-            <section>
-                <h2>Your Favorite Games</h2>
-                {favoriteGames.length > 0 ? (
-                    <div className="game-grid">
-                        {favoriteGames.map((game) => (
-                            <GameCard key={game.gameId} game={game} />
-                        ))}
-                    </div>
-                ) : (
-                    <p style={{ color: 'var(--text-muted)' }}>You haven't marked any games as favorites yet.</p>
-                )}
-            </section>
-
-            <section>
-                <h2>All Games</h2>
-                <div className="game-grid">
-                    {games?.map((game) => (
-                        <GameCard key={game.gameId} game={game} />
-                    ))}
+            <div className="dashboard-content">
+                <div className="search-bar-container" onClick={handleSearchClick}>
+                    <span className="search-icon">🔍</span>
+                    <span className="search-placeholder">Search</span>
                 </div>
-            </section>
+
+                <section className="favorites-section">
+                    <h2>Favourite</h2>
+                    {isLoadingPlayer || isLoadingGames ? (
+                        <p className="loading-text">Loading...</p>
+                    ) : favoriteGames.length > 0 ? (
+                        <div className="game-grid">
+                            {favoriteGames.map((game) => (
+                                <GameCard key={game.gameId} game={game} isFavorite={true} />
+                            ))}
+                        </div>
+                    ) : (
+                        <p style={{ color: 'var(--text-muted)' }}>You haven't marked any games as favorites yet.</p>
+                    )}
+                </section>
+
+                <section className="all-games-section">
+                    <h2>All Games</h2>
+                    {isLoadingGames ? (
+                        <p className="loading-text">Loading...</p>
+                    ) : (
+                        <div className="game-grid">
+                            {availableGames.map((game) => (
+                                <GameCard
+                                    key={game.gameId}
+                                    game={game}
+                                    isFavorite={player?.favoriteGameIds.includes(game.gameId)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     );
-}
+};
+
+export default Dashboard;
