@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getGame } from '../services/game';
+import { getGames } from '../services/game';
+import type { Game } from '../model/types';
 import './GameDetailsPage.scss';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -18,17 +19,19 @@ interface GameDetailsPageProps {
     isEnd?: boolean;
 }
 
-export default function GameDetails({ isEnd = false } : GameDetailsPageProps) {
-    const [ showModeOverlay, setShowModeOverlay ] = useState(false);
-    const [ showLobbyOverlay, setShowLobbyOverlay ] = useState<boolean>(false);
-    const [ showEndOverlay, setShowEndOverlay ] = useState(isEnd);
+export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
+    const [showModeOverlay, setShowModeOverlay] = useState(false);
+    const [showLobbyOverlay, setShowLobbyOverlay] = useState<boolean>(false);
+    const [showEndOverlay, setShowEndOverlay] = useState(isEnd);
     const { gameId } = useParams<{ gameId: string }>();
     const navigate = useNavigate();
 
-    const { data: game, isLoading } = useQuery({
-        queryKey: ['game'],
-        queryFn: () => getGame(gameId || '')
+    const { data: games, isLoading } = useQuery<Game[], Error>({
+        queryKey: ['games'],  // ← Same key as Dashboard
+        queryFn: getGames
     });
+
+    const game = games?.find(g => g.gameId === gameId);
 
     const handleStatsClick = () => {
         navigate(`/game/${gameId}/statistics`);
@@ -71,8 +74,6 @@ export default function GameDetails({ isEnd = false } : GameDetailsPageProps) {
         );
     }
 
-
-
     // Mock data for now
     const leaderboard = [
         { rank: 1, user: 'PlayerOne', score: 2500 },
@@ -86,13 +87,12 @@ export default function GameDetails({ isEnd = false } : GameDetailsPageProps) {
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
             <header>
-                <h1>{game.description}</h1> {/* have to change this to name in the backend */}
+                <h1>{game.description}</h1>
                 <StarBorderIcon className="star-icon" />
             </header>
 
             <div className="top-section">
                 <div className="game-image">
-                    {/* Placeholder for game image */}
                     <ImageIcon className="placeholder-icon" />
                 </div>
                 <div className="action-buttons">
@@ -108,7 +108,6 @@ export default function GameDetails({ isEnd = false } : GameDetailsPageProps) {
                     Max players: {game.maxPlayers}.
                     Status: {game.isAvailable ? 'Available' : 'Unavailable'}.
                 </p>
-
             </div>
 
             <div className="leaderboard-section">
@@ -136,16 +135,16 @@ export default function GameDetails({ isEnd = false } : GameDetailsPageProps) {
             />
             <GameLobbyOverlay
                 isOpen={showLobbyOverlay}
-                gameId={gameId?gameId:""}
-                gameName={gameId?gameId:""}
-                maxPlayers={2}
+                gameId={gameId ? gameId : ""}
+                gameName={game.description}
+                maxPlayers={game.maxPlayers}
                 onClose={() => setShowLobbyOverlay(false)}
                 onStartGame={() => setShowLobbyOverlay(false)}
             />
             <GameEndOverlay
                 isOpen={showEndOverlay}
                 result={gameResult}
-                gameId={gameId?gameId:""}
+                gameId={gameId ? gameId : ""}
                 onPlayAgain={handlePlayClick}
                 onClose={() => {
                     navigate(`/game/${gameId}`);

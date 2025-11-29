@@ -1,4 +1,5 @@
 import api from './apiPython';
+import { getCurrentPlayer } from './player';
 
 export interface PythonGame {
     gameId: string;
@@ -9,8 +10,16 @@ export interface PythonGame {
     status: string;
 }
 
-export const createPythonGame = async (playerX: string, playerO: string): Promise<{ gameId: string }> => {
-    const response = await api.post(`/api/python-games`, null, { params: { playerX, playerO } });
+export const createPythonGame = async (opponentId: string): Promise<{ gameId: string }> => {
+    const player = await getCurrentPlayer();
+
+    // Player is always X, opponent is O
+    const response = await api.post('/api/python-games', null, {
+        params: {
+            playerXId: player.playerId,
+            playerOId: opponentId
+        }
+    });
     return response.data;
 };
 
@@ -20,6 +29,8 @@ export const getPythonGameState = async (gameId: string): Promise<PythonGame> =>
 };
 
 export const makePythonMove = async (gameId: string, position: number): Promise<PythonGame> => {
-    const response = await api.post(`/api/python-games/${gameId}/move`, null, { params: { position } });
+    const response = await api.post(`/api/python-games/${gameId}/move`, null, {
+        params: { position }
+    });
     return response.data;
 };

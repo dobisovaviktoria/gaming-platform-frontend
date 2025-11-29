@@ -14,7 +14,7 @@ const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, ga
 
     const handleAgainstAI = () => {
         console.log('Starting game against AI...');
-        navigate(`http://localhost:5172/`);
+        navigate(`/game/${gameId}/play?mode=ai`);
         onClose();
     };
 
@@ -32,7 +32,7 @@ const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, ga
             <div className="mode-container">
                 <div className="mode-header">
                     <div className="header-content">
-                        <h3 className="mode-title">Lobby</h3>
+                        <h3 className="mode-title">Choose Game Mode</h3>
                         <button className="btn-close" onClick={onClose} aria-label="Close">
                             ✕
                         </button>
@@ -44,11 +44,13 @@ const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, ga
                         <button className="btn-mode" onClick={handleAgainstAI}>
                             <span className="mode-icon">🤖</span>
                             <span className="mode-label">Against AI</span>
+                            <span className="mode-description">Play against computer</span>
                         </button>
 
                         <button className="btn-mode" onClick={handleHumanGame}>
                             <span className="mode-icon">👤</span>
-                            <span className="mode-label">Against another person</span>
+                            <span className="mode-label">Against Human</span>
+                            <span className="mode-description">Play with a friend</span>
                         </button>
                     </div>
                 </div>
