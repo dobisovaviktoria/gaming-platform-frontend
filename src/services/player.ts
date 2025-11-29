@@ -58,3 +58,11 @@ export const acceptFriendRequest = async (friendshipId: string): Promise<void> =
 export const rejectFriendRequest = async (friendshipId: string): Promise<void> => {
     await api.post(`/api/players/friends/${friendshipId}/reject`);
 };
+
+export const addFavoriteGame = async (gameId: string): Promise<void> => {
+    await api.post(`/api/players/favorites/${gameId}`);
+};
+
+export const removeFavoriteGame = async (gameId: string): Promise<void> => {
+    await api.delete(`/api/players/favorites/${gameId}`);
+};

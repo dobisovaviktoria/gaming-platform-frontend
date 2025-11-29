@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/Navbar';
 import SideMenu from '../components/overlays/SideMenu.tsx';
 import GameCard from '../components/GameCard.tsx';
-import { getCurrentPlayer } from '../services/player';
+import ConfirmationDialog from '../components/overlays/ConfirmationDialog.tsx';
+import { getCurrentPlayer, addFavoriteGame, removeFavoriteGame } from '../services/player';
 import { getGames } from '../services/game';
 import type { Game, Player } from '../model/types';
 import './Dashboard.scss';
@@ -12,7 +13,9 @@ import './Dashboard.scss';
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [gameToUnfavorite, setGameToUnfavorite] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
     const { data: player, isLoading: isLoadingPlayer } = useQuery<Player, Error>({
         queryKey: ['player'],
@@ -23,6 +26,42 @@ const Dashboard: React.FC = () => {
         queryKey: ['games'],
         queryFn: getGames
     });
+
+    const addFavoriteMutation = useMutation({
+        mutationFn: addFavoriteGame,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['player'] });
+        }
+    });
+
+    const removeFavoriteMutation = useMutation({
+        mutationFn: removeFavoriteGame,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['player'] });
+            setShowConfirm(false);
+            setGameToUnfavorite(null);
+        }
+    });
+
+    const handleToggleFavorite = (gameId: string, isFavorite: boolean) => {
+        if (isFavorite) {
+            setGameToUnfavorite(gameId);
+            setShowConfirm(true);
+        } else {
+            addFavoriteMutation.mutate(gameId);
+        }
+    };
+
+    const confirmUnfavorite = () => {
+        if (gameToUnfavorite) {
+            removeFavoriteMutation.mutate(gameToUnfavorite);
+        }
+    };
+
+    const cancelUnfavorite = () => {
+        setShowConfirm(false);
+        setGameToUnfavorite(null);
+    };
 
     const handleMenuToggle = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -63,7 +102,12 @@ const Dashboard: React.FC = () => {
                     ) : favoriteGames.length > 0 ? (
                         <div className="game-grid">
                             {favoriteGames.map((game) => (
-                                <GameCard key={game.gameId} game={game} isFavorite={true} />
+                                <GameCard 
+                                    key={game.gameId} 
+                                    game={game} 
+                                    isFavorite={true} 
+                                    onToggleFavorite={handleToggleFavorite}
+                                />
                             ))}
                         </div>
                     ) : (
@@ -82,12 +126,20 @@ const Dashboard: React.FC = () => {
                                     key={game.gameId}
                                     game={game}
                                     isFavorite={player?.favoriteGameIds.includes(game.gameId)}
+                                    onToggleFavorite={handleToggleFavorite}
                                 />
                             ))}
                         </div>
                     )}
                 </section>
             </div>
+            {showConfirm && (
+                <ConfirmationDialog
+                    message="Are you sure you want to remove this game from your favorites?"
+                    onConfirm={confirmUnfavorite}
+                    onCancel={cancelUnfavorite}
+                />
+            )}
         </div>
     );
 };
