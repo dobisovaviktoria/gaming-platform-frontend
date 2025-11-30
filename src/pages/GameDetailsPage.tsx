@@ -95,7 +95,7 @@ export default function GameDetails({ isEnd = false } : GameDetailsPageProps) {
                     {/* Placeholder for game image */}
                     <ImageIcon className="placeholder-icon" />
                 </div>
-                <div className="action-buttons">
+                <div className="buttons">
                     <button onClick={handleAchievementsClick}>Achievements</button>
                     <button onClick={handleStatsClick}>Stats</button>
                 </div>

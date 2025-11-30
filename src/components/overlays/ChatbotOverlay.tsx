@@ -81,10 +81,10 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="chatbot-overlay">
-            <div className="chatbot-backdrop" onClick={onClose} />
-            <div className="chatbot-container">
-                <div className="chatbot-header">
+        <div className="overlay">
+            <div className="overlay-backdrop" onClick={onClose} />
+            <div className="overlay-container">
+                <div className="overlay-header">
                     <div className="header-content">
                         <h3 className="chatbot-title">😊 Your AI Companion</h3>
                         <button className="btn-close" onClick={onClose} aria-label="Close chat">
