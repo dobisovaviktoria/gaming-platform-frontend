@@ -1,0 +1,43 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_MERGE_REQUEST_ID
+
+stages:
+  - install
+  - test
+  - build
+
+default:
+  image: node:20
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+
+install_dependencies:
+  stage: install
+  script:
+    - npm ci
+
+lint:
+  stage: test
+  dependencies: []
+  script:
+    - npm run lint
+
+typecheck:
+  stage: test
+  dependencies: []
+  script:
+    - npx tsc --noEmit
+
+build:
+  stage: build
+  dependencies: []
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
