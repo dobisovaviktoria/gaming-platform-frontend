@@ -117,9 +117,6 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="chatbot-input-container">
-                    <button className="btn-attachment" aria-label="Attach file">
-                        📎
-                    </button>
                     <input
                         type="text"
                         placeholder="Input field"

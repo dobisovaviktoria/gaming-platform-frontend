@@ -150,3 +150,45 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1.5rem;
+
+    .profile-content {
+      .profile-card {
+        padding: 2rem 1.5rem;
+
+        .profile-avatar-section {
+          .profile-avatar {
+            width: 100px;
+            height: 100px;
+          }
+
+          .profile-name {
+            font-size: 1.5rem;
+          }
+        }
+
+        .profile-fields {
+          .profile-field {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+
+            label {
+              text-align: left;
+            }
+          }
+        }
+
+        .profile-actions {
+          flex-direction: column;
+
+          button {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
