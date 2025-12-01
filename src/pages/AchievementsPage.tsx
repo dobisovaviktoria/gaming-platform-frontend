@@ -1,137 +1,56 @@
-// pages/AchievementsPage.tsx
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Navbar from '../components/Navbar';
 import SideMenu from '../components/overlays/SideMenu.tsx';
 import Achievement from '../components/Achievement';
 import { useSearch } from '../hooks/useSearch';
+import { getCurrentPlayer } from '../services/player';
+import { getGames } from '../services/game';
+import { getPlayerAchievementsForGame } from '../services/achievements';
+import type { GameWithAchievements, Achievement as AchievementType } from '../model/types';
 import './AchievementsPage.scss';
-
-interface AchievementData {
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-    achieved: boolean;
-}
-
-interface Game {
-    id: string;
-    name: string;
-    achievements: AchievementData[];
-}
 
 const AchievementsPage: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [expandedGames, setExpandedGames] = useState<Set<string>>(new Set());
 
-    const gamesData: Game[] = [
-        {
-            id: '1',
-            name: 'Tic Tac Toe',
-            achievements: [
-                {
-                    id: '1',
-                    name: 'First Win',
-                    description: 'Win your first game of Tic Tac Toe',
-                    icon: '🏆',
-                    achieved: true
-                },
-                {
-                    id: '2',
-                    name: 'Win Streak',
-                    description: 'Win 5 games in a row',
-                    icon: '🔥',
-                    achieved: true
-                },
-                {
-                    id: '3',
-                    name: 'Perfect Game',
-                    description: 'Win without your opponent scoring',
-                    icon: '⭐',
-                    achieved: true
-                },
-                {
-                    id: '4',
-                    name: 'Master',
-                    description: 'Win 50 games total',
-                    icon: '👑',
-                    achieved: false
-                },
-                {
-                    id: '5',
-                    name: 'Grand Master',
-                    description: 'Win 100 games total',
-                    icon: '💎',
-                    achieved: false
-                },
-                {
-                    id: '6',
-                    name: 'Legend',
-                    description: 'Win 250 games total',
-                    icon: '🌟',
-                    achieved: false
-                },
-                {
-                    id: '7',
-                    name: 'Unbeatable',
-                    description: 'Win 50 games in a row',
-                    icon: '🛡️',
-                    achieved: false
-                },
-                {
-                    id: '8',
-                    name: 'Champion',
-                    description: 'Reach rank #1 on the leaderboard',
-                    icon: '🥇',
-                    achieved: false
-                },
-            ],
-        },
-        {
-            id: '2',
-            name: 'Chess',
-            achievements: [
-                {
-                    id: '9',
-                    name: 'Checkmate',
-                    description: 'Win your first chess game',
-                    icon: '👑',
-                    achieved: false
-                },
-                {
-                    id: '10',
-                    name: 'Castling Pro',
-                    description: 'Successfully castle in 10 games',
-                    icon: '🏰',
-                    achieved: false
-                },
-            ],
-        },
-        {
-            id: '3',
-            name: 'Connect 4',
-            achievements: [
-                {
-                    id: '11',
-                    name: 'First Connect',
-                    description: 'Win your first Connect 4 game',
-                    icon: '🎯',
-                    achieved: true
-                },
-                {
-                    id: '12',
-                    name: 'Vertical Master',
-                    description: 'Win 10 games with vertical connections',
-                    icon: '📏',
-                    achieved: false
-                },
-            ],
-        },
-    ];
+    const { data: player } = useQuery({
+        queryKey: ['player'],
+        queryFn: getCurrentPlayer
+    });
 
-    const { searchQuery, searchResults, isLoading, handleSearch } = useSearch<Game>({
-        data: gamesData,
-        searchField: 'name',
+    const { data: games, isLoading: isLoadingGames } = useQuery({
+        queryKey: ['games'],
+        queryFn: getGames
+    });
+
+    const { data: allAchievements, isLoading: isLoadingAchievements } = useQuery({
+        queryKey: ['allAchievements', player?.playerId],
+        queryFn: async () => {
+            if (!player || !games) return [];
+
+            const achievementsPromises = games.map(game =>
+                getPlayerAchievementsForGame(player.playerId, game.gameId)
+                    .then((data: { achievements: any; }) => ({
+                        gameId: game.gameId,
+                        gameName: game.description,
+                        achievements: data.achievements
+                    }))
+                    .catch(() => ({
+                        gameId: game.gameId,
+                        gameName: game.description,
+                        achievements: []
+                    }))
+            );
+
+            return Promise.all(achievementsPromises);
+        },
+        enabled: !!player && !!games
+    });
+
+    const { searchQuery, searchResults, isLoading: isSearching, handleSearch } = useSearch<GameWithAchievements>({
+        data: allAchievements || [],
+        searchField: 'gameName',
     });
 
     const handleMenuToggle = () => {
@@ -165,6 +84,7 @@ const AchievementsPage: React.FC = () => {
     };
 
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0;
+    const isLoading = isLoadingGames || isLoadingAchievements;
 
     return (
         <div className="page">
@@ -179,13 +99,19 @@ const AchievementsPage: React.FC = () => {
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                 />
-                {isLoading && <span className="loading-spinner">⏳</span>}
+                {(isSearching || isLoading) && <span className="loading-spinner">⏳</span>}
             </div>
 
             <div className="achievements-content">
                 <h1>Achievements</h1>
 
-                {showNoResults && (
+                {isLoading && (
+                    <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                        Loading achievements...
+                    </p>
+                )}
+
+                {!isLoading && showNoResults && (
                     <div className="no-results">
                         <div className="sad-face">☹️</div>
                         <h2>No games found</h2>
@@ -193,74 +119,96 @@ const AchievementsPage: React.FC = () => {
                     </div>
                 )}
 
-                <div className="games-list">
-                    {searchResults.map((game) => {
-                        const isExpanded = expandedGames.has(game.id);
-                        const achievedCount = game.achievements.filter((a) => a.achieved).length;
-                        const toBeAchievedCount = game.achievements.filter((a) => !a.achieved).length;
+                {!isLoading && (
+                    <div className="games-list">
+                        {searchResults.map((game) => {
+                            const isExpanded = expandedGames.has(game.gameId);
+                            const achievedCount = game.achievements.filter((a) => a.unlocked).length;
+                            const toBeAchievedCount = game.achievements.filter((a) => !a.unlocked).length;
 
-                        return (
-                            <div key={game.id} className="game-card">
-                                <div className="game-header" onClick={() => toggleGame(game.id)}>
-                                    <div className="game-title">
-                                        <span className="game-name">{game.name}</span>
+                            if (game.achievements.length === 0) return null;
+
+                            return (
+                                <div key={game.gameId} className="game-card">
+                                    <div className="game-header" onClick={() => toggleGame(game.gameId)}>
+                                        <div className="game-title">
+                                            <span className="game-name">{game.gameName}</span>
+                                        </div>
+                                        <button
+                                            className={`expand-btn ${isExpanded ? 'expanded' : ''}`}
+                                            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                                        />
                                     </div>
-                                    <button
-                                        className={`expand-btn ${isExpanded ? 'expanded' : ''}`}
-                                        aria-label={isExpanded ? 'Collapse' : 'Expand'}
-                                    />
+
+                                    {isExpanded && (
+                                        <div className="game-achievements">
+                                            {achievedCount > 0 && (
+                                                <div className="achievement-section">
+                                                    <h3>My badges ({achievedCount})</h3>
+                                                    <div className="achievements-grid">
+                                                        {game.achievements
+                                                            .filter((a) => a.unlocked)
+                                                            .map((achievement) => (
+                                                                <Achievement
+                                                                    key={achievement.id}
+                                                                    icon={getAchievementIcon(achievement)}
+                                                                    name={achievement.name}
+                                                                    description={achievement.description}
+                                                                    achieved={achievement.unlocked}
+                                                                    onClick={() => handleAchievementClick(achievement.id)}
+                                                                />
+                                                            ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {toBeAchievedCount > 0 && (
+                                                <div className="achievement-section">
+                                                    <h3>To Be Achieved ({toBeAchievedCount})</h3>
+                                                    <div className="achievements-grid">
+                                                        {game.achievements
+                                                            .filter((a) => !a.unlocked)
+                                                            .map((achievement) => (
+                                                                <Achievement
+                                                                    key={achievement.id}
+                                                                    icon={getAchievementIcon(achievement)}
+                                                                    name={achievement.name}
+                                                                    description={achievement.description}
+                                                                    achieved={achievement.unlocked}
+                                                                    onClick={() => handleAchievementClick(achievement.id)}
+                                                                />
+                                                            ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-
-                                {isExpanded && (
-                                    <div className="game-achievements">
-                                        {achievedCount > 0 && (
-                                            <div className="achievement-section">
-                                                <h3>My badges</h3>
-                                                <div className="achievements-grid">
-                                                    {game.achievements
-                                                        .filter((a) => a.achieved)
-                                                        .map((achievement) => (
-                                                            <Achievement
-                                                                key={achievement.id}
-                                                                icon={achievement.icon}
-                                                                name={achievement.name}
-                                                                description={achievement.description}
-                                                                achieved={achievement.achieved}
-                                                                onClick={() => handleAchievementClick(achievement.id)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {toBeAchievedCount > 0 && (
-                                            <div className="achievement-section">
-                                                <h3>To Be Achieved</h3>
-                                                <div className="achievements-grid">
-                                                    {game.achievements
-                                                        .filter((a) => !a.achieved)
-                                                        .map((achievement) => (
-                                                            <Achievement
-                                                                key={achievement.id}
-                                                                icon={achievement.icon}
-                                                                name={achievement.name}
-                                                                description={achievement.description}
-                                                                achieved={achievement.achieved}
-                                                                onClick={() => handleAchievementClick(achievement.id)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );
 };
+
+// Helper function to map achievement criteria to icons
+function getAchievementIcon(achievement: AchievementType): string {
+    try {
+        const criteria = JSON.parse(achievement.criteria);
+        const iconMap: Record<string, string> = {
+            'WINS_COUNT': '🏆',
+            'WIN_STREAK': '🔥',
+            'GAMES_PLAYED': '🎮',
+            'SCORE_THRESHOLD': '⭐',
+            'KILLS_COUNT': '⚔️',
+            'PERFECT_GAME': '💎'
+        };
+        return iconMap[criteria.type] || '🏅';
+    } catch {
+        return '🏅';
+    }
+}
 
 export default AchievementsPage;

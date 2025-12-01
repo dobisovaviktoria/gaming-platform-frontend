@@ -6,18 +6,33 @@ import './GameCard.scss';
 interface GameCardProps {
     game: Game;
     isFavorite?: boolean;
+    onToggleFavorite?: (gameId: string, isFavorite: boolean) => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false, onToggleFavorite }) => {
     const navigate = useNavigate();
 
     const handlePlayClick = () => {
         navigate(`/game/${game.gameId}`);
     };
 
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onToggleFavorite) {
+            onToggleFavorite(game.gameId, isFavorite);
+        }
+    };
+
     return (
         <div className="game-card">
-            {isFavorite && <span className="favorite-star">⭐</span>}
+            <span 
+                className="favorite-star" 
+                onClick={handleFavoriteClick}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+                {isFavorite ? '⭐' : '☆'}
+            </span>
             <div className="game-image">
                 {/* Placeholder image - replace with actual game image source */}
                 <div className="image-placeholder">

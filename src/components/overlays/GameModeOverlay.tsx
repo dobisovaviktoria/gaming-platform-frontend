@@ -14,7 +14,7 @@ const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, ga
 
     const handleAgainstAI = () => {
         console.log('Starting game against AI...');
-        navigate(`http://localhost:5172/`);
+        navigate(`/game/${gameId}/play?mode=ai`);
         onClose();
     };
 
