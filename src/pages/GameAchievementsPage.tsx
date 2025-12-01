@@ -46,7 +46,7 @@ const GameAchievementsPage: React.FC = () => {
     };
 
     return (
-        <div className="game-achievements-page">
+        <div className="page">
             <div className="page-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←

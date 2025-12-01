@@ -26,7 +26,7 @@ const GameStatsPage: React.FC = () => {
     };
 
     return (
-        <div className="game-stats-page">
+        <div className="page">
             <div className="page-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←

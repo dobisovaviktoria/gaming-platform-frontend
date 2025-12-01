@@ -61,7 +61,7 @@ const AddingGamePage: React.FC = () => {
     };
 
     return (
-        <div className="adding-game-page">
+        <div className="page">
             <div className="page-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←

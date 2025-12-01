@@ -39,7 +39,7 @@ const SearchPage: React.FC = () => {
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
 
     return (
-        <div className="search-page">
+        <div className="page">
             <header className="search-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←

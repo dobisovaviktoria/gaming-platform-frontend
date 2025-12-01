@@ -1,8 +1,6 @@
-.game-details {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  color: var(--text);
+@use "PageGeneral";
+
+.page {
 
   header {
     display: flex;

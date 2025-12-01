@@ -167,7 +167,7 @@ const AchievementsPage: React.FC = () => {
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0;
 
     return (
-        <div className="achievements-page">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 

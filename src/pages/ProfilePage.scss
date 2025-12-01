@@ -1,9 +1,6 @@
-.profile-page {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  color: var(--text);
-  min-height: 100vh;
+@use "PageGeneral";
+
+.page {
 
   .profile-content {
     margin-top: 2rem;
@@ -147,48 +144,6 @@
 
           &:hover {
             background: rgba(255, 255, 255, 0.9);
-          }
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .profile-page {
-    padding: 1.5rem;
-
-    .profile-content {
-      .profile-card {
-        padding: 2rem 1.5rem;
-
-        .profile-avatar-section {
-          .profile-avatar {
-            width: 100px;
-            height: 100px;
-          }
-
-          .profile-name {
-            font-size: 1.5rem;
-          }
-        }
-
-        .profile-fields {
-          .profile-field {
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
-
-            label {
-              text-align: left;
-            }
-          }
-        }
-
-        .profile-actions {
-          flex-direction: column;
-
-          button {
-            width: 100%;
           }
         }
       }

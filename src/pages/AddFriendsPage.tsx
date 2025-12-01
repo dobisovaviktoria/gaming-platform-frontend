@@ -60,7 +60,7 @@ const AddFriendsPage: React.FC = () => {
     const shouldShowResults = searchQuery.trim().length > 2;
 
     return (
-        <div className="add-friends-page">
+        <div className="page">
             <div className="page-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←
@@ -68,14 +68,13 @@ const AddFriendsPage: React.FC = () => {
                 <h1>People</h1>
             </div>
 
-            <div className="search-container">
+            <div className="search-input-container">
                 <span className="search-icon">🔍</span>
                 <input
                     type="text"
                     placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="search-input"
                 />
                 {isLoading && <span className="loading-spinner">⏳</span>}
             </div>

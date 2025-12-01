@@ -1,53 +1,6 @@
-.friends-page {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  color: var(--text);
+@use "PageGeneral";
 
-  .search-input-container {
-    position: relative;
-    margin-bottom: 3rem;
-
-    .search-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-
-    .loading-spinner {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      animation: spin 1s linear infinite;
-    }
-
-    input {
-      width: 100%;
-      padding: 1rem 3rem 1rem 3rem;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 0.75rem;
-      color: var(--text);
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-
-      &::placeholder {
-        color: var(--text-muted);
-      }
-
-      &:focus {
-        border-color: var(--primary);
-        background: rgba(255, 255, 255, 0.15);
-      }
-    }
-  }
+.page {
 
   .search-results {
     .error-message {
@@ -215,34 +168,6 @@
             }
           }
         }
-      }
-    }
-  }
-}
-
-@keyframes spin {
-  from {
-    transform: translateY(-50%) rotate(0deg);
-  }
-  to {
-    transform: translateY(-50%) rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .friends-page {
-    padding: 1.5rem;
-
-    .search-results {
-      .friends-header {
-        h1 {
-          font-size: 1.5rem;
-        }
-      }
-
-      .friends-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 1.5rem;
       }
     }
   }
