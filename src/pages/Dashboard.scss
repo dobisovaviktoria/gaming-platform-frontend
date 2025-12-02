@@ -1,10 +1,6 @@
-// pages/Dashboard.scss
-.dashboard {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  color: var(--text);
-  min-height: 100vh;
+@use "PageGeneral";
+
+.page {
 
   .dashboard-content {
     margin-top: 1rem;
@@ -74,31 +70,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1.5rem;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 1.5rem;
-
-    .dashboard-content {
-      .search-bar-container {
-        padding: 0.75rem 1rem;
-        margin-bottom: 2rem;
-      }
-
-      .favorites-section,
-      .all-games-section {
-        h2 {
-          font-size: 1.1rem;
-        }
-      }
-
-      .game-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-      }
     }
   }
 }

@@ -62,12 +62,12 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
     };
 
     if (isLoading) {
-        return <div className="game-details">Loading...</div>;
+        return <div className="page">Loading...</div>;
     }
 
     if (!game) {
         return (
-            <div className="game-details">
+            <div className="page">
                 <h2>Game not found</h2>
                 <button onClick={() => navigate('/')}>Back to Dashboard</button>
             </div>
@@ -83,7 +83,7 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
     ];
 
     return (
-        <div className="game-details">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
             <header>
@@ -95,7 +95,7 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
                 <div className="game-image">
                     <ImageIcon className="placeholder-icon" />
                 </div>
-                <div className="action-buttons">
+                <div className="buttons">
                     <button onClick={handleAchievementsClick}>Achievements</button>
                     <button onClick={handleStatsClick}>Stats</button>
                 </div>

@@ -53,7 +53,7 @@ const GameAchievementsPage: React.FC = () => {
     const lockedBadges = achievements.filter(a => !a.unlocked);
 
     return (
-        <div className="game-achievements-page">
+        <div className="page">
             <div className="page-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←

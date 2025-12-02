@@ -1,10 +1,6 @@
-.add-game-page {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  color: var(--text);
-  min-height: 100vh;
-  overflow-y: auto;
+@use "PageGeneral";
+
+.page {
 
   .add-game-content {
     margin-top: 2rem;
@@ -56,29 +52,6 @@
 
       &:active {
         transform: translateY(0);
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .add-game-page {
-    padding: 1.5rem;
-
-    .add-game-content {
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .documentation-text {
-        p {
-          font-size: 0.95rem;
-        }
-      }
-
-      .btn-add-game {
-        width: 100%;
-        margin-left: 0;
       }
     }
   }

@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
     const availableGames = games?.filter(g => g.isAvailable) || [];
 
     return (
-        <div className="dashboard">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 

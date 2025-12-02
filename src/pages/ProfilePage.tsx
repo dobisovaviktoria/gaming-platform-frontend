@@ -54,7 +54,7 @@ const ProfilePage: React.FC = () => {
     };
 
     return (
-        <div className="profile-page">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 

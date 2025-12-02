@@ -45,7 +45,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
                     <ul>
                         {menuItems.map((item, index) => (
                             <li key={index}>
-                                <Link to={item.path} className="link-btn" key={item.label}>
+                                <Link to={item.path} className="link-btn" key={item.label} onClick={onClose}>
                                     {item.label}
                                 </Link>
                             </li>
