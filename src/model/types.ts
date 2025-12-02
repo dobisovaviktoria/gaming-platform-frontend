@@ -1,8 +1,20 @@
 export interface Game {
-    gameId: string;
-    maxPlayers: number;
+    id: string;
+    name: string;
+    url: string;
+    pictureUrl: string;
     description: string;
-    isAvailable: boolean;
+    rules: string;
+    maxPlayers: number;
+}
+
+export interface NewGame {
+    name: string;
+    url: string;
+    pictureUrl: string;
+    description: string;
+    rules: string;
+    maxPlayers: number;
 }
 
 export interface Player {

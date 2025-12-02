@@ -1,20 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './GameModeOverlay.scss';
 
 interface GameModeOverlayProps {
     isOpen: boolean;
-    gameId: string;
+    url: string;
     showLobby: () => void;
     onClose: () => void;
 }
 
-const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, gameId, onClose }) => {
-    const navigate = useNavigate();
+const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, url, onClose }) => {
 
     const handleAgainstAI = () => {
         console.log('Starting game against AI...');
-        navigate(`/game/${gameId}/play?mode=ai`);
+        window.location.href = url;
         onClose();
     };
 

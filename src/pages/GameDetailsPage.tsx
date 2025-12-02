@@ -1,12 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getGames } from '../services/game';
+import { getGame } from '../services/game';
 import type { Game } from '../model/types';
 import './GameDetailsPage.scss';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import ImageIcon from '@mui/icons-material/Image';
 import {useState} from "react";
 import GameModeOverlay from "../components/overlays/GameModeOverlay.tsx";
 import Navbar from "../components/Navbar.tsx";
@@ -26,13 +25,11 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
     const { gameId } = useParams<{ gameId: string }>();
     const navigate = useNavigate();
 
-    const { data: games, isLoading } = useQuery<Game[], Error>({
-        queryKey: ['games'],  // ← Same key as Dashboard
-        queryFn: getGames
+    const { data: game, isLoading } = useQuery<Game, Error>({
+        queryKey: [gameId || ''],
+        queryFn: () => getGame(gameId || '')
     });
-
-    const game = games?.find(g => g.gameId === gameId);
-
+    console.log(game);
     const handleStatsClick = () => {
         navigate(`/game/${gameId}/statistics`);
     };
@@ -87,13 +84,13 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
             <header>
-                <h1>{game.description}</h1>
+                <h1>{game.name}</h1>
                 <StarBorderIcon className="star-icon" />
             </header>
 
             <div className="top-section">
                 <div className="game-image">
-                    <ImageIcon className="placeholder-icon" />
+                    <img src={game.pictureUrl}  alt={game.name}/>
                 </div>
                 <div className="action-buttons">
                     <button onClick={handleAchievementsClick}>Achievements</button>
@@ -104,9 +101,8 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
             <div className="overview-section">
                 <h2>Overview</h2>
                 <p>
-                    {game.description} is a thrilling game where you can challenge your friends.
+                    {game.description}.<br/>
                     Max players: {game.maxPlayers}.
-                    Status: {game.isAvailable ? 'Available' : 'Unavailable'}.
                 </p>
             </div>
 
@@ -129,14 +125,14 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
             </div>
             <GameModeOverlay
                 isOpen={showModeOverlay}
-                gameId={gameId || ''}
+                url={game.url || ''}
                 showLobby={() => setShowLobbyOverlay(true)}
                 onClose={() => setShowModeOverlay(false)}
             />
             <GameLobbyOverlay
                 isOpen={showLobbyOverlay}
-                gameId={gameId ? gameId : ""}
-                gameName={game.description}
+                url={game.url}
+                gameName={game.name}
                 maxPlayers={game.maxPlayers}
                 onClose={() => setShowLobbyOverlay(false)}
                 onStartGame={() => setShowLobbyOverlay(false)}

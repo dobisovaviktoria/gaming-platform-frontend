@@ -1,7 +1,6 @@
 // components/overlays/GameLobbyOverlay.tsx
 import React, { useState } from 'react';
 import './GameLobbyOverlay.scss';
-import {useNavigate} from "react-router-dom";
 
 interface Player {
     id: string;
@@ -12,7 +11,7 @@ interface Player {
 
 interface GameLobbyOverlayProps {
     isOpen: boolean;
-    gameId: string;
+    url: string;
     gameName: string;
     maxPlayers: number;
     onClose: () => void;
@@ -21,13 +20,12 @@ interface GameLobbyOverlayProps {
 
 const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
                                                                isOpen,
-                                                               gameId,
+                                                               url,
                                                                gameName,
                                                                maxPlayers,
                                                                onClose
                                                            }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate();
     const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([
         {
             id: '1',
@@ -112,8 +110,7 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
     };
 
     const handleStart = () => {
-        if (waitingPlayers.length === maxPlayers)
-            navigate(`http://localhost:5172/`);
+        if (waitingPlayers.length === maxPlayers) window.location.href = url;
     };
 
     if (!isOpen) return null;

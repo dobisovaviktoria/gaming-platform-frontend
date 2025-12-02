@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import './AddingGamePage.scss';
+import {useAddGame} from "../hooks/useGame.ts";
+import type {Game} from "../model/types.ts";
 
 interface GameFormData {
-    gameName: string;
-    gameSource: string;
-    gamePicture: File | null;
+    url: string;
+    name: string;
     pictureUrl: string;
-    genre: string;
-    generateThumbnail: boolean;
+    description: string;
+    rules: string;
+    maxPlayers: number;
 }
 
 const AddingGamePage: React.FC = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState<GameFormData>({
-        gameName: '',
-        gameSource: '',
-        gamePicture: null,
+        name: '',
+        url: '',
         pictureUrl: '',
-        genre: '',
-        generateThumbnail: false,
+        description: '',
+        rules: '',
+        maxPlayers: 2,
     });
+
+    const onSuccess = (game : Game) => navigate('/game/' + game.id);
+
+    const {addNewGame} = useAddGame(onSuccess)
 
     const handleBackClick = () => {
         navigate('/add-game');
@@ -33,31 +39,13 @@ const AddingGamePage: React.FC = () => {
         }));
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        setFormData((prev) => ({
-            ...prev,
-            gamePicture: file,
-            pictureUrl: file ? URL.createObjectURL(file) : '',
-        }));
-    };
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log('Submitting game:', formData);
 
-        // TODO: Add API call to submit game
-        // const formDataToSend = new FormData();
-        // formDataToSend.append('gameName', formData.gameName);
-        // formDataToSend.append('gameSource', formData.gameSource);
-        // if (formData.gamePicture) {
-        //   formDataToSend.append('gamePicture', formData.gamePicture);
-        // }
-        // formDataToSend.append('genre', formData.genre);
-        // formDataToSend.append('generateThumbnail', formData.generateThumbnail.toString());
+        addNewGame(formData);
 
-        // After successful submission:
-        // navigate('/add-game');
+        navigate('/add-game');
     };
 
     return (
@@ -75,8 +63,8 @@ const AddingGamePage: React.FC = () => {
                     <input
                         id="gameName"
                         type="text"
-                        value={formData.gameName}
-                        onChange={(e) => handleInputChange('gameName', e.target.value)}
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
                         placeholder="Game Name"
                         required
                     />
@@ -87,53 +75,60 @@ const AddingGamePage: React.FC = () => {
                     <input
                         id="gameSource"
                         type="text"
-                        value={formData.gameSource}
-                        onChange={(e) => handleInputChange('gameSource', e.target.value)}
-                        placeholder="URL or path"
+                        value={formData.url}
+                        onChange={(e) => handleInputChange('url', e.target.value)}
+                        placeholder="URL"
                         required
                     />
                 </div>
 
                 <div className="form-field">
-                    <label htmlFor="gamePicture">Game Tags</label>
+                    <label htmlFor="gamePicture">Game Picture</label>
                     <input
                         id="gamePicture"
                         type="text"
                         value={formData.pictureUrl}
                         onChange={(e) => handleInputChange('pictureUrl', e.target.value)}
-                        placeholder="Tags"
+                        placeholder="URL"
+                        required
                     />
                 </div>
 
                 <div className="form-field">
-                    <label htmlFor="genre">Game Files</label>
-                    <div className="file-upload-area">
-                        <input
-                            id="fileUpload"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            hidden
-                        />
-                        <label htmlFor="fileUpload" className="file-upload-label">
-                            <span className="upload-icon">📥</span>
-                            <span className="upload-text">
-                {formData.gamePicture ? formData.gamePicture.name : 'Click to upload'}
-              </span>
-                        </label>
-                    </div>
+                    <label htmlFor="gameDescription">Game Description</label>
+                    <input
+                        id="gameDescription"
+                        type="text"
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        placeholder="Description"
+                        required
+                    />
                 </div>
 
-                <div className="form-field checkbox-field">
-                    <label htmlFor="generateThumbnail" className="checkbox-label">
-                        <input
-                            id="generateThumbnail"
-                            type="checkbox"
-                            checked={formData.generateThumbnail}
-                            onChange={(e) => handleInputChange('generateThumbnail', e.target.checked)}
-                        />
-                        <span>Separate Frontend</span>
+                <div className="form-field">
+                    <label htmlFor="gameRules">Game Rules</label>
+                    <input
+                        id="gameRules"
+                        type="text"
+                        value={formData.rules}
+                        onChange={(e) => handleInputChange('rules', e.target.value)}
+                        placeholder="Rules"
+                        required
+                    />
+                </div>
+
+                <div className="form-field">
+                    <label htmlFor="maxPlayers">Max Players
                     </label>
+                    <input
+                        id="maxPlayers"
+                        type="number"
+                        value={formData.maxPlayers}
+                        onChange={(e) => handleInputChange('maxPlayers', e.target.value)}
+                        placeholder="2"
+                        required
+                    />
                 </div>
 
                 <button type="submit" className="btn-submit">
