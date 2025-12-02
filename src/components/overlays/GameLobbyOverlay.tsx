@@ -1,4 +1,3 @@
-// components/overlays/GameLobbyOverlay.tsx
 import React, { useState } from 'react';
 import './GameLobbyOverlay.scss';
 
@@ -116,11 +115,16 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="game-lobby-overlay">
+        <div className="overlay">
             <div className="overlay-backdrop" onClick={onClose} />
             <div className="overlay-container">
                 <div className="overlay-header">
-                    <div className="decorative-pattern" />
+                    <div className="header-content">
+                        <h3 className="title">Lobby</h3>
+                        <button className="btn-close" onClick={onClose} aria-label="Close">
+                            ✕
+                        </button>
+                    </div>
                 </div>
 
                 <div className="overlay-content">
@@ -190,18 +194,14 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
                         )}
                     </div>
 
-                    <div className="action-buttons">
-                        <button className="btn-add-random" onClick={handleAddRandom}>
+                    <div className="buttons">
+                        <button className="btn btn-add-random" onClick={handleAddRandom}>
                             Add Random People
                         </button>
-                        <button className="btn-start" onClick={handleStart}>
+                        <button className="btn btn-start" onClick={handleStart}>
                             Start
                         </button>
                     </div>
-                </div>
-
-                <div className="overlay-footer">
-                    <div className="decorative-pattern" />
                 </div>
             </div>
         </div>

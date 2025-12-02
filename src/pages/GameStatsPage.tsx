@@ -48,7 +48,7 @@ const GameStatsPage: React.FC = () => {
         : '0.0';
 
     return (
-        <div className="game-stats-page">
+        <div className="page">
             <div className="page-header">
                 <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
                     ←

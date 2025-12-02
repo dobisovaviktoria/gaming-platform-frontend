@@ -1,9 +1,6 @@
-.profile-page {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  color: var(--text);
-  min-height: 100vh;
+@use "PageGeneral";
+
+.page {
 
   .profile-content {
     margin-top: 2rem;
@@ -155,7 +152,7 @@
 }
 
 @media (max-width: 768px) {
-  .profile-page {
+  .page {
     padding: 1.5rem;
 
     .profile-content {

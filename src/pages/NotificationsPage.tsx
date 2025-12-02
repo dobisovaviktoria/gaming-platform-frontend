@@ -64,7 +64,7 @@ const NotificationsPage: React.FC = () => {
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
 
     return (
-        <div className="notifications-page">
+        <div className="page">
             <Navbar
                 onMenuToggle={handleMenuToggle}
             />

@@ -84,7 +84,7 @@ const FriendsPage: React.FC = () => {
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !friendsError;
 
     return (
-        <div className="friends-page">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 

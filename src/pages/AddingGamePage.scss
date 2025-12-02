@@ -1,42 +1,6 @@
-.adding-game-page {
-  padding: 2rem;
-  max-width: 500px;
-  margin: 0 auto;
-  color: var(--text);
-  min-height: 100vh;
+@use "PageGeneral";
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-
-    .btn-back {
-      background: transparent;
-      border: none;
-      font-size: 2rem;
-      color: var(--text);
-      cursor: pointer;
-      padding: 0.5rem;
-      transition: transform 0.2s;
-      line-height: 1;
-      margin-left: -0.5rem;
-
-      &:hover {
-        transform: translateX(-4px);
-      }
-
-      &:active {
-        transform: translateX(-2px);
-      }
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      margin: 0;
-    }
-  }
+.page {
 
   .game-form {
     display: flex;
@@ -101,40 +65,6 @@
         opacity: 0.5;
         cursor: not-allowed;
         transform: none;
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .adding-game-page {
-    padding: 1.5rem;
-
-    .page-header {
-      margin-bottom: 2rem;
-
-      .btn-back {
-        font-size: 1.75rem;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-    }
-
-    .game-form {
-      gap: 1.25rem;
-
-      .form-field {
-        .file-upload-area {
-          .file-upload-label {
-            padding: 2rem 1rem;
-
-            .upload-icon {
-              font-size: 2rem;
-            }
-          }
-        }
       }
     }
   }

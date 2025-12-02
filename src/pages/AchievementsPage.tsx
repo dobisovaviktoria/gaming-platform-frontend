@@ -87,7 +87,7 @@ const AchievementsPage: React.FC = () => {
     const isLoading = isLoadingGames || isLoadingAchievements;
 
     return (
-        <div className="achievements-page">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 

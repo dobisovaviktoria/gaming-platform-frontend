@@ -1,42 +1,6 @@
-.game-stats-page {
-  padding: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
-  color: var(--text);
-  min-height: 100vh;
+@use "PageGeneral";
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-
-    .btn-back {
-      background: transparent;
-      border: none;
-      font-size: 2rem;
-      color: var(--text);
-      cursor: pointer;
-      padding: 0.5rem;
-      transition: transform 0.2s;
-      line-height: 1;
-      margin-left: -0.5rem;
-
-      &:hover {
-        transform: translateX(-4px);
-      }
-
-      &:active {
-        transform: translateX(-2px);
-      }
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      margin: 0;
-    }
-  }
+.page {
 
   .stats-section {
     h2 {
@@ -95,53 +59,6 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: var(--primary);
-          }
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .game-stats-page {
-    padding: 1.5rem;
-
-    .page-header {
-      margin-bottom: 2rem;
-
-      .btn-back {
-        font-size: 1.75rem;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-    }
-
-    .stats-section {
-      h2 {
-        font-size: 1rem;
-      }
-
-      .stats-list {
-        .stat-item {
-          padding: 1rem;
-          gap: 1rem;
-
-          .stat-icon {
-            font-size: 1.75rem;
-            width: 44px;
-            height: 44px;
-          }
-
-          .stat-info {
-            .stat-label {
-              font-size: 0.95rem;
-            }
-
-            .stat-value {
-              font-size: 1rem;
-            }
           }
         }
       }

@@ -22,7 +22,7 @@ const AddGamePage: React.FC = () => {
     };
 
     return (
-        <div className="add-game-page">
+        <div className="page">
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
