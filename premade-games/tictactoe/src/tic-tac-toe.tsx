@@ -40,13 +40,7 @@ function TicTacToeGame() {
 
     useEffect(() => {
         if (pythonGame && pythonGame.status !== 'in_progress') {
-            if (pythonGame.isDraw) {
-                window.location.replace('http://localhost:5173/game/123e4567-e89b-12d3-a456-426614174000/end');
-            } else if (pythonGame.winner === 'X') {
-                window.location.replace('http://localhost:5173/game/123e4567-e89b-12d3-a456-426614174000/end');
-            } else {
-                window.location.replace('http://localhost:5173/game/123e4567-e89b-12d3-a456-426614174000/end');
-            }
+            window.location.replace('http://localhost:5173/game/123e4567-e89b-12d3-a456-426614174000/end');
         }
     }, [pythonGame]);
 

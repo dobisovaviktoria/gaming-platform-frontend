@@ -39,8 +39,8 @@ const AddGamePage: React.FC = () => {
                         web-based and follow our API guidelines for player management and game state.
                     </p>
                     <p>
-                        You'll need to provide the following information: game name, description,
-                        number of players, game category, and thumbnail image.
+                        You'll need to provide the following information: game name, redirection url,
+                        thumbnail image, description, rules, number of players.
                     </p>
                     <p>
                         The game should implement our authentication system and handle player sessions
@@ -52,7 +52,7 @@ const AddGamePage: React.FC = () => {
                     </p>
                 </div>
 
-                <Link className="btn-add-game" to="/add-game/new">
+                <Link className="btn btn-add-game" to="/add-game/new">
                     Add a Game
                 </Link>
             </div>

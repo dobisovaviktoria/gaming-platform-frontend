@@ -81,8 +81,8 @@ const Dashboard: React.FC = () => {
         navigate('/search');
     };
 
-    const favoriteGames = games?.filter((g) => player?.favoriteGameIds.includes(g.gameId)) || [];
-    const availableGames = games?.filter(g => g.isAvailable) || [];
+    const favoriteGames = games?.filter((g) => player?.favoriteGameIds.includes(g.id)) || [];
+    const availableGames = games || [];
 
     return (
         <div className="page">
@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
                         <div className="game-grid">
                             {favoriteGames.map((game) => (
                                 <GameCard 
-                                    key={game.gameId} 
+                                    key={game.id}
                                     game={game} 
                                     isFavorite={true} 
                                     onToggleFavorite={handleToggleFavorite}
@@ -123,9 +123,9 @@ const Dashboard: React.FC = () => {
                         <div className="game-grid">
                             {availableGames.map((game) => (
                                 <GameCard
-                                    key={game.gameId}
+                                    key={game.id}
                                     game={game}
-                                    isFavorite={player?.favoriteGameIds.includes(game.gameId)}
+                                    isFavorite={player?.favoriteGameIds.includes(game.id)}
                                     onToggleFavorite={handleToggleFavorite}
                                 />
                             ))}
