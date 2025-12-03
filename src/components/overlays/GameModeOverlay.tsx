@@ -12,13 +12,14 @@ const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, ur
 
     const handleAgainstAI = () => {
         console.log('Starting game against AI...');
-        window.location.href = url;
+        window.location.href = `${url}?mode=ai`;
         onClose();
     };
 
     const handleHumanGame = () => {
         console.log('Starting human game...');
         showLobby();
+        // window.location.href = `${url}?mode=friend`;
         onClose();
     };
 

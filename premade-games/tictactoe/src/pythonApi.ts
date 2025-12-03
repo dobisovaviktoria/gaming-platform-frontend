@@ -9,11 +9,20 @@ export interface PythonGame {
     status: string;
 }
 
-export const createPythonGame = async (playerXId: string, playerOId: string): Promise<{ gameId: string }> => {
-    const response = await api.post(`/api/python-games`, null, { params: { playerXId, playerOId } });
+export const createPythonGame = async (
+    playerXId: string,
+    playerOId: string,
+    mode: 'ai' | 'friend'
+): Promise<{ gameId: string }> => {
+    const response = await api.post(`/api/python-games`, null, {
+        params: {
+            playerXId,   // Current player's UUID
+            playerOId,   // AI UUID or Friend's UUID
+            mode         // 'ai' or 'friend'
+        }
+    });
     return response.data;
 };
-
 export const getPythonGameState = async (gameId: string): Promise<PythonGame> => {
     const response = await api.get(`/api/python-games/${gameId}`);
     return response.data;
