@@ -30,14 +30,14 @@ const AchievementsPage: React.FC = () => {
             if (!player || !games) return [];
 
             const achievementsPromises = games.map(game =>
-                getPlayerAchievementsForGame(player.playerId, game.gameId)
+                getPlayerAchievementsForGame(player.playerId, game.id)
                     .then((data: { achievements: any; }) => ({
-                        gameId: game.gameId,
+                        gameId: game.id,
                         gameName: game.description,
                         achievements: data.achievements
                     }))
                     .catch(() => ({
-                        gameId: game.gameId,
+                        gameId: game.id,
                         gameName: game.description,
                         achievements: []
                     }))

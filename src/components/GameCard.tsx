@@ -12,8 +12,6 @@ interface GameCardProps {
 const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false, onToggleFavorite }) => {
     const navigate = useNavigate();
 
-    console.log(game)
-
     const handlePlayClick = () => {
         navigate(`/game/${game.id}`);
     };

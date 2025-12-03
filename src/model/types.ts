@@ -57,3 +57,10 @@ export interface GameWithAchievements {
     gameName: string;
     achievements: Achievement[];
 }
+
+export interface Notification {
+    relatedId: string;
+    content: string;
+    type: "FRIEND_REQUEST"|"GAME_INVITE"|"GAME_ACHIEVEMENT"|"APP_ACHIEVEMENT"|"FRIEND_ADDED"|undefined;
+    stamp: string;
+}
