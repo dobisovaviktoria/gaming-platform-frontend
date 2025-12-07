@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Navbar from '../components/Navbar';
 import SideMenu from '../components/overlays/SideMenu.tsx';
@@ -10,7 +10,7 @@ import { getPlayerAchievementsForGame } from '../services/achievements';
 import type { GameWithAchievements, Achievement as AchievementType } from '../model/types';
 import './AchievementsPage.scss';
 
-const AchievementsPage: React.FC = () => {
+export default function AchievementsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [expandedGames, setExpandedGames] = useState<Set<string>>(new Set());
 
@@ -30,14 +30,14 @@ const AchievementsPage: React.FC = () => {
             if (!player || !games) return [];
 
             const achievementsPromises = games.map(game =>
-                getPlayerAchievementsForGame(player.playerId, game.gameId)
+                getPlayerAchievementsForGame(player.playerId, game.id)
                     .then((data: { achievements: any; }) => ({
-                        gameId: game.gameId,
+                        gameId: game.id,
                         gameName: game.description,
                         achievements: data.achievements
                     }))
                     .catch(() => ({
-                        gameId: game.gameId,
+                        gameId: game.id,
                         gameName: game.description,
                         achievements: []
                     }))
@@ -210,5 +210,3 @@ function getAchievementIcon(achievement: AchievementType): string {
         return '🏅';
     }
 }
-
-export default AchievementsPage;
