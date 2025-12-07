@@ -1,4 +1,3 @@
-import React from 'react';
 import './GameModeOverlay.scss';
 
 interface GameModeOverlayProps {
@@ -8,7 +7,7 @@ interface GameModeOverlayProps {
     onClose: () => void;
 }
 
-const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, url, onClose }) => {
+export default function GameModeOverlay({ isOpen, showLobby, url, onClose }: GameModeOverlayProps) {
 
     const handleAgainstAI = () => {
         console.log('Starting game against AI...');
@@ -54,5 +53,3 @@ const GameModeOverlay: React.FC<GameModeOverlayProps> = ({ isOpen, showLobby, ur
         </div>
     );
 };
-
-export default GameModeOverlay;

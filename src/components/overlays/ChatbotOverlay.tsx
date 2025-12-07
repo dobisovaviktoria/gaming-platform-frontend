@@ -1,4 +1,3 @@
-// components/ChatbotOverlay.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatbotOverlay.scss';
 
@@ -14,7 +13,7 @@ interface ChatbotOverlayProps {
     onClose: () => void;
 }
 
-const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
+export default function ChatbotOverlay({ isOpen, onClose } : ChatbotOverlayProps) {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -137,5 +136,3 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
         </div>
     );
 };
-
-export default ChatbotOverlay;

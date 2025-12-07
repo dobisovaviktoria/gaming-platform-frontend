@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './GameLobbyOverlay.scss';
 
 interface Player {
@@ -17,13 +17,7 @@ interface GameLobbyOverlayProps {
     onStartGame: () => void;
 }
 
-const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
-                                                               isOpen,
-                                                               url,
-                                                               gameName,
-                                                               maxPlayers,
-                                                               onClose
-                                                           }) => {
+export default function GameLobbyOverlay({isOpen, url, gameName, maxPlayers, onClose}: GameLobbyOverlayProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([
         {
@@ -207,5 +201,3 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
         </div>
     );
 };
-
-export default GameLobbyOverlay;

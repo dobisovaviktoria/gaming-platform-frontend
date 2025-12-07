@@ -1,4 +1,3 @@
-import React from 'react';
 import './SideMenu.scss';
 import { Link } from "react-router";
 import {useKeycloak} from "../../contexts/AuthContext.tsx";
@@ -8,7 +7,7 @@ interface SideMenuProps {
     onClose: () => void;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
+export default function SideMenu({ isOpen, onClose } : SideMenuProps) {
     const { logout } = useKeycloak();
 
     const menuItems = [
@@ -60,5 +59,3 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         </>
     );
 };
-
-export default SideMenu;

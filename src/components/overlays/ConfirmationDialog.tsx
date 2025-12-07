@@ -1,4 +1,3 @@
-import React from 'react';
 import './ConfirmationDialog.scss';
 
 interface ConfirmationDialogProps {
@@ -7,7 +6,7 @@ interface ConfirmationDialogProps {
     onCancel: () => void;
 }
 
-const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ message, onConfirm, onCancel }) => {
+export default function ConfirmationDialog({ message, onConfirm, onCancel } : ConfirmationDialogProps) {
     return (
         <div className="confirmation-overlay">
             <div className="confirmation-dialog">
@@ -20,5 +19,3 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ message, onConf
         </div>
     );
 };
-
-export default ConfirmationDialog;
