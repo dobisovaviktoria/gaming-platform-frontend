@@ -57,3 +57,14 @@ export interface GameWithAchievements {
     gameName: string;
     achievements: Achievement[];
 }
+
+export interface PythonGameState {
+  gameId: string;
+  boardCells: string[];
+  currentTurn: 'X' | 'O';
+  winner: 'X' | 'O' | null;
+  isDraw: boolean;
+  status: 'in_progress' | 'win' | 'draw' | 'waiting_for_opponent';
+  player_x_id: string;
+  player_o_id: string | null;
+}
