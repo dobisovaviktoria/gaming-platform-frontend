@@ -131,11 +131,10 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
             />
             <GameLobbyOverlay
                 isOpen={showLobbyOverlay}
-                url={game.url}
                 gameName={game.name}
+                gameId={game.id}
                 maxPlayers={game.maxPlayers}
                 onClose={() => setShowLobbyOverlay(false)}
-                onStartGame={() => setShowLobbyOverlay(false)}
             />
             <GameEndOverlay
                 isOpen={showEndOverlay}

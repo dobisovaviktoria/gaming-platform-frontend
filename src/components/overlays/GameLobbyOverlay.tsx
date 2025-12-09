@@ -1,5 +1,9 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import './GameLobbyOverlay.scss';
+import {useKeycloak} from '../../contexts/AuthContext';
+import {getFriends} from '../../services/player';
+import {joinLobby, checkLobbyStatus} from '../../services/lobby';
+import {useNavigate} from "react-router-dom";
 
 interface Player {
     id: string;
@@ -10,101 +14,121 @@ interface Player {
 
 interface GameLobbyOverlayProps {
     isOpen: boolean;
-    url: string;
     gameName: string;
+    gameId: string; 
     maxPlayers: number;
     onClose: () => void;
-    onStartGame: () => void;
 }
 
-export default function GameLobbyOverlay({isOpen, url, gameName, maxPlayers, onClose}: GameLobbyOverlayProps) {
+export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, onClose}: GameLobbyOverlayProps) {
+    const { user } = useKeycloak();
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
-    const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([
-        {
-            id: '1',
-            username: 'Brittany Dinan',
-            avatarUrl: '/avatars/brittany1.jpg',
-            status: 'waiting',
-        },
-    ]);
+    const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([]);
+    const [allPlayers, setAllPlayers] = useState<Player[]>([]);
+    const [isLoadingFriends, setIsLoadingFriends] = useState(true);
+    const [isWaitingForMatch, setIsWaitingForMatch] = useState(false);
 
-    // Mock searchable players list
-    const [allPlayers] = useState<Player[]>([
-        {
-            id: '2',
-            username: 'Brittany Dinan',
-            avatarUrl: '/avatars/brittany2.jpg',
-            status: 'not-invited',
-        },
-        {
-            id: '3',
-            username: 'John Smith',
-            avatarUrl: '/avatars/john.jpg',
-            status: 'not-invited',
-        },
-        {
-            id: '4',
-            username: 'Sarah Johnson',
-            avatarUrl: '/avatars/sarah.jpg',
-            status: 'not-invited',
-        },
-        {
-            id: '5',
-            username: 'Mike Wilson',
-            avatarUrl: '/avatars/mike.jpg',
-            status: 'not-invited',
-        },
-        {
-            id: '6',
-            username: 'Emily Brown',
-            avatarUrl: '/avatars/emily.jpg',
-            status: 'not-invited',
-        },
-    ]);
+    useEffect(() => {
+        if (user) {
+            setWaitingPlayers([
+                {
+                    id: user.sub, 
+                    username: user.preferred_username,
+                    avatarUrl: user.avatarUrl || '/avatars/default.jpg', 
+                    status: 'waiting',
+                },
+            ]);
+        }
+    }, [user]);
 
-    const [invitedPlayers, setInvitedPlayers] = useState<Player[]>([]);
+    useEffect(() => {
+        const fetchFriends = async () => {
+            if (user) {
+                setIsLoadingFriends(true);
+                try {
+                    const friends = await getFriends();
+                    const friendPlayers: Player[] = friends.map(friend => ({
+                        id: friend.playerId,
+                        username: friend.username,
+                        avatarUrl: '/avatars/default.jpg', 
+                        status: 'not-invited',
+                    }));
+                    setAllPlayers(friendPlayers);
+                } catch (error) {
+                    console.error('Failed to fetch friends:', error);
+                    setAllPlayers([]);
+                } finally {
+                    setIsLoadingFriends(false);
+                }
+            }
+        };
 
-    const currentPlayerCount = waitingPlayers.length + invitedPlayers.filter(p => p.status === 'invited').length;
+        fetchFriends();
+    }, [user]);
 
-    // Filter players based on search query
+    const [invitedPlayers] = useState<Player[]>([]);
+
+    const currentPlayerCount = waitingPlayers.length + invitedPlayers.length;
+
     const filteredPlayers = allPlayers.filter(player =>
         player.username.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !waitingPlayers.some(wp => wp.id === player.id) // Exclude already waiting players
+        !waitingPlayers.some(wp => wp.id === player.id) && 
+        !invitedPlayers.some(ip => ip.id === player.id) 
     );
 
     const handleInviteToggle = (player: Player) => {
-        const isInvited = invitedPlayers.some(p => p.id === player.id);
+        console.log('Toggling invite for player:', player);
+    };
 
-        if (isInvited) {
-            // Uninvite player
-            setInvitedPlayers(prev => prev.filter(p => p.id !== player.id));
-        } else {
-            // Invite player
-            if (currentPlayerCount < maxPlayers) {
-                setInvitedPlayers(prev => [...prev, { ...player, status: 'invited' }]);
-            } else {
-                alert(`Maximum ${maxPlayers} players allowed!`);
+    const handleJoinLobby = async () => {
+        if (!user || !user.sub) {
+            alert('User not authenticated.');
+            return;
+        }
+
+        try {
+            const response = await joinLobby({ gameId });
+            if (response.status === 'WAITING') {
+                setIsWaitingForMatch(true);
+            } else if (response.status === 'MATCHED' && response.sessionId) {
+                navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
             }
+        } catch (error) {
+            console.error('Failed to join lobby:', error);
+            
+            alert(`Failed to join lobby: ${error instanceof Error ? error.message : String(error)}`);
         }
     };
 
-    const handleAddRandom = () => {
-        // Invite player
-        if (currentPlayerCount < maxPlayers) {
-            setWaitingPlayers([...waitingPlayers, {
-                id: Math.floor(Math.random() * 1000)+"",
-                username: 'Brittany Dinan',
-                avatarUrl: '/avatars/brittany1.jpg',
-                status: 'waiting',
-            },])
-        } else {
-            alert(`Maximum ${maxPlayers} players allowed!`);
-        }
-    };
+    useEffect(() => {
+        let pollingInterval: number;
 
-    const handleStart = () => {
-        if (waitingPlayers.length === maxPlayers) window.location.href = url;
-    };
+        if (isWaitingForMatch) {
+            pollingInterval = setInterval(async () => {
+                try {
+                    const response = await checkLobbyStatus(gameId);
+                    if (response.status === 'MATCHED' && response.sessionId) {
+                        setIsWaitingForMatch(false);
+                        clearInterval(pollingInterval);
+                        navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                    } else if (response.status === 'WAITING') {
+                        console.log('Still waiting for match...');
+                    }
+                } catch (error) {
+                    console.error('Failed to check lobby status:', error);
+                    clearInterval(pollingInterval);
+                    setIsWaitingForMatch(false);
+                    alert('Failed to check lobby status. Please try again.');
+                }
+            }, 2000); 
+        }
+
+        return () => {
+            clearInterval(pollingInterval);
+        };
+    }, [isWaitingForMatch, gameId, onClose, navigate]);
+
 
     if (!isOpen) return null;
 
@@ -140,6 +164,15 @@ export default function GameLobbyOverlay({isOpen, url, gameName, maxPlayers, onC
                                     <span className="player-name">{player.username}</span>
                                 </div>
                             ))}
+                            {invitedPlayers.map((player) => (
+                                <div key={player.id} className="player-item">
+                                    <div className="player-avatar">
+                                        <img src={player.avatarUrl} alt={player.username} />
+                                        <div className="loading-indicator">✉️</div>
+                                    </div>
+                                    <span className="player-name">{player.username}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -157,31 +190,39 @@ export default function GameLobbyOverlay({isOpen, url, gameName, maxPlayers, onC
                     </div>
 
                     <div className="invited-section">
-                        {filteredPlayers.map((player) => {
-                            const isInvited = invitedPlayers.some(p => p.id === player.id);
+                        {isLoadingFriends ? (
+                            <div className="loading-friends">Loading friends...</div>
+                        ) : filteredPlayers.length > 0 ? (
+                            filteredPlayers.map((player) => {
+                                const isInvited = invitedPlayers.some(p => p.id === player.id);
 
-                            return (
-                                <div key={player.id} className="invited-player">
-                                    <div className="player-info">
-                                        <div className="player-avatar-small">
-                                            <img src={player.avatarUrl} alt={player.username} />
+                                return (
+                                    <div key={player.id} className="invited-player">
+                                        <div className="player-info">
+                                            <div className="player-avatar-small">
+                                                <img src={player.avatarUrl} alt={player.username} />
+                                            </div>
+                                            <span className="player-name">{player.username}</span>
                                         </div>
-                                        <span className="player-name">{player.username}</span>
+                                        <button
+                                            className={`invite-btn ${isInvited ? 'invited' : ''}`}
+                                            onClick={() => handleInviteToggle(player)}
+                                            aria-label={isInvited ? 'Uninvite player' : 'Invite player'}
+                                        >
+                                            <span className="status-icon">
+                                                {isInvited ? '✅' : '✉️'}
+                                            </span>
+                                        </button>
                                     </div>
-                                    <button
-                                        className={`invite-btn `}
-                                        onClick={() => handleInviteToggle(player)}
-                                        aria-label={isInvited ? 'Uninvite player' : 'Invite player'}
-                                    >
-                                        <span className="status-icon">
-                                          {isInvited ? '⏳' : '✉️'}
-                                        </span>
-                                    </button>
-                                </div>
-                            );
-                        })}
+                                );
+                            })
+                        ) : (
+                            <div className="no-results">
+                                <p>No friends found.</p>
+                            </div>
+                        )}
 
-                        {filteredPlayers.length === 0 && searchQuery && (
+                        {filteredPlayers.length === 0 && searchQuery && !isLoadingFriends && (
                             <div className="no-results">
                                 <p>No players found matching "{searchQuery}"</p>
                             </div>
@@ -189,11 +230,12 @@ export default function GameLobbyOverlay({isOpen, url, gameName, maxPlayers, onC
                     </div>
 
                     <div className="buttons">
-                        <button className="btn btn-add-random" onClick={handleAddRandom}>
-                            Add Random People
-                        </button>
-                        <button className="btn btn-start" onClick={handleStart}>
-                            Start
+                        <button
+                            className="btn btn-start"
+                            onClick={handleJoinLobby}
+                            disabled={isWaitingForMatch || currentPlayerCount === 0}
+                        >
+                            {isWaitingForMatch ? 'Waiting in Lobby' : 'Join Lobby'}
                         </button>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import './App.css'
-import TicTacToeGame from "./tic-tac-toe.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import TicTacToeGame from "./original/TicTacToeGame.tsx";
 
 const queryClient = new QueryClient();
 

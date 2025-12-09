@@ -16,6 +16,7 @@ import AddFriendsPage from "./pages/AddFriendsPage.tsx";
 import AddingGamePage from "./pages/AddingGamePage.tsx";
 import Dashboard2 from "./pages/Dashboard.tsx";
 import GameDetailsPage from "./pages/GameDetailsPage.tsx";
+import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame.tsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,8 @@ function AuthenticatedRouting() {
                 <Route path="/game/:gameId/end" element={<GameDetailsPage isEnd={true} />} />
                 <Route path="/game/:gameId/achievements" element={<GameAchievementsPage />} />
                 <Route path="/game/:gameId/statistics" element={<GameStatsPage />} />
+                <Route path="/game/:gameId/play" element={<TicTacToeGame />} />
+
 
                 <Route path="/chatbottest" element={<ChatbotTestPage/>} />
             </Routes>
