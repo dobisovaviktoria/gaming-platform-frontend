@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import './AddingGamePage.scss';
-import {useAddGame} from "../hooks/useGame.ts";
-import type {Game} from "../model/types.ts";
+import {useAddGame} from "../../hooks/useGame.ts";
+import type {Game} from "../../model/types.ts";
 
 interface GameFormData {
     url: string;

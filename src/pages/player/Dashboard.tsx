@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Navbar from '../components/Navbar';
-import SideMenu from '../components/overlays/SideMenu.tsx';
-import GameCard from '../components/GameCard.tsx';
-import ConfirmationDialog from '../components/overlays/ConfirmationDialog.tsx';
-import { getCurrentPlayer, addFavoriteGame, removeFavoriteGame } from '../services/player';
-import { getGames } from '../services/game';
-import type { Game, Player } from '../model/types';
+import Navbar from '../../components/Navbar.tsx';
+import SideMenu from '../../components/overlays/SideMenu.tsx';
+import GameCard from '../../components/GameCard.tsx';
+import ConfirmationDialog from '../../components/overlays/ConfirmationDialog.tsx';
+import { getCurrentPlayer, addFavoriteGame, removeFavoriteGame } from '../../services/player.ts';
+import { getGames } from '../../services/game.ts';
+import type { Game, Player } from '../../model/types.ts';
 import './Dashboard.scss';
 
 const Dashboard: React.FC = () => {

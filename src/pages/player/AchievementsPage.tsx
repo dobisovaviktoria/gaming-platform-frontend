@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Navbar from '../components/Navbar';
-import SideMenu from '../components/overlays/SideMenu.tsx';
-import Achievement from '../components/Achievement';
-import { useSearch } from '../hooks/useSearch';
-import { getCurrentPlayer } from '../services/player';
-import { getGames } from '../services/game';
-import { getPlayerAchievementsForGame } from '../services/achievements';
-import type { GameWithAchievements, Achievement as AchievementType } from '../model/types';
+import Navbar from '../../components/Navbar.tsx';
+import SideMenu from '../../components/overlays/SideMenu.tsx';
+import Achievement from '../../components/Achievement.tsx';
+import { useSearch } from '../../hooks/useSearch.ts';
+import { getCurrentPlayer } from '../../services/player.ts';
+import { getGames } from '../../services/game.ts';
+import { getPlayerAchievementsForGame } from '../../services/achievements.ts';
+import type { GameWithAchievements, Achievement as AchievementType } from '../../model/types.ts';
 import './AchievementsPage.scss';
 
 const AchievementsPage: React.FC = () => {
@@ -30,14 +30,14 @@ const AchievementsPage: React.FC = () => {
             if (!player || !games) return [];
 
             const achievementsPromises = games.map(game =>
-                getPlayerAchievementsForGame(player.playerId, game.gameId)
+                getPlayerAchievementsForGame(player.playerId, game.id)
                     .then((data: { achievements: any; }) => ({
-                        gameId: game.gameId,
+                        gameId: game.id,
                         gameName: game.description,
                         achievements: data.achievements
                     }))
                     .catch(() => ({
-                        gameId: game.gameId,
+                        gameId: game.id,
                         gameName: game.description,
                         achievements: []
                     }))

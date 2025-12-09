@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSearch } from '../hooks/useSearch';
+import { useSearch } from '../../hooks/useSearch.ts';
 import './SearchPage.scss';
 
 interface Game {

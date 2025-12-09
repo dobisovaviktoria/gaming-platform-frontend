@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
-import SideMenu from '../components/overlays/SideMenu.tsx';
+import Navbar from '../../components/Navbar.tsx';
+import SideMenu from '../../components/overlays/SideMenu.tsx';
 import './AddGamePage.scss';
 import { Link } from "react-router";
 

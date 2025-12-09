@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getFriends, getFriendRequests, acceptFriendRequest, rejectFriendRequest, type PlayerBasicInfo, type FriendRequest } from '../services/player';
-import Navbar from '../components/Navbar';
-import SideMenu from '../components/overlays/SideMenu.tsx';
-import PersonCard from '../components/PersonCard';
-import { useSearch } from '../hooks/useSearch';
+import { getFriends, getFriendRequests, acceptFriendRequest, rejectFriendRequest, type PlayerBasicInfo, type FriendRequest } from '../../services/player.ts';
+import Navbar from '../../components/Navbar.tsx';
+import SideMenu from '../../components/overlays/SideMenu.tsx';
+import PersonCard from '../../components/PersonCard.tsx';
+import { useSearch } from '../../hooks/useSearch.ts';
 import './FriendsPage.scss';
 import { Link } from "react-router";
 

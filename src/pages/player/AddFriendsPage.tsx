@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { getAllPlayers, addFriend, type PlayerSearchResponse } from '../services/player';
-import { useSearch } from '../hooks/useSearch';
+import { getAllPlayers, addFriend, type PlayerSearchResponse } from '../../services/player.ts';
+import { useSearch } from '../../hooks/useSearch.ts';
 import './AddFriendsPage.scss';
 
 interface User {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getCurrentPlayer } from '../services/player';
-import { getPlayerGameStats } from '../services/stats';
+import { getCurrentPlayer } from '../../services/player.ts';
+import { getPlayerGameStats } from '../../services/stats.ts';
 import './GameStatsPage.scss';
 
 const GameStatsPage: React.FC = () => {
