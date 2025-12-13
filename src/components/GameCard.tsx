@@ -9,7 +9,7 @@ interface GameCardProps {
     onToggleFavorite?: (gameId: string, isFavorite: boolean) => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false, onToggleFavorite }) => {
+export default function GameCard({ game, isFavorite = false, onToggleFavorite } : GameCardProps) {
     const navigate = useNavigate();
 
     console.log(game)
@@ -52,5 +52,3 @@ const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false, onToggleF
         </div>
     );
 };
-
-export default GameCard;

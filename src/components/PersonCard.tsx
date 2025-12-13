@@ -1,4 +1,3 @@
-import React from 'react';
 import './PersonCard.scss';
 
 interface PersonCardProps {
@@ -8,7 +7,7 @@ interface PersonCardProps {
     onClick?: (id: string) => void;
 }
 
-const PersonCard: React.FC<PersonCardProps> = ({ id, username, avatarUrl, onClick }) => {
+export default function PersonCard({ id, username, avatarUrl, onClick } : PersonCardProps) {
     const handleClick = () => {
         if (onClick) {
             onClick(id);
@@ -24,5 +23,3 @@ const PersonCard: React.FC<PersonCardProps> = ({ id, username, avatarUrl, onClic
         </div>
     );
 };
-
-export default PersonCard;
