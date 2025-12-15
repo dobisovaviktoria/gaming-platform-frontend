@@ -19,7 +19,7 @@ export default function SideMenu({ isOpen, onClose } : SideMenuProps) {
     ];
     const adminMenuItems = [
         { label: 'Admin Dashboard', path: '/admin/' },
-        { label: 'Games Management', path: '/admin/games' },
+        { label: 'Waiting Games', path: '/admin/games' },
     ];
 
     const handleLogout = () => {
