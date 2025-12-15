@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
@@ -10,7 +10,7 @@ import { getPlayerAchievementsForGame } from '../../services/achievements.ts';
 import type { GameWithAchievements, Achievement as AchievementType } from '../../model/types.ts';
 import './AchievementsPage.scss';
 
-const AchievementsPage: React.FC = () => {
+export default function AchievementsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [expandedGames, setExpandedGames] = useState<Set<string>>(new Set());
 
@@ -210,5 +210,3 @@ function getAchievementIcon(achievement: AchievementType): string {
         return '🏅';
     }
 }
-
-export default AchievementsPage;

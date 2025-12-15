@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import './AddingGamePage.scss';
 import {useAddGame} from "../../hooks/useGame.ts";
@@ -13,7 +13,7 @@ interface GameFormData {
     maxPlayers: number;
 }
 
-const AddingGamePage: React.FC = () => {
+export default function AddingGamePage(){
     const navigate = useNavigate();
     const [formData, setFormData] = useState<GameFormData>({
         name: '',
@@ -138,5 +138,3 @@ const AddingGamePage: React.FC = () => {
         </div>
     );
 };
-
-export default AddingGamePage;

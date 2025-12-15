@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getAllPlayers, addFriend, type PlayerSearchResponse } from '../../services/player.ts';
@@ -12,7 +12,7 @@ interface User {
     alreadyConnected: boolean;
 }
 
-const AddFriendsPage: React.FC = () => {
+export default function AddFriendsPage()  {
     const navigate = useNavigate();
     const [addedFriends, setAddedFriends] = useState<Set<string>>(new Set());
 
@@ -124,5 +124,3 @@ const AddFriendsPage: React.FC = () => {
         </div>
     );
 };
-
-export default AddFriendsPage;

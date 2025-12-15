@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import './GameLobbyOverlay.scss';
 import {useKeycloak} from '../../contexts/AuthContext';
 import {getFriends} from '../../services/player';
@@ -20,13 +20,7 @@ interface GameLobbyOverlayProps {
     onClose: () => void;
 }
 
-const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
-                                                               isOpen,
-                                                               gameName,
-                                                               gameId, 
-                                                               maxPlayers,
-                                                               onClose
-                                                           }) => {
+export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, onClose}: GameLobbyOverlayProps) {
     const { user } = useKeycloak();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
@@ -249,5 +243,3 @@ const GameLobbyOverlay: React.FC<GameLobbyOverlayProps> = ({
         </div>
     );
 };
-
-export default GameLobbyOverlay;

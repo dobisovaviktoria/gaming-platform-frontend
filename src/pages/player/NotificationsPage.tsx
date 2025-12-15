@@ -1,5 +1,4 @@
-// pages/NotificationsPage.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
 import Notification from '../../components/Notification.tsx';
@@ -12,7 +11,7 @@ interface NotificationData {
     icon?: string;
 }
 
-const NotificationsPage: React.FC = () => {
+export default function NotificationsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const notifications: NotificationData[] = [
@@ -114,5 +113,3 @@ const NotificationsPage: React.FC = () => {
         </div>
     );
 };
-
-export default NotificationsPage;

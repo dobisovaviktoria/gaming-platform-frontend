@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getFriends, getFriendRequests, acceptFriendRequest, rejectFriendRequest, type PlayerBasicInfo, type FriendRequest } from '../../services/player.ts';
 import Navbar from '../../components/Navbar.tsx';
@@ -14,7 +14,7 @@ interface Friend {
     avatarUrl: string;
 }
 
-const FriendsPage: React.FC = () => {
+export default function FriendsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const queryClient = useQueryClient();
 
@@ -178,5 +178,3 @@ const FriendsPage: React.FC = () => {
         </div>
     );
 };
-
-export default FriendsPage;

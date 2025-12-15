@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
 import './ProfilePage.scss';
@@ -10,7 +10,7 @@ interface ProfileData {
     password: string;
 }
 
-const ProfilePage: React.FC = () => {
+export default function ProfilePage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const user = {
         avatarUrl: "example.png",
@@ -133,5 +133,3 @@ const ProfilePage: React.FC = () => {
         </div>
     );
 };
-
-export default ProfilePage;

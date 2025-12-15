@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 
 interface UseSearchOptions<T> {
     data: T[];
-    searchField: (keyof T);
+    searchField: keyof T;
 }
 
 interface UseSearchReturn<T> {
@@ -14,47 +14,39 @@ interface UseSearchReturn<T> {
     clearSearch: () => void;
 }
 
-export const useSearch = <T extends Record<string, any>>({
-                                                             data,
-                                                             searchField,
-                                                         }: UseSearchOptions<T>): UseSearchReturn<T> => {
+export function useSearch<T extends Record<string, any>>(
+    { data, searchField }: UseSearchOptions<T>
+): UseSearchReturn<T> {
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const searchResults = useMemo(() => {
-        const trimmedQuery = searchQuery.trim();
+    // Derived each render, no memo
+    const trimmedQuery = searchQuery.trim();
+    let searchResults: T[];
 
-        // If no search query, return all data
-        if (trimmedQuery.length === 0) {
-            return data;
-        }
+    if (!trimmedQuery) {
+        searchResults = data;
+    } else {
+        const q = trimmedQuery.toLowerCase();
+        searchResults = data.filter((item) => {
+            const value = item[searchField];
+            if (value == null) return false;
+            return String(value).toLowerCase().includes(q);
+        });
+    }
 
-        try {
-            const query = trimmedQuery.toLowerCase();
-
-            return data.filter((item) => {
-                const value = item[searchField];
-                if (value == null) return false;
-
-                return String(value).toLowerCase().includes(query)
-            });
-        } catch (err) {
-            console.error('Search filter error:', err);
-            return [];
-        }
-    }, [data, searchQuery, searchField]);
-
-    const handleSearch = useCallback((query: string) => {
+    // Plain functions; identity changes each render, but that’s fine
+    const handleSearch = (query: string) => {
         setSearchQuery(query);
         setError(null);
         setIsLoading(false);
-    }, []);
+    };
 
-    const clearSearch = useCallback(() => {
+    const clearSearch = () => {
         setSearchQuery('');
         setError(null);
-    }, []);
+    };
 
     return {
         searchQuery,
@@ -64,4 +56,4 @@ export const useSearch = <T extends Record<string, any>>({
         handleSearch,
         clearSearch,
     };
-};
+}

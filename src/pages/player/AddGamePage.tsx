@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
 import './AddGamePage.scss';
 import { Link } from "react-router";
 
-const AddGamePage: React.FC = () => {
+export default function AddGamePage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleMenuToggle = () => {
@@ -59,5 +59,3 @@ const AddGamePage: React.FC = () => {
         </div>
     );
 };
-
-export default AddGamePage;

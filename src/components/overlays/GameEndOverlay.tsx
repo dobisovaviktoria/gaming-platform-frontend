@@ -1,4 +1,3 @@
-import React from 'react';
 import {useNavigate} from 'react-router-dom';
 import './GameEndOverlay.scss';
 
@@ -12,13 +11,7 @@ interface GameEndOverlayProps {
     onClose?: () => void;
 }
 
-const GameEndOverlay: React.FC<GameEndOverlayProps> = ({
-                                                           isOpen,
-                                                           result,
-                                                           gameId,
-                                                           onPlayAgain,
-                                                           onClose
-                                                       }) => {
+export default function GameEndOverlay({isOpen, result, gameId, onPlayAgain, onClose} : GameEndOverlayProps) {
     const navigate = useNavigate();
 
     const getResultConfig = () => {
@@ -95,5 +88,3 @@ const GameEndOverlay: React.FC<GameEndOverlayProps> = ({
         </div>
     );
 };
-
-export default GameEndOverlay;

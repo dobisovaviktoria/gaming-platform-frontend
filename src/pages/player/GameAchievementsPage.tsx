@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Achievement from '../../components/Achievement.tsx';
@@ -6,7 +5,7 @@ import { getCurrentPlayer } from '../../services/player.ts';
 import { getPlayerAchievementsForGame } from '../../services/achievements.ts';
 import './GameAchievementsPage.scss';
 
-const GameAchievementsPage: React.FC = () => {
+export default function GameAchievementsPage() {
     const navigate = useNavigate();
     const { gameId } = useParams<{ gameId: string }>();
 
@@ -125,5 +124,3 @@ function getAchievementIcon(achievement: any): string {
         return '🏅';
     }
 }
-
-export default GameAchievementsPage;

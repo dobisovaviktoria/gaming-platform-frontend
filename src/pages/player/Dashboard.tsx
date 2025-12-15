@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../../components/Navbar.tsx';
@@ -10,7 +10,7 @@ import { getGames } from '../../services/game.ts';
 import type { Game, Player } from '../../model/types.ts';
 import './Dashboard.scss';
 
-const Dashboard: React.FC = () => {
+export default function Dashboard() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -143,5 +143,3 @@ const Dashboard: React.FC = () => {
         </div>
     );
 };
-
-export default Dashboard;

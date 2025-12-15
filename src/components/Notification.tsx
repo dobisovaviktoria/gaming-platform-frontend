@@ -1,4 +1,3 @@
-import React from 'react';
 import './Notification.scss';
 
 interface NotificationProps {
@@ -7,7 +6,7 @@ interface NotificationProps {
     onClick?: () => void;
 }
 
-const Notification: React.FC<NotificationProps> = ({ message, icon = '🔔', onClick }) => {
+export default function Notification({ message, icon = '🔔', onClick } : NotificationProps) {
     return (
         <div className="notification-card" onClick={onClick}>
             <div className="notification-icon">{icon}</div>
@@ -17,5 +16,3 @@ const Notification: React.FC<NotificationProps> = ({ message, icon = '🔔', onC
         </div>
 );
 };
-
-export default Notification;

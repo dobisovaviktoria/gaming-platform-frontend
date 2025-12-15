@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearch } from '../../hooks/useSearch.ts';
 import './SearchPage.scss';
@@ -11,7 +10,7 @@ interface Game {
     description?: string;
 }
 
-const SearchPage: React.FC = () => {
+export default function SearchPage(){
     const navigate = useNavigate();
 
     const gamesData: Game[] = [
@@ -91,5 +90,3 @@ const SearchPage: React.FC = () => {
         </div>
     );
 };
-
-export default SearchPage;
