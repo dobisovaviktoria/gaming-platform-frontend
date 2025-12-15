@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import './AdmingGamesPage.scss';
+import './AdminGamesPage.scss';
+import {useSearch} from "../../hooks/useSearch.ts";
+import Navbar from "../../components/Navbar.tsx";
+import SideMenu from "../../components/overlays/SideMenu.tsx";
 
 interface Game {
     id: string;
@@ -9,7 +12,7 @@ interface Game {
 }
 
 export default function AdminGamesPage() {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Sample pending games - replace with actual data
     const games: Game[] = [
@@ -27,41 +30,63 @@ export default function AdminGamesPage() {
         console.log('Rejecting game:', gameId);
     };
 
+    const handleMenuToggle = () => {
+        setIsMenuOpen(!isMenuOpen);
+        if (!isMenuOpen) {
+            document.body.classList.add('menu-open');
+        } else {
+            document.body.classList.remove('menu-open');
+        }
+    };
+
+    const handleMenuClose = () => {
+        setIsMenuOpen(false);
+        document.body.classList.remove('menu-open');
+    };
+
+    const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<Game>({
+        data: games,
+        searchField: 'title',
+    });
+
+    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
+
     return (
         <div className="page pending-games">
-            <div className="page-header">
-                <h1>Pending Games</h1>
-
-                <div className="header-actions">
-                    <button className="notification-btn" aria-label="Notifications">
-                        🔔
-                    </button>
-
-                    <div className="user-avatar">
-                        <img src="/path-to-avatar.jpg" alt="User" />
-                    </div>
-
-                    <button className="menu-btn" aria-label="Menu">
-                        ☰
-                    </button>
-                </div>
-            </div>
+            <Navbar onMenuToggle={handleMenuToggle}/>
+            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
             <div className="search-input-container">
                 <span className="search-icon">🔍</span>
                 <input
-                    type="search"
-                    placeholder="Search"
+                    type="text"
+                    placeholder="Example"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    autoFocus
                 />
+                {isLoading && <span className="loading-spinner">⏳</span>}
             </div>
+
+            {error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                </div>
+            )}
+
+            {showNoResults && (
+                <div className="no-results">
+                    <div className="sad-face">☹️</div>
+                    <h2>No results found</h2>
+                    <p>Try again...</p>
+                </div>
+            )}
 
             <main className="games-content">
                 <h2 className="section-title">Games</h2>
 
                 <div className="games-list">
-                    {games.map((game) => (
+                    {searchResults.map((game) => (
                         <div key={game.id} className="game-item">
                             <div className="game-info">
                 <span className="game-players">

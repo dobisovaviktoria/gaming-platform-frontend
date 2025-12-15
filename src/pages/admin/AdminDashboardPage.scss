@@ -1,8 +1,7 @@
-@import '../PageGeneral';
+@use '../PageGeneral';
 
 .admin-dashboard {
   .page-header {
-    justify-content: space-between;
 
     .header-actions {
       display: flex;

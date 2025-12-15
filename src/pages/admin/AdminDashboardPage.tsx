@@ -59,13 +59,11 @@ export default function AdminDashboardPage() {
     };
 
     const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<DataItem | PredictionItem>({
-        data: new Array().concat(dataItems).concat(predictions),
+        data: [].concat(dataItems).concat(predictions),
         searchField: 'label',
     });
 
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
-
-
 
     return (
         <div className="page admin-dashboard">
