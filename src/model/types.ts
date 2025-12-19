@@ -67,4 +67,6 @@ export interface PythonGameState {
   status: 'in_progress' | 'win' | 'draw' | 'waiting_for_opponent';
   player_x_id: string;
   player_o_id: string | null;
+  currentPlayerWinProbability: number | null;
+
 }

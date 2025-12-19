@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { createPythonGame } from '../pythonApi.ts'; // Game creation for AI remains an HTTP call
+import { createPythonGame } from '../pythonApi.ts';
 import { socket } from '../../../../src/services/socket.ts';
 import { type PythonGameState } from '../../../../src/model/types.ts';
 import GameEndOverlay from '../../../../src/components/overlays/GameEndOverlay';
@@ -22,15 +22,16 @@ function TicTacToeGame() {
     const [showEndOverlay, setShowEndOverlay] = useState(false);
     const [gameResult, setGameResult] = useState<'win' | 'loss' | 'draw'>('win');
     const [isCreatingGame, setIsCreatingGame] = useState(false);
+    const [myWinProbability, setMyWinProbability] = useState<number | null>(null);
 
     const gameMode = (searchParams.get('mode') as GameMode);
 
-    //  current player info on load
+    // Current player info on load
     useEffect(() => {
         getCurrentPlayer().then(setPlayer).catch(() => alert('Failed to load player data.'));
     }, []);
 
-    // Game creation 
+    // Game creation
     useEffect(() => {
         if (!gameMode || !player || gameId) return;
 
@@ -63,8 +64,7 @@ function TicTacToeGame() {
         }
     }, [gameMode, player, gameId, searchParams]);
 
-
-    // WebSocket connection 
+    // WebSocket connection
     useEffect(() => {
         if (!gameId || !player) return;
 
@@ -80,7 +80,7 @@ function TicTacToeGame() {
             console.log('Game state update received:', newGameState);
             setGame(newGameState);
 
-            //  player symbol
+            // Determine player symbol
             if (newGameState.player_x_id === player?.playerId) {
                 setPlayerSymbol('X');
             } else if (newGameState.player_o_id === player?.playerId) {
@@ -100,8 +100,28 @@ function TicTacToeGame() {
         };
     }, [gameId, player]);
 
+    // Calculate my win probability when game state changes
+    useEffect(() => {
+        if (!game || !playerSymbol || game.status !== 'in_progress') {
+            setMyWinProbability(null);
+            return;
+        }
 
-    //  win/loss/draw when game state changes
+        if (game.currentPlayerWinProbability === null || game.currentPlayerWinProbability === undefined) {
+            setMyWinProbability(null);
+            return;
+        }
+
+        // If it's my turn, this is my probability
+        if (game.currentTurn === playerSymbol) {
+            setMyWinProbability(game.currentPlayerWinProbability);
+        } else {
+            // If it's opponent's turn, my probability is inverse
+            setMyWinProbability(1 - game.currentPlayerWinProbability);
+        }
+    }, [game, playerSymbol]);
+
+    // Win/loss/draw when game state changes
     useEffect(() => {
         if (!game || game.status === 'in_progress' || game.status === 'waiting_for_opponent' || showEndOverlay) return;
 
@@ -111,7 +131,6 @@ function TicTacToeGame() {
 
         setShowEndOverlay(true);
     }, [game, playerSymbol, showEndOverlay]);
-
 
     const handleCellClick = (index: number) => {
         if (!gameId || !game || !player) return;
@@ -136,6 +155,7 @@ function TicTacToeGame() {
         setShowEndOverlay(false);
         setGame(null);
         setGameId(null);
+        setMyWinProbability(null);
     };
 
     const handleBackClick = () => navigate('/game/tic-tac-toe');
@@ -148,9 +168,20 @@ function TicTacToeGame() {
         return game.winner === playerSymbol ? 'Win' : 'Loss';
     };
 
+    const formatProbability = (prob: number | null): string => {
+        if (prob === null) return 'N/A';
+        return `${(prob * 100).toFixed(1)}%`;
+    };
+
+
 
     if (!player) return <p>Loading player data...</p>;
-    if (!gameMode) return ( <div> <p>No game mode selected.</p> <button onClick={handleBackClick}>Go Back</button> </div> );
+    if (!gameMode) return (
+        <div>
+            <p>No game mode selected.</p>
+            <button onClick={handleBackClick}>Go Back</button>
+        </div>
+    );
 
     return (
         <div className="tic-tac-toe-game">
@@ -162,7 +193,7 @@ function TicTacToeGame() {
                     <h1 className="game-title">Tic-Tac-Toe</h1>
 
                     {isCreatingGame && <div className="start-section"><p>Starting AI Game...</p></div>}
-                    
+
                     {!game && gameMode === 'friend' && <div className="start-section"><p>Joining game...</p></div>}
 
                     {game && game.status === 'waiting_for_opponent' && (
@@ -189,7 +220,31 @@ function TicTacToeGame() {
                                         {getPlayerStatus()}
                                     </span>
                                 </div>
+
+                                {/* Win Probability Display */}
+                                {game.status === 'in_progress' && myWinProbability !== null && (
+                                    <>
+
+
+                                    </>
+                                )}
                             </div>
+
+                            {game.status === 'in_progress' && myWinProbability !== null && (
+                                <div className="probability-bar-container">
+                                    <div className="probability-bar-labels">
+                                        <span>0%</span>
+                                        <span className="current-prob">{formatProbability(myWinProbability)}</span>
+                                        <span>100%</span>
+                                    </div>
+                                    <div className="probability-bar-track">
+                                        <div
+                                            className="probability-bar-fill"
+                                            style={{ width: `${myWinProbability * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="game-board">
                                 {game.boardCells.map((cell, index) => (
@@ -223,4 +278,3 @@ function TicTacToeGame() {
 }
 
 export default TicTacToeGame;
-
