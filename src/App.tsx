@@ -9,7 +9,6 @@ import FriendsPage from "./pages/FriendsPage.tsx";
 import AddGamePage from "./pages/AddGamePage.tsx";
 import AchievementsPage from "./pages/AchievementsPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
-import ChatbotTestPage from "./pages/temp/ChatbotTestPage.tsx";
 import GameAchievementsPage from "./pages/GameAchievementsPage.tsx";
 import GameStatsPage from "./pages/GameStatsPage.tsx";
 import AddFriendsPage from "./pages/AddFriendsPage.tsx";
@@ -17,33 +16,38 @@ import AddingGamePage from "./pages/AddingGamePage.tsx";
 import Dashboard2 from "./pages/Dashboard.tsx";
 import GameDetailsPage from "./pages/GameDetailsPage.tsx";
 import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame.tsx";
+import ChatbotOverlay from "../src/components/overlays/ChatbotOverlay.tsx";
+import {useState} from "react";
 
 const queryClient = new QueryClient();
 
 function AuthenticatedRouting() {
+    const [chatOpen, setChatOpen] = useState(false);
+
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/notifications" element={<NotificationsPage/>} />
-                <Route path="/" element={<Dashboard2/>} />
-                <Route path="/search" element={<SearchPage/>} />
-                <Route path="/friends" element={<FriendsPage/>} />
-                <Route path="/friends/add" element={<AddFriendsPage />} />
-                <Route path="/add-game" element={<AddGamePage/>} />
-                <Route path="/add-game/new" element={<AddingGamePage />} />
-                <Route path="/achievements" element={<AchievementsPage/>} />
-                <Route path="/profile" element={<ProfilePage/>} />
-                <Route path="/game/:gameId" element={<GameDetailsPage />} />
-                <Route path="/game/:gameId/end" element={<GameDetailsPage isEnd={true} />} />
-                <Route path="/game/:gameId/achievements" element={<GameAchievementsPage />} />
-                <Route path="/game/:gameId/statistics" element={<GameStatsPage />} />
-                <Route path="/game/:gameId/play" element={<TicTacToeGame />} />
-
-
-                <Route path="/chatbottest" element={<ChatbotTestPage/>} />
-            </Routes>
+            <>
+                <Routes>
+                    <Route path="/notifications" element={<NotificationsPage/>} />
+                    <Route path="/" element={<Dashboard2/>} />
+                    <Route path="/search" element={<SearchPage/>} />
+                    <Route path="/friends" element={<FriendsPage/>} />
+                    <Route path="/friends/add" element={<AddFriendsPage />} />
+                    <Route path="/add-game" element={<AddGamePage/>} />
+                    <Route path="/add-game/new" element={<AddingGamePage />} />
+                    <Route path="/achievements" element={<AchievementsPage/>} />
+                    <Route path="/profile" element={<ProfilePage/>} />
+                    <Route path="/game/:gameId" element={<GameDetailsPage />} />
+                    <Route path="/game/:gameId/end" element={<GameDetailsPage isEnd={true} />} />
+                    <Route path="/game/:gameId/achievements" element={<GameAchievementsPage />} />
+                    <Route path="/game/:gameId/statistics" element={<GameStatsPage />} />
+                    <Route path="/game/:gameId/play" element={<TicTacToeGame />} />
+                </Routes>
+                <button className="chatbot-fab" onClick={() => setChatOpen(true)}>💬</button>
+                <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)}/>
+            </>
         </BrowserRouter>
-    )
+    );
 }
 
 function AppContent() {
