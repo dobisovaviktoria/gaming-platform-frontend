@@ -128,6 +128,8 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
           }
 
           .info-value {
@@ -142,6 +144,54 @@
                 color: #22c55e;
               }
             }
+
+            // ✅ WIN PROBABILITY PERCENTAGE STYLING
+            &.probability-big {
+              font-size: 1.8rem;
+              font-weight: 900;
+              color: #8b5cf6;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+              letter-spacing: 1px;
+            }
+          }
+        }
+      }
+
+      // ✅ PROBABILITY BAR CONTAINER
+      .probability-bar-container {
+        margin: 0 0 1.5rem 0;
+        padding: 0 1rem;
+
+        .probability-bar-labels {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.5rem;
+          font-size: 0.8rem;
+          color: var(--text-muted);
+
+          .current-prob {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.9rem;
+          }
+        }
+
+        .probability-bar-track {
+          width: 100%;
+          height: 10px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 5px;
+          overflow: hidden;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+
+          .probability-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 5px;
+            transition: width 0.4s ease;
+            min-width: 2%;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
           }
         }
       }
@@ -155,8 +205,8 @@
         margin: 0 auto;
 
         .cell {
-          aspect-ratio: 1 / 1; // Force square cells
-          width: 100%; // Take full width of grid column
+          aspect-ratio: 1 / 1;
+          width: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -168,7 +218,7 @@
           cursor: pointer;
           transition: background 0.2s, border-color 0.2s, transform 0.2s;
           user-select: none;
-          min-height: 100px; // Minimum size fallback
+          min-height: 100px;
 
           &.empty:hover {
             background: rgba(255, 255, 255, 0.08);
@@ -188,6 +238,11 @@
           &.cell-o {
             color: #f87171;
             animation: popIn 0.3s ease;
+          }
+
+          &.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
           }
         }
       }
@@ -256,6 +311,36 @@
         .game-title {
           font-size: 1.5rem;
           margin-top: 2rem;
+        }
+
+        .game-info {
+          padding: 0.75rem;
+
+          .info-item {
+            .info-label {
+              font-size: 0.75rem;
+            }
+
+            .info-value {
+              font-size: 1rem;
+
+              &.probability-big {
+                font-size: 1.5rem;
+              }
+            }
+          }
+        }
+
+        .probability-bar-container {
+          padding: 0 0.5rem;
+
+          .probability-bar-labels {
+            font-size: 0.7rem;
+
+            .current-prob {
+              font-size: 0.8rem;
+            }
+          }
         }
 
         .game-board {
