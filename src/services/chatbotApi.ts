@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api/chatbot';
+const API_BASE_URL = 'http://localhost:5000/api/chatbot';
 
 export interface ChatMessage {
     role: 'user' | 'assistant';
