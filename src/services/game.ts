@@ -1,5 +1,6 @@
 import api from './api.ts';
-import type {Game, NewGame} from '../model/types.ts';
+import type {DataGenerationConfig, DataGenerationResponse, Game, NewGame} from '../model/types.ts';
+import apiPython from "./apiPython.ts";
 
 export const getGames = async (): Promise<Game[]> => {
     const response = await api.get<Game[]>('/api/games');
@@ -27,4 +28,14 @@ export const approveGame = async (gameId: string): Promise<void> => {
 
 export const rejectGame = async (gameId: string): Promise<void> => {
     await api.post(`/api/games/${gameId}/reject`);
+};
+
+export const dataGeneration = async (config: DataGenerationConfig): Promise<DataGenerationResponse> => {
+    const response = await apiPython.post(`/api/python-games/generate?player1=${config.ai1Difficulty}&player2=${config.ai2Difficulty}&game=${config.game}&games=${config.wins}`);
+    return response.data;
+};
+
+export const getGeneratedData = async (): Promise<DataGenerationResponse[]> => {
+    const response = await api.get<DataGenerationResponse[]>('/api/games/generated');
+    return response.data;
 };

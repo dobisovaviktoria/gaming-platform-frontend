@@ -1,0 +1,44 @@
+@use './OverlayGeneral';
+
+.loading-overlay {
+  .overlay-container {
+    max-width: 400px;
+    //background: var(--background);
+    padding: 3rem 2rem;
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+
+      .spinner {
+        width: 80px;
+        height: 80px;
+        border: 6px solid rgba(255, 255, 255, 0.1);
+        border-top: 6px solid var(--text);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-message {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text);
+        text-align: center;
+        margin: 0;
+        animation: fadeInUp 0.5s ease 0.2s both;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -68,3 +68,20 @@ export interface PythonGameState {
   player_x_id: string;
   player_o_id: string | null;
 }
+
+export interface DataGenerationConfig {
+    game: string;
+    ai1Difficulty: string;
+    ai2Difficulty: string;
+    wins: number;
+}
+
+export interface DataGenerationResponse {
+    path: string;
+    player1: string;
+    player2: string;
+    game: string;
+    wins: number;
+    draws: number;
+    losses: number;
+}
