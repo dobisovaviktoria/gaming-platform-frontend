@@ -5,7 +5,7 @@ interface ResultsOverlayProps {
     isOpen: boolean;
     onClose: () => void;
     results: DataGenerationResponse;
-    onDelete: () => void;
+    onDelete: (file: string) => void;
     onSave: () => void;
 }
 
@@ -53,12 +53,12 @@ export default function ResultsOverlay({
 
                             <div className="stat-item file-item">
                                 <span className="stat-label">File:</span>
-                                <span className="stat-value filename">{results.path}</span>
+                                <span className="stat-value filename">{results.file}</span>
                             </div>
                         </div>
 
                         <div className="action-buttons">
-                            <button className="btn-delete" onClick={onDelete}>
+                            <button className="btn-delete" onClick={() => onDelete(results.file)}>
                                 Delete
                             </button>
                             <button className="btn-save" onClick={onSave}>

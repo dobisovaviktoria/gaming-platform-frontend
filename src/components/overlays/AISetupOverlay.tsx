@@ -9,20 +9,15 @@ interface AISetupOverlayProps {
 }
 
 const games = ['Tic Tac Toe'];
-const difficulties = ['Easy', 'Medium', 'Hard'];
 
 export default function AISetupOverlay({isOpen, onClose, mutate}: AISetupOverlayProps) {
     const [selectedGame, setSelectedGame] = useState('Tic Tac Toe');
-    const [ai1Difficulty, setAI1Difficulty] = useState('Hard');
-    const [ai2Difficulty, setAI2Difficulty] = useState('Easy');
     const [numberOfGames, setNumberOfGames] = useState(100);
 
     const handleStart = () => {
         const config: DataGenerationConfig = {
             game: selectedGame,
-            ai1Difficulty,
-            ai2Difficulty,
-            wins: numberOfGames
+            plays: numberOfGames
         };
 
         mutate(config);
@@ -58,44 +53,6 @@ export default function AISetupOverlay({isOpen, onClose, mutate}: AISetupOverlay
                                     {games.map((game) => (
                                         <option key={game} value={game}>
                                             {game}
-                                        </option>
-                                    ))}
-                                </select>
-                                <span className="select-icon">▼</span>
-                            </div>
-                        </div>
-
-                        {/* AI 1 Difficulty */}
-                        <div className="form-group">
-                            <label className="form-label">AI 1</label>
-                            <div className="select-wrapper">
-                                <select
-                                    value={ai1Difficulty}
-                                    onChange={(e) => setAI1Difficulty(e.target.value)}
-                                    className="form-select"
-                                >
-                                    {difficulties.map((difficulty) => (
-                                        <option key={difficulty} value={difficulty}>
-                                            {difficulty}
-                                        </option>
-                                    ))}
-                                </select>
-                                <span className="select-icon">▼</span>
-                            </div>
-                        </div>
-
-                        {/* AI 2 Difficulty */}
-                        <div className="form-group">
-                            <label className="form-label">AI 2</label>
-                            <div className="select-wrapper">
-                                <select
-                                    value={ai2Difficulty}
-                                    onChange={(e) => setAI2Difficulty(e.target.value)}
-                                    className="form-select"
-                                >
-                                    {difficulties.map((difficulty) => (
-                                        <option key={difficulty} value={difficulty}>
-                                            {difficulty}
                                         </option>
                                     ))}
                                 </select>

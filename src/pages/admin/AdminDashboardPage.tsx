@@ -6,7 +6,7 @@ import {useSearch} from "../../hooks/useSearch.ts";
 import AISetupOverlay from "../../components/overlays/AISetupOverlay.tsx";
 import LoadingOverlay from "../../components/overlays/LoadingOverlay.tsx";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {dataGeneration, getGeneratedData} from "../../services/game.ts";
+import {postGeneratedData, getGeneratedData, deleteGeneratedData} from "../../services/game.ts";
 import ResultsOverlay from "../../components/overlays/ResultsOverlay.tsx";
 import type {DataGenerationResponse} from "../../model/types.ts";
 
@@ -16,9 +16,7 @@ export default function AdminDashboardPage() {
     const [isResultsOpen, setIsResultsOpen] = useState(false);
     const [isRequestLoading, setIsRequestLoading] = useState(false);
     const [results, setResults] = useState<DataGenerationResponse>({
-        path: "",
-        player1: "",
-        player2: "",
+        file: "",
         game: "",
         wins: 0,
         draws: 0,
@@ -54,11 +52,6 @@ export default function AdminDashboardPage() {
         document.body.classList.remove('menu-open');
     };
 
-    const handleDelete = () => {
-        console.log('Deleting file...');
-        setIsResultsOpen(false);
-    };
-
     const handleSave = () => {
         console.log('Saving file...');
         setIsResultsOpen(false);
@@ -73,17 +66,30 @@ export default function AdminDashboardPage() {
     const queryClient = useQueryClient();
 
     const generateMutate = useMutation({
-        mutationFn: dataGeneration,
+        mutationFn: postGeneratedData,
         onMutate: () => {
             setIsRequestLoading(true)
         },
         onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ['waitingGames']});
+            queryClient.invalidateQueries({queryKey: ['generatedData']});
             setResults(data)
             setIsRequestLoading(false)
             setIsResultsOpen(true);
         }
     });
+
+    const deleteMutate = useMutation({
+        mutationFn: deleteGeneratedData,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['generatedData']});
+            setIsResultsOpen(true);
+        }
+    });
+
+    const handleDataClick = (data: DataGenerationResponse) => {
+        setResults(data)
+        setIsResultsOpen(true)
+    }
 
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
 
@@ -127,19 +133,17 @@ export default function AdminDashboardPage() {
                             <table className="data-table">
                                 <thead>
                                 <tr>
-                                    <th>Challenger</th>
-                                    <th>Opponent</th>
                                     <th>Game</th>
-                                    <th>Stand</th>
+                                    <th>Wins & Losses</th>
+                                    <th>Draws</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {searchResults.map((item) => (
-                                    <tr key={Math.random()} className="data-row">
-                                        <td className="item-label">{item.player1}</td>
-                                        <td className="item-label">{item.player2}</td>
+                                    <tr key={Math.random()} className="data-row" onClick={() => handleDataClick(item)}>
                                         <td className="item-label">{item.game}</td>
-                                        <td className="item-value">{item.wins} - {item.draws} - {item.losses}</td>
+                                        <td className="item-value">{item.wins + item.losses}</td>
+                                        <td className="item-value">{item.draws}</td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -163,7 +167,7 @@ export default function AdminDashboardPage() {
                 isOpen={isResultsOpen}
                 onClose={() => setIsResultsOpen(false)}
                 results={results}
-                onDelete={handleDelete}
+                onDelete={(file: string) => deleteMutate.mutate(file)}
                 onSave={handleSave}
             />
         </div>

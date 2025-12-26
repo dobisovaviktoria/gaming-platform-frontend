@@ -30,12 +30,16 @@ export const rejectGame = async (gameId: string): Promise<void> => {
     await api.post(`/api/games/${gameId}/reject`);
 };
 
-export const dataGeneration = async (config: DataGenerationConfig): Promise<DataGenerationResponse> => {
-    const response = await apiPython.post(`/api/python-games/generate?player1=${config.ai1Difficulty}&player2=${config.ai2Difficulty}&game=${config.game}&games=${config.wins}`);
+export const postGeneratedData = async (config: DataGenerationConfig): Promise<DataGenerationResponse> => {
+    const response = await apiPython.post(`/api/python-games/generated?game=${config.game}&games=${config.plays}`);
     return response.data;
 };
 
 export const getGeneratedData = async (): Promise<DataGenerationResponse[]> => {
-    const response = await api.get<DataGenerationResponse[]>('/api/games/generated');
+    const response = await apiPython.get<DataGenerationResponse[]>('/api/python-games/generated');
     return response.data;
+};
+
+export const deleteGeneratedData = async (file: string): Promise<void> => {
+    await apiPython.delete(`/api/python-games/generated?file=${file}`);
 };

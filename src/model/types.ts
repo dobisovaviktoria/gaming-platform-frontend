@@ -71,15 +71,11 @@ export interface PythonGameState {
 
 export interface DataGenerationConfig {
     game: string;
-    ai1Difficulty: string;
-    ai2Difficulty: string;
-    wins: number;
+    plays: number;
 }
 
 export interface DataGenerationResponse {
-    path: string;
-    player1: string;
-    player2: string;
+    file: string;
     game: string;
     wins: number;
     draws: number;
