@@ -9,7 +9,6 @@ import FriendsPage from "./pages/player/FriendsPage.tsx";
 import AddGamePage from "./pages/player/AddGamePage.tsx";
 import AchievementsPage from "./pages/player/AchievementsPage.tsx";
 import ProfilePage from "./pages/player/ProfilePage.tsx";
-import ChatbotTestPage from "./pages/temp/ChatbotTestPage.tsx";
 import GameAchievementsPage from "./pages/player/GameAchievementsPage.tsx";
 import GameStatsPage from "./pages/player/GameStatsPage.tsx";
 import AddFriendsPage from "./pages/player/AddFriendsPage.tsx";
@@ -20,6 +19,7 @@ import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminGamesPage from "./pages/admin/AdminGamesPage.tsx";
 import ChatbotOverlay from "./components/overlays/ChatbotOverlay.tsx";
+import {useState} from "react";
 
 const queryClient = new QueryClient();
 
@@ -52,12 +52,7 @@ function AuthenticatedRouting() {
                 <Route path="/admin">
                     <Route path="" element={<AdminDashboardPage/>} />
                     <Route path="games" element={<AdminGamesPage/>} />
-
-                    <Route path="test" element={<KeycloakTestPage />} />
                 </Route>
-
-                <Route path="/chatbottest" element={<ChatbotTestPage/>} />
-                <Route path="/keycloaktest" element={<KeycloakTestPage/>} />
             </Routes>
             <button className="chatbot-fab" onClick={() => setChatOpen(true)}>💬</button>
             <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)}/>
