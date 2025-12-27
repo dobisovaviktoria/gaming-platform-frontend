@@ -3,45 +3,34 @@ import './AdminDashboardPage.scss';
 import Navbar from "../../components/Navbar.tsx";
 import SideMenu from "../../components/overlays/SideMenu.tsx";
 import {useSearch} from "../../hooks/useSearch.ts";
-
-interface DataItem {
-    id: string;
-    label: string;
-    value: string;
-    item: "data";
-}
-
-interface PredictionItem {
-    id: string;
-    label: string;
-    value: string;
-    item: "prediction";
-}
+import AISetupOverlay from "../../components/overlays/AISetupOverlay.tsx";
+import LoadingOverlay from "../../components/overlays/LoadingOverlay.tsx";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {postGeneratedData, getGeneratedData, deleteGeneratedData} from "../../services/game.ts";
+import ResultsOverlay from "../../components/overlays/ResultsOverlay.tsx";
+import type {DataGenerationResponse} from "../../model/types.ts";
 
 export default function AdminDashboardPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isConfigOpen, setIsConfigOpen] = useState(false);
+    const [isResultsOpen, setIsResultsOpen] = useState(false);
+    const [isRequestLoading, setIsRequestLoading] = useState(false);
+    const [results, setResults] = useState<DataGenerationResponse>({
+        file: "",
+        game: "",
+        wins: 0,
+        draws: 0,
+        losses: 0,
 
-    // Sample data - replace with actual data
-    const dataItems: DataItem[] = [
-        { id: '1', label: 'Data Item 1', value: 'Value 1' , item: "data" },
-        { id: '2', label: 'Data Item 2', value: 'Value 2' , item: "data" },
-        { id: '3', label: 'Data Item 3', value: 'Value 3' , item: "data" },
-        { id: '4', label: 'Data Item 4', value: 'Value 4' , item: "data" },
-    ];
+    });
 
-    const predictions: PredictionItem[] = [
-        { id: '1', label: 'Prediction 1', value: 'Value 1' , item: "prediction" },
-        { id: '2', label: 'Prediction 2', value: 'Value 2' , item: "prediction" },
-        { id: '3', label: 'Prediction 3', value: 'Value 3' , item: "prediction" },
-        { id: '4', label: 'Prediction 4', value: 'Value 4' , item: "prediction" },
-    ];
-
-    const handleExport = () => {
-        console.log('Exporting data...');
-    };
+    const { data: queriedData, isLoading: isLoadingData } = useQuery<DataGenerationResponse[], Error>({
+        queryKey: ['generatedData'],
+        queryFn: getGeneratedData
+    });
 
     const handleTriggerAI = () => {
-        console.log('Triggering AI vs AI...');
+        setIsConfigOpen(true);
     };
 
     const handleMenuToggle = () => {
@@ -58,10 +47,49 @@ export default function AdminDashboardPage() {
         document.body.classList.remove('menu-open');
     };
 
-    const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<DataItem | PredictionItem>({
-        data: [].concat(dataItems).concat(predictions),
-        searchField: 'label',
+    const handleOverlayClose = () => {
+        setIsConfigOpen(false);
+        document.body.classList.remove('menu-open');
+    };
+
+    const handleSave = () => {
+        console.log('Saving file...');
+        setIsResultsOpen(false);
+    };
+
+    const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<DataGenerationResponse>({
+        data: queriedData || [],
+        searchField: 'game',
     });
+
+
+    const queryClient = useQueryClient();
+
+    const generateMutate = useMutation({
+        mutationFn: postGeneratedData,
+        onMutate: () => {
+            setIsRequestLoading(true)
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ['generatedData']});
+            setResults(data)
+            setIsRequestLoading(false)
+            setIsResultsOpen(true);
+        }
+    });
+
+    const deleteMutate = useMutation({
+        mutationFn: deleteGeneratedData,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['generatedData']});
+            setIsResultsOpen(false);
+        }
+    });
+
+    const handleDataClick = (data: DataGenerationResponse) => {
+        setResults(data)
+        setIsResultsOpen(true)
+    }
 
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
 
@@ -79,7 +107,7 @@ export default function AdminDashboardPage() {
                     onChange={(e) => handleSearch(e.target.value)}
                     autoFocus
                 />
-                {isLoading && <span className="loading-spinner">⏳</span>}
+                {(isLoading || isLoadingData) && <span className="loading-spinner">⏳</span>}
             </div>
 
             {error && (
@@ -101,31 +129,25 @@ export default function AdminDashboardPage() {
                 <main className="dashboard-content">
                     <section className="data-section">
                         <h2 className="section-title">Data</h2>
-                        <div className="data-list">
-                            {searchResults.filter(item => item.item === "data").map((item) => (
-                                <div key={item.id} className="data-item">
-                                    <span className="item-label">{item.label}</span>
-                                    <span className="item-value">{item.value}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    <section className="predictions-section">
-                        <h2 className="section-title">Predictions</h2>
-                        <div className="predictions-list">
-                            {searchResults.filter(item => item.item === "prediction").map((item) => (
-                                <div key={item.id} className="prediction-item">
-                                    <span className="item-label">{item.label}</span>
-                                    <span className="item-value">{item.value}</span>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="section-actions">
-                            <button className="export-btn" onClick={handleExport}>
-                                Export
-                            </button>
+                        <div className="data-table-wrapper">
+                            <table className="data-table">
+                                <thead>
+                                <tr>
+                                    <th>Game</th>
+                                    <th>Wins & Losses</th>
+                                    <th>Draws</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {searchResults.map((item) => (
+                                    <tr key={Math.random()} className="data-row" onClick={() => handleDataClick(item)}>
+                                        <td className="item-label">{item.game}</td>
+                                        <td className="item-value">{item.wins + item.losses}</td>
+                                        <td className="item-value">{item.draws}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
                         </div>
                     </section>
                 </main>
@@ -136,6 +158,19 @@ export default function AdminDashboardPage() {
                     Trigger AI vs AI
                 </button>
             </footer>
+            <AISetupOverlay isOpen={isConfigOpen} onClose={handleOverlayClose} mutate={generateMutate.mutate}/>
+            <LoadingOverlay
+                isOpen={isRequestLoading}
+                message="Generating data..."
+            />
+            <ResultsOverlay
+                isOpen={isResultsOpen}
+                onClose={() => setIsResultsOpen(false)}
+                results={results}
+                onDelete={(file: string) => deleteMutate.mutate(file)}
+                onSave={handleSave}
+            />
         </div>
+
     );
 }

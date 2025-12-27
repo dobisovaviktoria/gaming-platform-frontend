@@ -70,3 +70,16 @@ export interface PythonGameState {
   currentPlayerWinProbability: number | null;
 
 }
+
+export interface DataGenerationConfig {
+    game: string;
+    plays: number;
+}
+
+export interface DataGenerationResponse {
+    file: string;
+    game: string;
+    wins: number;
+    draws: number;
+    losses: number;
+}

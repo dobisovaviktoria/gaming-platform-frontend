@@ -3,31 +3,39 @@ import './AdminGamesPage.scss';
 import {useSearch} from "../../hooks/useSearch.ts";
 import Navbar from "../../components/Navbar.tsx";
 import SideMenu from "../../components/overlays/SideMenu.tsx";
-
-interface Game {
-    id: string;
-    title: string;
-    user: string;
-    status: 'pending';
-}
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {approveGame, getWaitingGames, rejectGame} from "../../services/game.ts";
+import type {Game} from "../../model/types.ts";
 
 export default function AdminGamesPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const queryClient = useQueryClient();
 
-    // Sample pending games - replace with actual data
-    const games: Game[] = [
-        { id: '1', title: 'TicTacToe', user: 'US', status: 'pending' },
-        { id: '2', title: 'Chess', user: 'Teachers', status: 'pending' },
-        { id: '3', title: 'Connect 4', user: 'Jip', status: 'pending' },
-        { id: '4', title: 'Minesweeper', user: 'Janneke', status: 'pending' },
-    ];
+    const { data: games, isLoading: isLoadingGames } = useQuery<Game[], Error>({
+        queryKey: ['waitingGames'],
+        queryFn: getWaitingGames
+    });
+
+    const approveMutate = useMutation({
+        mutationFn: approveGame,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['waitingGames'] });
+        }
+    });
+
+    const rejectMutate = useMutation({
+        mutationFn: rejectGame,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['waitingGames'] });
+        }
+    });
 
     const handleApprove = (gameId: string) => {
-        console.log('Approving game:', gameId);
+        approveMutate.mutate(gameId)
     };
 
     const handleReject = (gameId: string) => {
-        console.log('Rejecting game:', gameId);
+        rejectMutate.mutate(gameId)
     };
 
     const handleMenuToggle = () => {
@@ -44,12 +52,14 @@ export default function AdminGamesPage() {
         document.body.classList.remove('menu-open');
     };
 
-    const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<Game>({
-        data: games,
-        searchField: 'title',
+    const { searchQuery, searchResults, isLoading: isLoadingSearch, error, handleSearch } = useSearch<Game>({
+        data: games || [],
+        searchField: 'name',
     });
 
     const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
+
+    const isLoading = isLoadingGames || isLoadingSearch;
 
     return (
         <div className="page pending-games">
@@ -68,29 +78,29 @@ export default function AdminGamesPage() {
                 {isLoading && <span className="loading-spinner">⏳</span>}
             </div>
 
-            {error && (
-                <div className="error-message">
-                    <p>{error}</p>
-                </div>
-            )}
-
-            {showNoResults && (
-                <div className="no-results">
-                    <div className="sad-face">☹️</div>
-                    <h2>No results found</h2>
-                    <p>Try again...</p>
-                </div>
-            )}
-
             <main className="games-content">
                 <h2 className="section-title">Games</h2>
+
+                {error && (
+                    <div className="error-message">
+                        <p>{error}</p>
+                    </div>
+                )}
+
+                {showNoResults && (
+                    <div className="no-results">
+                        <div className="sad-face">☹️</div>
+                        <h2>No results found</h2>
+                        <p>Try again...</p>
+                    </div>
+                )}
 
                 <div className="games-list">
                     {searchResults.map((game) => (
                         <div key={game.id} className="game-item">
                             <div className="game-info">
                 <span className="game-players">
-                  {game.title} by {game.user}
+                  {game.name}
                 </span>
                             </div>
 
