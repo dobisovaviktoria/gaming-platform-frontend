@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 9999;
 
     .confirmation-dialog {
         background-color: var(--background-color);
@@ -35,12 +35,12 @@
                 font-weight: bold;
 
                 &:first-child {
-                    background-color: #e53935;
+                    background-color: #43a047;
                     color: white;
                 }
 
                 &:last-child {
-                    background-color: #43a047;
+                    background-color: #e53935;
                     color: white;
                 }
             }
