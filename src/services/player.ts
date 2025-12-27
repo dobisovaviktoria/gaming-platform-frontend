@@ -66,3 +66,8 @@ export const addFavoriteGame = async (gameId: string): Promise<void> => {
 export const removeFavoriteGame = async (gameId: string): Promise<void> => {
     await api.delete(`/api/players/favorites/${gameId}`);
 };
+
+export const getPlayerProfile = async (playerId: string): Promise<PlayerBasicInfo> => {
+    const response = await api.get<PlayerBasicInfo>(`/api/players/${playerId}`);
+    return response.data;
+};

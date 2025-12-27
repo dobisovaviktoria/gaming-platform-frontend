@@ -1,41 +1,94 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import SideMenu from '../components/overlays/SideMenu.tsx';
 import Notification from '../components/Notification';
+import ConfirmationDialog from '../components/overlays/ConfirmationDialog.tsx';
 import './NotificationsPage.scss';
-import {useSearch} from "../hooks/useSearch.ts";
+import { useSearch } from "../hooks/useSearch.ts";
+import { getCurrentPlayer, getPlayerProfile } from '../services/player';
+import { getGame } from '../services/game';
+import { getPendingInvitations, respondToInvitation, type InvitationResponse } from '../services/invitation';
+import { useNavigate } from 'react-router-dom';
 
 interface NotificationData {
     id: string;
     message: string;
     icon?: string;
+    originalData?: InvitationResponse;
 }
 
 export default function NotificationsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [notifications, setNotifications] = useState<NotificationData[]>([]);
+    const [internalPlayerId, setInternalPlayerId] = useState<string | null>(null);
+    const [selectedInvitation, setSelectedInvitation] = useState<InvitationResponse | null>(null);
+    const navigate = useNavigate();
 
-    const notifications: NotificationData[] = [
-        {
-            id: '1',
-            message: 'You have been invited to play Tic Tac Toe by user Brianna',
-            icon: '🔔',
-        },
-        {
-            id: '2',
-            message: 'You have been invited to play Tic Tac Toe by user Mark',
-            icon: '🔔',
-        },
-        {
-            id: '3',
-            message: 'You have been invited to play Bang by user Brianna',
-            icon: '🔔',
-        },
-        {
-            id: '4',
-            message: 'Your friend request was accepted by Brianna',
-            icon: '🔔',
-        },
-    ];
+    const namesCache = useRef<{ [key: string]: string }>({});
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                let playerId = internalPlayerId;
+                if (!playerId) {
+                    const player = await getCurrentPlayer();
+                    playerId = player.playerId;
+                    setInternalPlayerId(playerId);
+                }
+
+                if (playerId) {
+                    const invitations = await getPendingInvitations(playerId);
+                    
+                    const formattedNotifications = await Promise.all(invitations.map(async (inv) => {
+                        if (!namesCache.current[inv.inviterId]) {
+                            try {
+                                const profile = await getPlayerProfile(inv.inviterId);
+                                namesCache.current[inv.inviterId] = profile.username;
+                            } catch {
+                                namesCache.current[inv.inviterId] = 'Unknown Player';
+                            }
+                        }
+
+                        if (!namesCache.current[inv.gameId]) {
+                            try {
+                                const game = await getGame(inv.gameId);
+                                namesCache.current[inv.gameId] = game.name;
+                            } catch {
+                                namesCache.current[inv.gameId] = 'Unknown Game';
+                            }
+                        }
+
+                        const inviterName = namesCache.current[inv.inviterId];
+                        const gameName = namesCache.current[inv.gameId];
+
+                        return {
+                            id: inv.invitationId,
+                            message: `Game Invitation: ${inviterName} has invited you to play ${gameName}`,
+                            icon: '🎮',
+                            originalData: inv
+                        };
+                    }));
+                    
+                    setNotifications(formattedNotifications);
+                }
+            } catch (error) {
+                console.error("Failed to fetch notifications:", error);
+            }
+        };
+
+        fetchNotifications();
+        
+        const interval = setInterval(fetchNotifications, 5000);
+        return () => clearInterval(interval);
+    }, [internalPlayerId]);
+
+    useEffect(() => {
+        console.log('Selected Invitation State Changed:', selectedInvitation);
+    }, [selectedInvitation]);
+
+    useEffect(() => {
+        console.log('Notifications List Updated:', notifications);
+    }, [notifications]);
 
     const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<NotificationData>({
         data: notifications,
@@ -44,6 +97,33 @@ export default function NotificationsPage() {
 
     const handleNotificationClick = (id: string) => {
         console.log('Notification clicked:', id);
+        const notification = notifications.find(n => n.id === id);
+        if (notification?.originalData) {
+            console.log('Clicked Invitation Details:', notification.originalData);
+            setSelectedInvitation(notification.originalData);
+        }
+    };
+
+    const handleRespond = async (accept: boolean) => {
+        if (!selectedInvitation || !internalPlayerId) return;
+
+        try {
+            console.log(`Responding to invitation ${selectedInvitation.invitationId} with accept=${accept}`);
+            const response = await respondToInvitation(selectedInvitation.invitationId, internalPlayerId, accept);
+            console.log('Response result:', response);
+
+            setNotifications(prev => prev.filter(n => n.id !== selectedInvitation.invitationId));
+            setSelectedInvitation(null);
+
+            if (accept && response && typeof response === 'object' && 'sessionId' in response) {
+                console.log('Invitation accepted, navigating to game session:', response.sessionId);
+                navigate(`/game/${response.gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+            }
+        } catch (error) {
+            console.error("Failed to respond to invitation:", error);
+            alert("Failed to respond to invitation.");
+            setSelectedInvitation(null);
+        }
     };
 
     const handleMenuToggle = () => {
@@ -74,7 +154,7 @@ export default function NotificationsPage() {
                 <span className="search-icon">🔍</span>
                 <input
                     type="text"
-                    placeholder="Connect 4"
+                    placeholder="Search notifications..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     autoFocus
@@ -97,7 +177,7 @@ export default function NotificationsPage() {
                     </div>
                 )}
 
-                {searchResults.length > 0 && (
+                {searchResults.length > 0 ? (
                     <div className="notifications-list">
                         {searchResults.map((notification) => (
                             <Notification
@@ -108,8 +188,18 @@ export default function NotificationsPage() {
                             />
                         ))}
                     </div>
+                ) : (
+                    !isLoading && !searchQuery && <div className="no-results"><p>No new notifications.</p></div>
                 )}
             </div>
+
+            {selectedInvitation && (
+                <ConfirmationDialog
+                    message="Do you want to accept this game invitation?"
+                    onConfirm={() => handleRespond(true)}
+                    onCancel={() => handleRespond(false)}
+                />
+            )}
         </div>
     );
 };

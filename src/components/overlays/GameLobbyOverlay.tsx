@@ -1,8 +1,9 @@
 import {useEffect, useState} from 'react';
 import './GameLobbyOverlay.scss';
 import {useKeycloak} from '../../contexts/AuthContext';
-import {getFriends} from '../../services/player';
+import {getFriends, getCurrentPlayer} from '../../services/player';
 import {joinLobby, checkLobbyStatus} from '../../services/lobby';
+import {sendInvitation, getInvitationStatus} from '../../services/invitation';
 import {useNavigate} from "react-router-dom";
 
 interface Player {
@@ -28,9 +29,12 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
     const [allPlayers, setAllPlayers] = useState<Player[]>([]);
     const [isLoadingFriends, setIsLoadingFriends] = useState(true);
     const [isWaitingForMatch, setIsWaitingForMatch] = useState(false);
+    const [isWaitingForInvitation, setIsWaitingForInvitation] = useState(false);
+    const [pendingInvitationId, setPendingInvitationId] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
+            console.log('Current Logged-in User (Keycloak):', user);
             setWaitingPlayers([
                 {
                     id: user.sub, 
@@ -43,11 +47,26 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
     }, [user]);
 
     useEffect(() => {
+        const fetchInternalPlayer = async () => {
+            if (user) {
+                try {
+                    const player = await getCurrentPlayer();
+                    console.log('Current Player (Backend):', player);
+                } catch (error) {
+                    console.error('Failed to fetch internal player profile:', error);
+                }
+            }
+        };
+        fetchInternalPlayer();
+    }, [user]);
+
+    useEffect(() => {
         const fetchFriends = async () => {
             if (user) {
                 setIsLoadingFriends(true);
                 try {
                     const friends = await getFriends();
+                    console.log('Fetched Friends:', friends);
                     const friendPlayers: Player[] = friends.map(friend => ({
                         id: friend.playerId,
                         username: friend.username,
@@ -67,7 +86,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
         fetchFriends();
     }, [user]);
 
-    const [invitedPlayers] = useState<Player[]>([]);
+    const [invitedPlayers, setInvitedPlayers] = useState<Player[]>([]);
 
     const currentPlayerCount = waitingPlayers.length + invitedPlayers.length;
 
@@ -77,8 +96,28 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
         !invitedPlayers.some(ip => ip.id === player.id) 
     );
 
-    const handleInviteToggle = (player: Player) => {
-        console.log('Toggling invite for player:', player);
+    const handleInviteToggle = async (friend: Player) => {
+        console.log(`Attempting to invite friend: ${friend.username} (ID: ${friend.id})`);
+        
+        try {
+
+            const inviter = await getCurrentPlayer();
+            const inviterId = inviter.playerId;
+            const inviteeId = friend.id;
+
+            const response = await sendInvitation(inviterId, inviteeId, gameId);
+            
+            console.log('Invitation sent successfully:', response);
+            
+            setInvitedPlayers(prev => [...prev, { ...friend, status: 'invited' }]);
+            
+            setPendingInvitationId(response.invitationId);
+            setIsWaitingForInvitation(true);
+            
+        } catch (error) {
+            console.error('Failed to send invitation:', error);
+            alert('Failed to send invitation. Check console for details.');
+        }
     };
 
     const handleJoinLobby = async () => {
@@ -96,7 +135,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
             }
         } catch (error) {
             console.error('Failed to join lobby:', error);
-            
+
             alert(`Failed to join lobby: ${error instanceof Error ? error.message : String(error)}`);
         }
     };
@@ -113,21 +152,53 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
                         clearInterval(pollingInterval);
                         navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
                     } else if (response.status === 'WAITING') {
-                        console.log('Still waiting for match...');
                     }
                 } catch (error) {
                     console.error('Failed to check lobby status:', error);
                     clearInterval(pollingInterval);
                     setIsWaitingForMatch(false);
-                    alert('Failed to check lobby status. Please try again.');
                 }
-            }, 2000); 
+            }, 2000);
         }
 
         return () => {
             clearInterval(pollingInterval);
         };
     }, [isWaitingForMatch, gameId, onClose, navigate]);
+
+    useEffect(() => {
+        let pollingInterval: number;
+
+        if (isWaitingForInvitation && pendingInvitationId) {
+            pollingInterval = setInterval(async () => {
+                try {
+                    const response = await getInvitationStatus(pendingInvitationId);
+                    if (response.status === 'ACCEPTED' && response.sessionId) {
+                        setIsWaitingForInvitation(false);
+                        setPendingInvitationId(null);
+                        clearInterval(pollingInterval);
+                        console.log('Invitation accepted! Navigating to game...');
+                        navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                    } else if (response.status === 'REJECTED') {
+                        setIsWaitingForInvitation(false);
+                        setPendingInvitationId(null);
+                        clearInterval(pollingInterval);
+                        alert('Your invitation was rejected.');
+                    } else {
+                        console.log('Waiting for invitation response...');
+                    }
+                } catch (error) {
+                    console.error('Failed to check invitation status:', error);
+                    clearInterval(pollingInterval);
+                    setIsWaitingForInvitation(false);
+                }
+            }, 2000);
+        }
+
+        return () => {
+            clearInterval(pollingInterval);
+        };
+    }, [isWaitingForInvitation, pendingInvitationId, gameId, navigate]);
 
 
     if (!isOpen) return null;
