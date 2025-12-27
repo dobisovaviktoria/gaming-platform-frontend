@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import Navbar from '../components/Navbar';
-import SideMenu from '../components/overlays/SideMenu.tsx';
-import Notification from '../components/Notification';
-import ConfirmationDialog from '../components/overlays/ConfirmationDialog.tsx';
+import Navbar from '../../components/Navbar';
+import SideMenu from '../../components/overlays/SideMenu';
+import Notification from '../../components/Notification';
+import ConfirmationDialog from '../../components/overlays/ConfirmationDialog';
 import './NotificationsPage.scss';
-import { useSearch } from "../hooks/useSearch.ts";
-import { getCurrentPlayer, getPlayerProfile } from '../services/player';
-import { getGame } from '../services/game';
-import { getPendingInvitations, respondToInvitation, type InvitationResponse } from '../services/invitation';
+import { useSearch } from "../../hooks/useSearch";
+import { getCurrentPlayer, getPlayerProfile } from '../../services/player';
+import { getGame } from '../../services/game';
+import { getPendingInvitations, respondToInvitation, type InvitationResponse } from '../../services/invitation';
 import { useNavigate } from 'react-router-dom';
 
 interface NotificationData {
