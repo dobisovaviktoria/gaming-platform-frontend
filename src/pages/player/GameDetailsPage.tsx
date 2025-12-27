@@ -39,7 +39,12 @@ export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
     };
 
     const handlePlayClick = () => {
-        setShowModeOverlay(true);
+        console.log(`Playing game: ${game?.name}, URL: ${game?.url}`);
+        if (game?.name === 'Chess' && game?.url) {
+            window.location.href = game.url;
+        } else {
+            setShowModeOverlay(true);
+        }
     };
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);

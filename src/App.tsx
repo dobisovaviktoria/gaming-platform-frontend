@@ -17,16 +17,15 @@ import AddingGamePage from "./pages/player/AddingGamePage.tsx";
 import Dashboard2 from "./pages/player/Dashboard.tsx";
 import GameDetailsPage from "./pages/player/GameDetailsPage.tsx";
 import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame.tsx";
-import KeycloakTestPage from "./pages/temp/KeycloakTestPage.tsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminGamesPage from "./pages/admin/AdminGamesPage.tsx";
-// import ChatbotOverlay from "./components/overlays/ChatbotOverlay.tsx";
-// import {useState} from "react";
+import ChatbotOverlay from "./components/overlays/ChatbotOverlay.tsx";
 
 const queryClient = new QueryClient();
 
 function AuthenticatedRouting() {
-    // const [isChatOpen, setIsChatOpen] = useState(false);
+    const [chatOpen, setChatOpen] = useState(false);
+
     return (
         <BrowserRouter>
             <Routes>
@@ -60,21 +59,14 @@ function AuthenticatedRouting() {
                 <Route path="/chatbottest" element={<ChatbotTestPage/>} />
                 <Route path="/keycloaktest" element={<KeycloakTestPage/>} />
             </Routes>
-            {/*<button*/}
-            {/*    className="floating-chat-btn"*/}
-            {/*    onClick={() => setIsChatOpen(true)}*/}
-            {/*    aria-label="Open chat"*/}
-            {/*>*/}
-            {/*    💬*/}
-            {/*</button>*/}
-            {/*<ChatbotOverlay isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />*/}
+            <button className="chatbot-fab" onClick={() => setChatOpen(true)}>💬</button>
+            <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)}/>
         </BrowserRouter>
-    )
+    );
 }
 
 function AppContent() {
     const { isAuthenticated } = useKeycloak();
-
     return <>{isAuthenticated ? (
         <AuthenticatedRouting />
     ) : (
