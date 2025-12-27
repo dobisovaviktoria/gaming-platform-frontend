@@ -3,8 +3,8 @@
 .loading-overlay {
   .overlay-container {
     max-width: 400px;
-    //background: var(--background);
-    padding: 3rem 2rem;
+    background: var(--background);
+    padding: 5rem 2rem 2rem;
 
     .loading-content {
       display: flex;

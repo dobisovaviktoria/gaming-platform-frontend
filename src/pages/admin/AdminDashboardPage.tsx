@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
         mutationFn: deleteGeneratedData,
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['generatedData']});
-            setIsResultsOpen(true);
+            setIsResultsOpen(false);
         }
     });
 
