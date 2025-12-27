@@ -1,17 +1,17 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getGame } from '../services/game';
-import type { Game } from '../model/types';
+import { getGame } from '../../services/game.ts';
+import type { Game } from '../../model/types.ts';
 import './GameDetailsPage.scss';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import {useState} from "react";
-import GameModeOverlay from "../components/overlays/GameModeOverlay.tsx";
-import Navbar from "../components/Navbar.tsx";
-import SideMenu from "../components/overlays/SideMenu.tsx";
-import GameLobbyOverlay from "../components/overlays/GameLobbyOverlay.tsx";
-import GameEndOverlay from "../components/overlays/GameEndOverlay.tsx";
+import GameModeOverlay from "../../components/overlays/GameModeOverlay.tsx";
+import Navbar from "../../components/Navbar.tsx";
+import SideMenu from "../../components/overlays/SideMenu.tsx";
+import GameLobbyOverlay from "../../components/overlays/GameLobbyOverlay.tsx";
+import GameEndOverlay from "../../components/overlays/GameEndOverlay.tsx";
 
 const gameResult = "win";
 interface GameDetailsPageProps {

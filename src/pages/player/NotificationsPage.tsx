@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import SideMenu from '../components/overlays/SideMenu.tsx';
-import Notification from '../components/Notification';
+import Navbar from '../../components/Navbar.tsx';
+import SideMenu from '../../components/overlays/SideMenu.tsx';
+import Notification from '../../components/Notification.tsx';
 import './NotificationsPage.scss';
-import {useSearch} from "../hooks/useSearch.ts";
+import {useSearch} from "../../hooks/useSearch.ts";
 
 interface NotificationData {
     id: string;

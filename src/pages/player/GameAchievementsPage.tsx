@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import Achievement from '../components/Achievement';
-import { getCurrentPlayer } from '../services/player';
-import { getPlayerAchievementsForGame } from '../services/achievements';
+import Achievement from '../../components/Achievement.tsx';
+import { getCurrentPlayer } from '../../services/player.ts';
+import { getPlayerAchievementsForGame } from '../../services/achievements.ts';
 import './GameAchievementsPage.scss';
 
 export default function GameAchievementsPage() {
