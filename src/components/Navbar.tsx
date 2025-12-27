@@ -31,6 +31,7 @@ export default function Navbar ({ onMenuToggle } : NavbarProps) {
             </button>
 
             <div className="navbar-right">
+
                 <div className="profile-avatar">
                     <img
                         src={user?.avatarUrl || '/default-avatar.png'}
