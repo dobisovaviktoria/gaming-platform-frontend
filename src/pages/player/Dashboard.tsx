@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {Box, Typography, Paper, Grid, Stack, CircularProgress} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
 import GameCard from '../../components/GameCard.tsx';
 import ConfirmationDialog from '../../components/overlays/ConfirmationDialog.tsx';
-import { getCurrentPlayer, addFavoriteGame, removeFavoriteGame } from '../../services/player.ts';
-import { getGames } from '../../services/game.ts';
-import type { Game, Player } from '../../model/types.ts';
-import './Dashboard.scss';
+import {getCurrentPlayer, addFavoriteGame, removeFavoriteGame} from '../../services/player.ts';
+import {getGames} from '../../services/game.ts';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -17,21 +17,19 @@ export default function Dashboard() {
     const [gameToUnfavorite, setGameToUnfavorite] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
-    const { data: player, isLoading: isLoadingPlayer } = useQuery<Player, Error>({
+    const { data: player, isLoading: isLoadingPlayer } = useQuery({
         queryKey: ['player'],
-        queryFn: getCurrentPlayer
+        queryFn: getCurrentPlayer,
     });
 
-    const { data: games, isLoading: isLoadingGames } = useQuery<Game[], Error>({
+    const { data: games, isLoading: isLoadingGames } = useQuery({
         queryKey: ['games'],
-        queryFn: getGames
+        queryFn: getGames,
     });
 
     const addFavoriteMutation = useMutation({
         mutationFn: addFavoriteGame,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['player'] });
-        }
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['player'] }),
     });
 
     const removeFavoriteMutation = useMutation({
@@ -40,7 +38,7 @@ export default function Dashboard() {
             queryClient.invalidateQueries({ queryKey: ['player'] });
             setShowConfirm(false);
             setGameToUnfavorite(null);
-        }
+        },
     });
 
     const handleToggleFavorite = (gameId: string, isFavorite: boolean) => {
@@ -53,93 +51,96 @@ export default function Dashboard() {
     };
 
     const confirmUnfavorite = () => {
-        if (gameToUnfavorite) {
-            removeFavoriteMutation.mutate(gameToUnfavorite);
-        }
-    };
-
-    const cancelUnfavorite = () => {
-        setShowConfirm(false);
-        setGameToUnfavorite(null);
+        if (gameToUnfavorite) removeFavoriteMutation.mutate(gameToUnfavorite);
     };
 
     const handleMenuToggle = () => {
         setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
-    };
-
-    const handleMenuClose = () => {
-        setIsMenuOpen(false);
-        document.body.classList.remove('menu-open');
     };
 
     const handleSearchClick = () => {
         navigate('/search');
     };
 
-    const favoriteGames = games?.filter((g) => player?.favoriteGameIds.includes(g.id)) || [];
-    const availableGames = games || [];
+    const favoriteGames = games?.filter(g => player?.favoriteGameIds.includes(g.id)) || [];
+    const allGames = games || [];
+    const isLoading = isLoadingPlayer || isLoadingGames;
 
     return (
-        <div className="page">
+        <Box>
             <Navbar onMenuToggle={handleMenuToggle} />
-            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-            <div className="dashboard-content">
-                <div className="search-bar-container" onClick={handleSearchClick}>
-                    <span className="search-icon">🔍</span>
-                    <span className="search-placeholder">Search</span>
-                </div>
+            <Box p={3}>
+                <Paper elevation={2}>
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                        p={2}
+                        onClick={handleSearchClick}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <SearchIcon />
+                        <Typography variant="body1">Search</Typography>
+                    </Box>
+                </Paper>
 
-                <section className="favorites-section">
-                    <h2>Favourite</h2>
-                    {isLoadingPlayer || isLoadingGames ? (
-                        <p className="loading-text">Loading...</p>
-                    ) : favoriteGames.length > 0 ? (
-                        <div className="game-grid">
-                            {favoriteGames.map((game) => (
-                                <GameCard 
-                                    key={game.id}
-                                    game={game} 
-                                    isFavorite={true} 
-                                    onToggleFavorite={handleToggleFavorite}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <p style={{ color: 'var(--text-muted)' }}>You haven't marked any games as favorites yet.</p>
-                    )}
-                </section>
+                <Stack spacing={6} mt={4}>
+                    <Box>
+                        <Typography variant="h5" gutterBottom>Favourite</Typography>
+                        {isLoading ? (
+                            <Box textAlign="center" my={4}>
+                                <CircularProgress />
+                            </Box>
+                        ) : favoriteGames.length > 0 ? (
+                            <Grid container spacing={3}>
+                                {favoriteGames.map((game) => (
+                                    <Grid size={{xs: 12, sm: 6, md: 4, lg: 3}} key={game.id}>
+                                        <GameCard
+                                            game={game}
+                                            isFavorite={true}
+                                            onToggleFavorite={handleToggleFavorite}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : (
+                            <Typography color="text.secondary">
+                                You haven't marked any games as favorites yet.
+                            </Typography>
+                        )}
+                    </Box>
 
-                <section className="all-games-section">
-                    <h2>All Games</h2>
-                    {isLoadingGames ? (
-                        <p className="loading-text">Loading...</p>
-                    ) : (
-                        <div className="game-grid">
-                            {availableGames.map((game) => (
-                                <GameCard
-                                    key={game.id}
-                                    game={game}
-                                    isFavorite={player?.favoriteGameIds.includes(game.id)}
-                                    onToggleFavorite={handleToggleFavorite}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </section>
-            </div>
-            {showConfirm && (
-                <ConfirmationDialog
-                    message="Are you sure you want to remove this game from your favorites?"
-                    onConfirm={confirmUnfavorite}
-                    onCancel={cancelUnfavorite}
-                />
-            )}
-        </div>
+                    <Box>
+                        <Typography variant="h5" gutterBottom>All Games</Typography>
+                        {isLoading ? (
+                            <Box textAlign="center" my={4}>
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <Grid container spacing={3}>
+                                {allGames.map((game) => (
+                                    <Grid size={{xs: 12, sm: 6, md: 4, lg: 3}} key={game.id}>
+                                        <GameCard
+                                            game={game}
+                                            isFavorite={player?.favoriteGameIds.includes(game.id)}
+                                            onToggleFavorite={handleToggleFavorite}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                    </Box>
+                </Stack>
+            </Box>
+
+            <ConfirmationDialog
+                open={showConfirm}
+                message="Are you sure you want to remove this game from your favorites?"
+                onConfirm={confirmUnfavorite}
+                onCancel={() => setShowConfirm(false)}
+            />
+        </Box>
     );
-};
+}

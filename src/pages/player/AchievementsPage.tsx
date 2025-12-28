@@ -1,212 +1,161 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import {useState} from 'react';
+import {Box, Typography, TextField, InputAdornment, Grid, Stack, Paper} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import LockIcon from '@mui/icons-material/Lock';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
 import Achievement from '../../components/Achievement.tsx';
-import { useSearch } from '../../hooks/useSearch.ts';
-import { getCurrentPlayer } from '../../services/player.ts';
-import { getGames } from '../../services/game.ts';
-import { getPlayerAchievementsForGame } from '../../services/achievements.ts';
-import type { GameWithAchievements, Achievement as AchievementType } from '../../model/types.ts';
-import './AchievementsPage.scss';
+import {useSearch} from '../../hooks/useSearch.ts';
+import {useQuery} from '@tanstack/react-query';
+import {getGames} from '../../services/game.ts';
+import {getPlayerAchievementsForGame} from '../../services/achievements.ts';
+import {getCurrentPlayer} from '../../services/player.ts';
 
 export default function AchievementsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [expandedGames, setExpandedGames] = useState<Set<string>>(new Set());
 
-    const { data: player } = useQuery({
+    const {data: player} = useQuery({
         queryKey: ['player'],
-        queryFn: getCurrentPlayer
+        queryFn: getCurrentPlayer,
     });
 
-    const { data: games, isLoading: isLoadingGames } = useQuery({
+    const {data: games} = useQuery({
         queryKey: ['games'],
-        queryFn: getGames
+        queryFn: getGames,
     });
 
-    const { data: allAchievements, isLoading: isLoadingAchievements } = useQuery({
+    const {data: allAchievements} = useQuery({
         queryKey: ['allAchievements', player?.playerId],
         queryFn: async () => {
             if (!player || !games) return [];
-
-            const achievementsPromises = games.map(game =>
+            const promises = games.map((game) =>
                 getPlayerAchievementsForGame(player.playerId, game.id)
-                    .then((data: { achievements: any; }) => ({
+                    .then((data) => ({
                         gameId: game.id,
-                        gameName: game.description,
-                        achievements: data.achievements
+                        gameName: game.name,
+                        achievements: data.achievements,
                     }))
                     .catch(() => ({
                         gameId: game.id,
-                        gameName: game.description,
-                        achievements: []
+                        gameName: game.name,
+                        achievements: [],
                     }))
             );
-
-            return Promise.all(achievementsPromises);
+            return Promise.all(promises);
         },
-        enabled: !!player && !!games
+        enabled: !!player && !!games,
     });
 
-    const { searchQuery, searchResults, isLoading: isSearching, handleSearch } = useSearch<GameWithAchievements>({
+    const {searchQuery, searchResults, handleSearch} = useSearch({
         data: allAchievements || [],
         searchField: 'gameName',
     });
 
-    const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
-    };
-
-    const handleMenuClose = () => {
-        setIsMenuOpen(false);
-        document.body.classList.remove('menu-open');
-    };
-
     const toggleGame = (gameId: string) => {
         setExpandedGames((prev) => {
             const newSet = new Set(prev);
-            if (newSet.has(gameId)) {
-                newSet.delete(gameId);
-            } else {
-                newSet.add(gameId);
-            }
+            newSet.has(gameId) ? newSet.delete(gameId) : newSet.add(gameId);
             return newSet;
         });
     };
 
-    const handleAchievementClick = (achievementId: string) => {
-        console.log('Achievement clicked:', achievementId);
-    };
-
-    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0;
-    const isLoading = isLoadingGames || isLoadingAchievements;
+    const handleMenuToggle = () => setIsMenuOpen(!isMenuOpen);
 
     return (
-        <div className="page">
+        <Box>
             <Navbar onMenuToggle={handleMenuToggle} />
-            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-            <div className="search-input-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Search games"
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
-                {(isSearching || isLoading) && <span className="loading-spinner">⏳</span>}
-            </div>
+            <Box className="achievements-page-content">
+                <Box className="achievements-search">
+                    <TextField
+                        fullWidth
+                        placeholder="Search games"
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                </Box>
 
-            <div className="achievements-content">
-                <h1>Achievements</h1>
+                <Typography variant="h4" className="achievements-main-title">
+                    Achievements
+                </Typography>
 
-                {isLoading && (
-                    <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
-                        Loading achievements...
-                    </p>
+                <Stack spacing={4}>
+                    {searchResults.map((game) => {
+                        const isExpanded = expandedGames.has(game.gameId);
+                        const achieved = game.achievements.filter((a: any) => a.unlocked).length;
+                        const total = game.achievements.length;
+
+                        if (total === 0) return null;
+
+                        return (
+                            <Paper key={game.gameId} elevation={3} className="achievements-game-card">
+                                <Box
+                                    className="achievements-game-header"
+                                    onClick={() => toggleGame(game.gameId)}
+                                >
+                                    <Typography variant="h6">{game.gameName}</Typography>
+                                    <Box className="achievements-game-status">
+                                        <Typography variant="body2">
+                                            {achieved}/{total} unlocked
+                                        </Typography>
+                                        {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                    </Box>
+                                </Box>
+
+                                {isExpanded && (
+                                    <Box className="achievements-game-list">
+                                        <Grid container spacing={3}>
+                                            {game.achievements.map((achievement: any) => (
+                                                <Grid key={achievement.id}>
+                                                    <Achievement
+                                                        icon={
+                                                            achievement.unlocked ? (
+                                                                <EmojiEventsIcon className="achievement-icon-unlocked" />
+                                                            ) : (
+                                                                <LockIcon className="achievement-icon-locked" />
+                                                            )
+                                                        }
+                                                        name={achievement.name}
+                                                        description={achievement.description}
+                                                        achieved={achievement.unlocked}
+                                                    />
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </Box>
+                                )}
+                            </Paper>
+                        );
+                    })}
+                </Stack>
+
+                {searchResults.length === 0 && (
+                    <Box className="achievements-empty-state">
+                        <SentimentDissatisfiedIcon className="achievements-empty-icon" />
+                        <Typography variant="h5" className="achievements-empty-title">
+                            No games found
+                        </Typography>
+                        <Typography className="achievements-empty-subtitle">
+                            Try a different search...
+                        </Typography>
+                    </Box>
                 )}
-
-                {!isLoading && showNoResults && (
-                    <div className="no-results">
-                        <div className="sad-face">☹️</div>
-                        <h2>No games found</h2>
-                        <p>Try a different search...</p>
-                    </div>
-                )}
-
-                {!isLoading && (
-                    <div className="games-list">
-                        {searchResults.map((game) => {
-                            const isExpanded = expandedGames.has(game.gameId);
-                            const achievedCount = game.achievements.filter((a) => a.unlocked).length;
-                            const toBeAchievedCount = game.achievements.filter((a) => !a.unlocked).length;
-
-                            if (game.achievements.length === 0) return null;
-
-                            return (
-                                <div key={game.gameId} className="game-card">
-                                    <div className="game-header" onClick={() => toggleGame(game.gameId)}>
-                                        <div className="game-title">
-                                            <span className="game-name">{game.gameName}</span>
-                                        </div>
-                                        <button
-                                            className={`expand-btn ${isExpanded ? 'expanded' : ''}`}
-                                            aria-label={isExpanded ? 'Collapse' : 'Expand'}
-                                        />
-                                    </div>
-
-                                    {isExpanded && (
-                                        <div className="game-achievements">
-                                            {achievedCount > 0 && (
-                                                <div className="achievement-section">
-                                                    <h3>My badges ({achievedCount})</h3>
-                                                    <div className="achievements-grid">
-                                                        {game.achievements
-                                                            .filter((a) => a.unlocked)
-                                                            .map((achievement) => (
-                                                                <Achievement
-                                                                    key={achievement.id}
-                                                                    icon={getAchievementIcon(achievement)}
-                                                                    name={achievement.name}
-                                                                    description={achievement.description}
-                                                                    achieved={achievement.unlocked}
-                                                                    onClick={() => handleAchievementClick(achievement.id)}
-                                                                />
-                                                            ))}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {toBeAchievedCount > 0 && (
-                                                <div className="achievement-section">
-                                                    <h3>To Be Achieved ({toBeAchievedCount})</h3>
-                                                    <div className="achievements-grid">
-                                                        {game.achievements
-                                                            .filter((a) => !a.unlocked)
-                                                            .map((achievement) => (
-                                                                <Achievement
-                                                                    key={achievement.id}
-                                                                    icon={getAchievementIcon(achievement)}
-                                                                    name={achievement.name}
-                                                                    description={achievement.description}
-                                                                    achieved={achievement.unlocked}
-                                                                    onClick={() => handleAchievementClick(achievement.id)}
-                                                                />
-                                                            ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
-};
-
-// Helper function to map achievement criteria to icons
-function getAchievementIcon(achievement: AchievementType): string {
-    try {
-        const criteria = JSON.parse(achievement.criteria);
-        const iconMap: Record<string, string> = {
-            'WINS_COUNT': '🏆',
-            'WIN_STREAK': '🔥',
-            'GAMES_PLAYED': '🎮',
-            'SCORE_THRESHOLD': '⭐',
-            'KILLS_COUNT': '⚔️',
-            'PERFECT_GAME': '💎'
-        };
-        return iconMap[criteria.type] || '🏅';
-    } catch {
-        return '🏅';
-    }
 }

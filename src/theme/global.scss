@@ -1,20 +1,2129 @@
-@use'./variables';
+//@use './variables';
+//
+//* {
+//  margin: 0;
+//  padding: 0;
+//  box-sizing: border-box;
+//}
+//
+//body {
+//  margin: 0;
+//  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+//  background: var(--bg);
+//  color: var(--text);
+//  min-height: 100vh;
+//  font-size: var(--font-base);
+//  line-height: 1.6;
+//}
+//
+//#root {
+//  min-height: 100vh;
+//}
+//
+//#root > div {
+//  padding: 2rem 1.5rem;
+//
+//  @media (min-width: 600px) {
+//    padding: 2.5rem 3rem;
+//  }
+//
+//  @media (min-width: 960px) {
+//    padding: 3rem 4rem;
+//    max-width: 1400px;
+//    margin: 0 auto;
+//  }
+//}
+//
+//#root > div > *:not(:first-child) {
+//  margin-top: 2rem;
+//}
+//
+//.MuiGrid-container {
+//  margin-top: 2rem;
+//}
+//
+//.MuiPaper-root {
+//  border-radius: 1rem;
+//  background-color: var(--card) !important;
+//  border: 1px solid var(--border-subtle);
+//}
+//
+//.MuiPaper-root:first-child {
+//  background-color: var(--frosted-glass) !important;
+//  backdrop-filter: blur(12px);
+//}
+//
+//.MuiInputBase-root {
+//  background-color: var(--input-bg) !important;
+//}
+//
+//.MuiOutlinedInput-notchedOutline {
+//  border-color: var(--border-subtle) !important;
+//}
+//
+//.Mui-focused .MuiOutlinedInput-notchedOutline {
+//  border-color: var(--primary) !important;
+//}
+//
+//.MuiIconButton-root {
+//  color: var(--text) !important;
+//}
+//
+//.MuiAvatar-root {
+//  background-color: var(--avatar-bg);
+//}
+//
+//.MuiTypography-root {
+//  color: var(--text) !important;
+//}
+//
+//.MuiTypography-h5,
+//.MuiTypography-h6 {
+//  color: var(--text) !important;
+//  font-weight: 600;
+//}
+//
+//.MuiTypography-body2 {
+//  color: var(--text-muted) !important;
+//}
+//
+//.MuiTypography-caption,
+//.MuiTypography-root[color="text.secondary"] {
+//  color: var(--text-muted) !important;
+//}
+//
+//::-webkit-scrollbar {
+//  width: 6px;
+//}
+//
+//::-webkit-scrollbar-track {
+//  background: var(--scroll-track);
+//}
+//
+//::-webkit-scrollbar-thumb {
+//  background: var(--scroll-thumb);
+//  border-radius: 3px;
+//}
+//
+//::-webkit-scrollbar-thumb:hover {
+//  background: var(--scroll-thumb-hover);
+//}
+//
+//body.menu-open {
+//  overflow: hidden;
+//}
+//
+///* Navbar & SideMenu */
+//.MuiDrawer-paper {
+//  background-color: var(--card) !important;
+//  color: var(--text) !important;
+//}
+//
+//.MuiListItemText-primary {
+//  color: var(--text) !important;
+//}
+//
+//.MuiListItemButton-root {
+//  color: var(--text) !important;
+//}
+//
+//.MuiListItemButton-root:hover {
+//  background-color: var(--hover-subtle) !important;
+//}
+//
+//.MuiDivider-root {
+//  background-color: var(--divider) !important;
+//}
+//
+//.MuiButton-outlinedError {
+//  color: var(--error) !important;
+//  border-color: var(--error) !important;
+//}
+//
+//.MuiButton-outlinedError:hover {
+//  background-color: var(--error-hover) !important;
+//}
+//
+///* Cards */
+//.MuiCard-root {
+//  background-color: var(--card) !important;
+//  color: var(--text) !important;
+//  border-radius: 1rem;
+//  border: 1px solid var(--border-subtle);
+//}
+//
+//.MuiCardContent-root {
+//  color: var(--text) !important;
+//}
+//
+//.MuiCardActions-root .MuiButton-contained {
+//  background-color: var(--primary) !important;
+//  color: white !important;
+//}
+//
+///* Search & Dashboard */
+//.MuiPaper-elevation2 {
+//  background-color: var(--frosted-glass-dark) !important;
+//  backdrop-filter: blur(12px);
+//  border: 1px solid var(--border-subtle);
+//  border-radius: 1rem;
+//}
+//
+//.MuiPaper-elevation2:hover {
+//  background-color: var(--frosted-glass-dark-hover) !important;
+//  border-color: var(--primary) !important;
+//}
+//
+//.MuiPaper-elevation2 .MuiSvgIcon-root,
+//.MuiPaper-elevation2 .MuiTypography-root {
+//  color: var(--text) !important;
+//  opacity: 0.7;
+//}
+//
+//.MuiTextField-root {
+//  background-color: var(--frosted-glass-dark) !important;
+//  border-radius: 1rem;
+//  border: 1px solid var(--border-subtle);
+//}
+//
+//.MuiInputBase-input {
+//  color: var(--text) !important;
+//}
+//
+//.MuiInputAdornment-root .MuiSvgIcon-root {
+//  color: var(--primary) !important;
+//}
+//
+//.MuiList-root {
+//  margin-top: 2rem;
+//}
+//
+//.MuiListItem-root {
+//  background-color: var(--list-item-bg) !important;
+//  border-radius: 1rem;
+//  margin-bottom: 0.5rem;
+//  border: 1px solid var(--border-subtle);
+//}
+//
+//.MuiListItemButton-root:hover {
+//  background-color: var(--primary-hover) !important;
+//}
+//
+///* Achievements */
+//.achievements-page-container {
+//  max-width: 1200px;
+//  margin: 0 auto;
+//  padding: 32px 24px;
+//}
+//
+//.achievements-header {
+//  display: flex;
+//  align-items: center;
+//  margin-bottom: 40px;
+//}
+//
+//.achievements-back-button {
+//  color: #42a5f5 !important;
+//  margin-right: 16px;
+//}
+//
+//.achievements-back-button:hover {
+//  background-color: rgba(66, 165, 245, 0.1) !important;
+//}
+//
+//.achievements-title {
+//  color: white !important;
+//  font-weight: 600;
+//  font-size: 2.2rem !important;
+//}
+//
+//.achievements-section {
+//  background: rgba(255, 255, 255, 0.06) !important;
+//  backdrop-filter: blur(16px);
+//  border-radius: 20px;
+//  border: 1px solid var(--border-subtle);
+//  padding: 32px;
+//  margin-bottom: 40px;
+//}
+//
+//.achievements-section-title {
+//  color: white !important;
+//  font-weight: 600;
+//  margin-bottom: 24px !important;
+//  font-size: 1.5rem !important;
+//}
+//
+//.achievements-grid {
+//  display: grid;
+//  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+//  gap: 24px;
+//}
+//
+//.achievement-item {
+//  background: rgba(255, 255, 255, 0.08) !important;
+//  border-radius: 16px;
+//  padding: 24px;
+//  text-align: center;
+//  transition: all 0.3s ease;
+//  border: 1px solid rgba(255, 255, 255, 0.1);
+//  position: relative;
+//  overflow: visible;
+//}
+//
+//.achievement-item:hover {
+//  transform: translateY(-6px);
+//  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+//}
+//
+//.achievement-item.unlocked {
+//  background: rgba(99, 102, 241, 0.15) !important;
+//  border-color: var(--primary) !important;
+//}
+//
+//.icon-wrapper {
+//  margin-bottom: 16px;
+//  min-height: 64px;
+//  display: flex;
+//  align-items: center;
+//  justify-content: center;
+//}
+//
+//.achievement-icon-unlocked {
+//  font-size: 56px !important;
+//  color: #FFD700 !important;
+//  filter: drop-shadow(0 0 12px #FFD700);
+//}
+//
+//.achievement-icon-locked {
+//  font-size: 56px !important;
+//  color: #888 !important;
+//  opacity: 0.7;
+//}
+//
+//.achievement-name {
+//  color: white !important;
+//  font-weight: 600;
+//  font-size: 1.15rem !important;
+//  margin-bottom: 8px !important;
+//}
+//
+//.achievement-description {
+//  color: var(--text-muted) !important;
+//  font-size: 0.95rem;
+//  line-height: 1.5;
+//}
+//
+//.tooltip {
+//  position: absolute;
+//  bottom: 100%;
+//  left: 50%;
+//  transform: translateX(-50%) translateY(10px);
+//  opacity: 0;
+//  visibility: hidden;
+//  transition: all 0.3s ease;
+//  pointer-events: none;
+//  margin-bottom: 12px;
+//  z-index: 10;
+//}
+//
+//.tooltip::before {
+//  content: '';
+//  position: absolute;
+//  top: 100%;
+//  left: 50%;
+//  transform: translateX(-50%);
+//  border: 8px solid transparent;
+//  border-top-color: rgba(30, 41, 59, 0.95);
+//}
+//
+//.tooltip-content {
+//  background: rgba(30, 41, 59, 0.95);
+//  backdrop-filter: blur(12px);
+//  border: 1px solid rgba(255, 255, 255, 0.1);
+//  border-radius: 12px;
+//  padding: 12px 16px;
+//  min-width: 180px;
+//  text-align: center;
+//  color: white !important;
+//  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+//}
+//
+//.achievement-item:hover .tooltip {
+//  opacity: 1;
+//  visibility: visible;
+//  transform: translateX(-50%) translateY(0);
+//}
+//
+///* Chatbot */
+//.MuiDialog-paper {
+//  background: var(--dialog-bg) !important;
+//  backdrop-filter: blur(20px);
+//  border: 1px solid var(--primary-subtle);
+//  border-radius: 1.5rem;
+//  max-width: 500px;
+//  width: 100%;
+//}
+//
+//.chat-message-bot {
+//  align-self: flex-start;
+//  background: var(--primary-subtle) !important;
+//  border-radius: 1.5rem 1.5rem 1.5rem 0;
+//  padding: 12px 16px;
+//  max-width: 80%;
+//  margin: 8px 0;
+//  color: #ffffff !important;
+//}
+//
+//.chat-message-user {
+//  align-self: flex-end;
+//  background: var(--primary) !important;
+//  color: white !important;
+//  border-radius: 1.5rem 1.5rem 0 1.5rem;
+//  padding: 12px 16px;
+//  max-width: 80%;
+//  margin: 8px 0;
+//}
+//
+//.chat-message-bot .MuiTypography-root,
+//.chat-message-user .MuiTypography-root {
+//  color: #ffffff !important;
+//}
+//
+//.chat-input-container {
+//  background: var(--chat-input-bg);
+//  border-top: 1px solid var(--border-subtle);
+//  padding: 16px;
+//}
+//
+//.chat-input .MuiInputBase-root {
+//  background: var(--input-bg);
+//  border-radius: 2rem;
+//  padding: 12px 20px;
+//}
+//
+//.chat-input .MuiInputBase-input {
+//  color: #ffffff !important;
+//}
+//
+//.chat-input .MuiInputBase-input::placeholder {
+//  color: var(--text-muted) !important;
+//}
+//
+//.chat-send-button {
+//  background: var(--primary) !important;
+//  color: white !important;
+//}
+//
+//.chat-title {
+//  color: #ffffff !important;
+//  font-weight: 600;
+//}
+//
+///* Friends & Notifications */
+//.notification-card {
+//  background: var(--frosted-glass-dark) !important;
+//  backdrop-filter: blur(10px);
+//  border: 1px solid var(--border-subtle);
+//  border-radius: 1rem;
+//  padding: 16px;
+//  margin-bottom: 12px;
+//  cursor: pointer;
+//  transition: all 0.3s ease;
+//}
+//
+//.notification-card:hover {
+//  background: var(--frosted-glass-dark-hover) !important;
+//  border-color: var(--primary) !important;
+//  transform: translateY(-2px);
+//  box-shadow: 0 8px 20px var(--primary-shadow);
+//}
+//
+//.notification-content {
+//  color: #ffffff !important;
+//}
+//
+//.MuiButton-root:disabled {
+//  background-color: var(--primary) !important;
+//  color: white !important;
+//  opacity: 0.8;
+//}
+//
+//.MuiButton-contained {
+//  background-color: var(--primary) !important;
+//  color: white !important;
+//}
+//
+///* Admin Games Page */
+//.admin-page-title {
+//  color: white !important;
+//  font-weight: 600;
+//}
+//
+//.admin-search-field {
+//  & .MuiInputBase-input {
+//    color: white;
+//    font-size: var(--font-lg);
+//  }
+//
+//  & .MuiInputBase-input::placeholder {
+//    color: var(--text-muted);
+//    opacity: 1;
+//  }
+//
+//  & .MuiOutlinedInput-root {
+//    border-radius: 12px;
+//    background-color: var(--input-bg);
+//
+//    & fieldset {
+//      border-color: var(--border-subtle);
+//    }
+//
+//    &:hover fieldset {
+//      border-color: var(--border-hover);
+//    }
+//
+//    &.Mui-focused fieldset {
+//      border-color: white;
+//      border-width: 2px;
+//    }
+//  }
+//
+//  & .MuiSvgIcon-root {
+//    color: white;
+//  }
+//}
+//
+//.admin-games-list .admin-game-item {
+//  background-color: var(--card-subtle);
+//  backdrop-filter: blur(10px);
+//  border-radius: 12px;
+//  margin-bottom: 16px;
+//  transition: all 0.3s ease;
+//
+//  &:hover {
+//    background-color: var(--card-hover);
+//    transform: translateY(-2px);
+//    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+//  }
+//
+//  .MuiListItemButton-root {
+//    padding: 20px;
+//  }
+//
+//  .MuiListItemText-primary {
+//    color: white !important;
+//    font-weight: 500;
+//  }
+//
+//  .MuiButton-containedSuccess {
+//    background-color: var(--success);
+//
+//    &:hover {
+//      background-color: var(--success-dark);
+//    }
+//  }
+//
+//  .MuiButton-outlinedError {
+//    border-color: var(--error);
+//    color: var(--error);
+//
+//    &:hover {
+//      background-color: var(--error-hover);
+//      border-color: var(--error);
+//    }
+//  }
+//}
+//
+///* Admin Dashboard Page */
+//.admin-dashboard-content {
+//  max-width: 1200px;
+//  margin: 0 auto;
+//}
+//
+//.search-loading-indicator {
+//  position: absolute;
+//  right: 16px;
+//  top: 50%;
+//  transform: translateY(-50%);
+//  color: white;
+//}
+//
+//.no-results-container .no-results-title {
+//  color: white;
+//  font-weight: 500;
+//}
+//
+//.admin-data-table-container {
+//  border-radius: 16px;
+//  overflow: hidden;
+//  background-color: var(--card-subtle);
+//  backdrop-filter: blur(12px);
+//  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+//
+//  .table-header-cell {
+//    background-color: var(--card-subtle-dark);
+//    color: white !important;
+//    font-weight: 600;
+//    font-size: var(--font-lg);
+//    padding: 24px 20px;
+//  }
+//
+//  .table-body-cell {
+//    color: white !important;
+//    padding: 24px 20px;
+//    font-size: 1.05rem;
+//  }
+//
+//  .admin-data-row {
+//    transition: background-color 0.25s ease;
+//
+//    &:hover {
+//      background-color: var(--card-hover) !important;
+//    }
+//
+//    &:last-child td {
+//      border-bottom: none;
+//    }
+//  }
+//}
+//
+//.trigger-ai-button {
+//  background: var(--primary);
+//  padding: 14px 36px !important;
+//  font-size: var(--font-lg);
+//  font-weight: 600;
+//  border-radius: 12px;
+//  text-transform: none;
+//
+//  &:hover {
+//    background: var(--primary);
+//    transform: translateY(-3px);
+//  }
+//}
+//
+///* Profile Page */
+//.profile-page-container {
+//  display: flex;
+//  justify-content: center;
+//  align-items: flex-start;
+//  min-height: 80vh;
+//  padding: 40px 20px;
+//  max-width: 1400px;
+//  margin: 0 auto;
+//}
+//
+//.profile-card {
+//  width: 100%;
+//  max-width: 560px;
+//  background: var(--profile-glass);
+//  backdrop-filter: blur(16px);
+//  border-radius: 24px;
+//  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+//  overflow: hidden;
+//}
+//
+//.profile-card-content {
+//  padding: 48px 40px;
+//}
+//
+//.profile-avatar {
+//  width: 140px !important;
+//  height: 140px !important;
+//  font-size: 4rem !important;
+//  background-color: var(--avatar-bg);
+//  color: white;
+//  border: 4px solid var(--border-subtle);
+//}
+//
+//.profile-username {
+//  color: white !important;
+//  font-weight: 600;
+//  margin-top: 16px !important;
+//}
+//
+//.profile-fields .profile-textfield {
+//  & .MuiInputLabel-root {
+//    color: var(--text-muted);
+//  }
+//
+//  & .MuiInputBase-input {
+//    color: white;
+//    font-size: 1.05rem;
+//  }
+//
+//  & .MuiOutlinedInput-root {
+//    border-radius: 12px;
+//    background-color: var(--input-bg);
+//
+//    &.Mui-disabled {
+//      background-color: var(--input-disabled);
+//
+//      & .MuiOutlinedInput-notchedOutline {
+//        border-color: var(--border-subtle);
+//      }
+//    }
+//
+//    & fieldset {
+//      border-color: var(--border-subtle);
+//    }
+//
+//    &:hover fieldset {
+//      border-color: var(--border-hover);
+//    }
+//
+//    &.Mui-focused fieldset {
+//      border-color: white;
+//      border-width: 2px;
+//    }
+//  }
+//}
+//
+//.profile-edit-button,
+//.profile-update-button {
+//  border-radius: 12px;
+//  text-transform: none;
+//  font-weight: 600;
+//  padding: 10px 28px;
+//}
+//
+//.profile-edit-button {
+//  border-color: var(--accent-blue);
+//  color: var(--accent-blue);
+//
+//  &:hover {
+//    background-color: var(--accent-blue-hover);
+//    border-color: var(--accent-blue);
+//  }
+//}
+//
+//.profile-update-button {
+//  background-color: var(--accent-blue);
+//
+//  &:hover {
+//    background-color: var(--accent-blue-dark);
+//    box-shadow: 0 6px 20px var(--accent-blue-shadow);
+//  }
+//}
+//
+///* Landing Page */
+//
+//.landing-container {
+//  min-height: 100vh;
+//  display: flex;
+//  align-items: center;
+//  justify-content: center;
+//  padding: 24px;
+//  background: var(--bg);
+//}
+//
+//.landing-card {
+//  width: 100%;
+//  max-width: 420px;
+//  background: rgba(255, 255, 255, 0.06) !important;
+//  backdrop-filter: blur(20px);
+//  border-radius: 24px;
+//  border: 1px solid var(--border-subtle);
+//  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+//}
+//
+//.landing-content {
+//  padding: 48px 40px;
+//  text-align: center;
+//
+//  @media (max-width: 480px) {
+//    padding: 40px 32px;
+//  }
+//}
+//
+//.landing-title {
+//  color: white !important;
+//  font-weight: 800 !important;
+//  letter-spacing: 3px;
+//  font-size: 2rem !important;
+//
+//  @media (min-width: 600px) {
+//    font-size: 2.5rem !important;
+//  }
+//}
+//
+//.landing-subtitle {
+//  color: var(--text-muted) !important;
+//  font-weight: 500;
+//  font-size: 1rem !important;
+//}
+//
+//.landing-login-button {
+//  background: var(--primary) !important;
+//  border-radius: 16px !important;
+//  padding: 16px !important;
+//  font-size: 1rem !important;
+//  font-weight: 600;
+//  text-transform: none;
+//  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+//
+//  &:hover {
+//    background: var(--primary-dark) !important;
+//    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+//    transform: translateY(-2px);
+//  }
+//}
+//
+//.landing-register-button {
+//  border: 2px solid var(--primary) !important;
+//  color: var(--primary) !important;
+//  border-radius: 16px !important;
+//  padding: 16px !important;
+//  font-size: 1rem !important;
+//  font-weight: 600;
+//  text-transform: none;
+//
+//  &:hover {
+//    background: rgba(99, 102, 241, 0.1) !important;
+//    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.2);
+//    transform: translateY(-2px);
+//  }
+//}
+//
+//.landing-footer {
+//  color: var(--text-muted) !important;
+//  font-size: 0.9rem !important;
+//  margin-top: 24px !important;
+//}
+//
+///* Notifications Page */
+//
+//.notifications-page-content {
+//  max-width: 900px;
+//  margin: 0 auto;
+//  padding: 24px;
+//}
+//
+//.notifications-search-field {
+//  margin-bottom: 32px !important;
+//
+//  & .MuiInputBase-input {
+//    font-size: 1.1rem;
+//    color: white;
+//  }
+//
+//  & .MuiInputBase-input::placeholder {
+//    color: rgba(255, 255, 255, 0.7);
+//    opacity: 1;
+//  }
+//
+//  & .MuiOutlinedInput-root {
+//    border-radius: 16px;
+//    background-color: rgba(255, 255, 255, 0.08);
+//
+//    & fieldset {
+//      border-color: rgba(255, 255, 255, 0.3);
+//    }
+//
+//    &:hover fieldset {
+//      border-color: rgba(255, 255, 255, 0.5);
+//    }
+//
+//    &.Mui-focused fieldset {
+//      border-color: white;
+//      border-width: 2px;
+//    }
+//  }
+//
+//  & .MuiSvgIcon-root {
+//    color: white;
+//  }
+//}
+//
+//.notifications-title {
+//  color: white !important;
+//  font-weight: 600;
+//  margin-bottom: 24px !important;
+//}
+//
+//.notifications-error-alert {
+//  margin-bottom: 24px !important;
+//  background-color: rgba(211, 47, 47, 0.2);
+//  color: white;
+//}
+//
+//.notifications-list-container {
+//  border-radius: 20px;
+//  background: rgba(255, 255, 255, 0.05);
+//  backdrop-filter: blur(12px);
+//  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+//  overflow: hidden;
+//}
+//
+//.notification-item {
+//  transition: all 0.2s ease;
+//
+//  &:hover {
+//    background-color: rgba(255, 255, 255, 0.08);
+//  }
+//}
+//
+//.notification-button {
+//  padding: 20px !important;
+//}
+//
+//.notification-avatar {
+//  background-color: var(--primary) !important;
+//}
+//
+//.notification-text {
+//  & .MuiListItemText-primary {
+//    color: white !important;
+//    font-size: 1.05rem;
+//  }
+//}
+//
+//.notifications-loading,
+//.notifications-empty {
+//  display: flex;
+//  justify-content: center;
+//  align-items: center;
+//  padding: 60px 20px;
+//  color: var(--text-muted);
+//  text-align: center;
+//}
+//
+//.notifications-empty .MuiTypography-root {
+//  font-size: 1.2rem;
+//}
+//
+///* Game Details Page */
+//.game-details-container {
+//  max-width: 1000px;
+//  margin: 0 auto;
+//  padding: 24px 16px;
+//}
+//
+//.game-details-title {
+//  color: white !important;
+//  font-weight: 600 !important;
+//  margin-bottom: 32px !important;
+//  font-size: 2.2rem !important;
+//
+//  @media (max-width: 600px) {
+//    font-size: 1.8rem !important;
+//  }
+//}
+//
+//.game-details-grid {
+//  display: flex;
+//  align-items: stretch;
+//  gap: 32px;
+//  margin-bottom: 48px !important;
+//
+//  @media (max-width: 960px) {
+//    flex-direction: column;
+//    gap: 24px;
+//  }
+//}
+//
+//.game-details-image {
+//  width: 80% !important;
+//  height: auto !important;
+//  border-radius: 16px;
+//  object-fit: cover;
+//  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+//}
+//
+//.game-details-actions {
+//  height: 100%;
+//  display: flex;
+//  flex-direction: column;
+//  justify-content: center;
+//  gap: 16px;
+//}
+//
+//.game-details-button {
+//  border-radius: 12px !important;
+//  padding: 12px 24px !important;
+//  font-size: 1rem !important;
+//  font-weight: 600;
+//  text-transform: none;
+//  border: 2px solid var(--primary) !important;
+//  color: var(--primary) !important;
+//
+//  &:hover {
+//    background: rgba(99, 102, 241, 0.1) !important;
+//    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+//  }
+//}
+//
+//.game-details-overview {
+//  margin-bottom: 48px;
+//}
+//
+//.game-details-section-title {
+//  color: white !important;
+//  font-weight: 600;
+//  margin-bottom: 12px !important;
+//  font-size: 1.4rem !important;
+//}
+//
+//.game-details-description {
+//  color: var(--text-muted) !important;
+//  font-size: 1.05rem;
+//  line-height: 1.6;
+//}
+//
+//.game-details-play-button-container {
+//  text-align: right;
+//}
+//
+//.game-details-play-button {
+//  background: var(--primary) !important;
+//  border-radius: 16px !important;
+//  padding: 14px 36px !important;
+//  font-size: 1.2rem !important;
+//  font-weight: 600;
+//  text-transform: none;
+//  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+//
+//  &:hover {
+//    background: var(--primary-dark) !important;
+//    transform: translateY(-3px);
+//    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+//  }
+//}
+//
+///* Game Achievements Page */
+//.game-achievements-container {
+//  max-width: 1200px;
+//  margin: 0 auto;
+//  padding: 32px 24px;
+//}
+//
+//.achievements-header {
+//  display: flex;
+//  align-items: center;
+//  gap: 16px;
+//  margin-bottom: 48px;
+//}
+//
+//.achievements-back-button {
+//  color: #42a5f5 !important;
+//  text-transform: none;
+//  font-weight: 600;
+//
+//  &:hover {
+//    background-color: rgba(66, 165, 245, 0.1) !important;
+//  }
+//}
+//
+//.achievements-title {
+//  color: white !important;
+//  font-weight: 600;
+//  font-size: 2.4rem !important;
+//}
+//
+//.achievements-section {
+//  background: rgba(255, 255, 255, 0.06) !important;
+//  backdrop-filter: blur(16px);
+//  border-radius: 24px;
+//  border: 1px solid rgba(255, 255, 255, 0.08);
+//  overflow: hidden;
+//}
+//
+//.achievements-section-content {
+//  padding: 40px;
+//  text-align: center;
+//}
+//
+//.achievements-section-title {
+//  color: white !important;
+//  font-weight: 600;
+//  font-size: 1.6rem !important;
+//  margin-bottom: 32px !important;
+//}
+//
+//.achievement-item {
+//  aspect-ratio: 1 / 1;
+//  border-radius: 20px;
+//  display: flex;
+//  flex-direction: column;
+//  align-items: center;
+//  justify-content: center;
+//  padding: 24px;
+//  transition: all 0.3s ease;
+//  border: 1px solid rgba(255, 255, 255, 0.1);
+//  background: rgba(255, 255, 255, 0.08) !important;
+//}
+//
+//.achievement-item:hover {
+//  transform: translateY(-8px);
+//  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+//}
+//
+//.achievement-item.unlocked.trophy {
+//  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+//}
+//
+//.achievement-item.unlocked.fire {
+//  background: linear-gradient(135deg, #dc2626, #f97316) !important;
+//}
+//
+//.achievement-item.unlocked.diamond {
+//  background: linear-gradient(135deg, #06b6d4, #22d3ee) !important;
+//}
+//
+//.achievement-item.unlocked.sword {
+//  background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+//}
+//
+//.achievement-item.unlocked.star {
+//  background: linear-gradient(135deg, #eab308, #fde047) !important;
+//}
+//
+//.icon-wrapper {
+//  margin-bottom: 16px;
+//}
+//
+//.trophy-icon, .fire-icon, .diamond-icon, .sword-icon, .star-icon {
+//  font-size: 64px !important;
+//  color: white !important;
+//}
+//
+//.achievement-item.locked .icon-wrapper svg {
+//  font-size: 64px !important;
+//  color: rgba(255, 255, 255, 0.4) !important;
+//}
+//
+//.achievement-name {
+//  color: white !important;
+//  font-weight: 600;
+//  font-size: 1.1rem !important;
+//  margin-top: 8px;
+//}
+//
+//.achievement-item.locked .achievement-name {
+//  color: rgba(255, 255, 255, 0.6) !important;
+//}
+//
+//.achievement-description {
+//  color: rgba(255, 255, 255, 0.8) !important;
+//  font-size: 0.9rem;
+//  line-height: 1.4;
+//  margin-top: 8px;
+//}
+//
+//.achievement-item.locked .achievement-description {
+//  color: rgba(255, 255, 255, 0.5) !important;
+//}
 
+@use './variables';
+
+/* Reset & Base */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scrollbar-color: var(--text-muted) rgba(0,0,0,0);
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  font-size: var(--font-base);
+  line-height: 1.6;
 }
 
 #root {
   min-height: 100vh;
+}
+
+#root > div {
+  padding: 2rem 1.5rem;
+
+  @media (min-width: 600px) {
+    padding: 2.5rem 3rem;
+  }
+
+  @media (min-width: 960px) {
+    padding: 3rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+#root > div > *:not(:first-child) {
+  margin-top: 2rem;
+}
+
+.MuiGrid-container {
+  margin-top: 2rem;
+}
+
+/* Base Components */
+.MuiPaper-root {
+  border-radius: 1rem;
+  background-color: var(--card) !important;
+  border: 1px solid var(--border-subtle);
+}
+
+.MuiPaper-root:first-child {
+  background-color: var(--frosted-glass) !important;
+  backdrop-filter: blur(12px);
+}
+
+.MuiInputBase-root {
+  background-color: var(--input-bg) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-subtle) !important;
+}
+
+.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary) !important;
+}
+
+.MuiIconButton-root {
+  color: var(--text) !important;
+}
+
+.MuiAvatar-root {
+  background-color: var(--avatar-bg);
+}
+
+.MuiTypography-root {
+  color: var(--text) !important;
+}
+
+.MuiTypography-h5,
+.MuiTypography-h6 {
+  color: var(--text) !important;
+  font-weight: 600;
+}
+
+.MuiTypography-body2 {
+  color: var(--text-muted) !important;
+}
+
+.MuiTypography-caption,
+.MuiTypography-root[color="text.secondary"] {
+  color: var(--text-muted) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Navbar & SideMenu */
+.MuiDrawer-paper {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+}
+
+.MuiListItemText-primary {
+  color: var(--text) !important;
+}
+
+.MuiListItemButton-root {
+  color: var(--text) !important;
+}
+
+.MuiListItemButton-root:hover {
+  background-color: var(--hover-subtle) !important;
+}
+
+.MuiDivider-root {
+  background-color: var(--divider) !important;
+}
+
+.MuiButton-outlinedError {
+  color: var(--error) !important;
+  border-color: var(--error) !important;
+}
+
+.MuiButton-outlinedError:hover {
+  background-color: var(--error-hover) !important;
+}
+
+/* Cards */
+.MuiCard-root {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+  border-radius: 1rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.MuiCardContent-root {
+  color: var(--text) !important;
+}
+
+.MuiCardActions-root .MuiButton-contained {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+/* Search & Dashboard */
+.MuiPaper-elevation2 {
+  background-color: var(--frosted-glass-dark) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+}
+
+.MuiPaper-elevation2:hover {
+  background-color: var(--frosted-glass-dark-hover) !important;
+  border-color: var(--primary) !important;
+}
+
+.MuiPaper-elevation2 .MuiSvgIcon-root,
+.MuiPaper-elevation2 .MuiTypography-root {
+  color: var(--text) !important;
+  opacity: 0.7;
+}
+
+.MuiTextField-root {
+  background-color: var(--frosted-glass-dark) !important;
+  border-radius: 1rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.MuiInputBase-input {
+  color: var(--text) !important;
+}
+
+.MuiInputAdornment-root .MuiSvgIcon-root {
+  color: var(--primary) !important;
+}
+
+.MuiList-root {
+  margin-top: 2rem;
+}
+
+.MuiListItem-root {
+  background-color: var(--list-item-bg) !important;
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.MuiListItemButton-root:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+/* Achievements */
+.achievements-page-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.achievements-search {
+  margin-bottom: 32px;
+}
+
+.achievements-main-title {
+  color: white !important;
+  font-weight: 600;
+  margin-bottom: 32px !important;
+  font-size: 2.2rem !important;
+}
+
+.achievements-game-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.achievements-game-header {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.achievements-game-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.achievements-game-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted) !important;
+}
+
+.achievements-game-list {
+  padding: 16px 24px 32px;
+}
+
+.achievement-item {
+  width: 120px;
+  height: 120px;
+  border-radius: 1rem;
+  position: relative;
+  overflow: visible;
+  background: rgba(30, 41, 59, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.icon-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+}
+
+.icon-wrapper .MuiSvgIcon-root {
+  font-size: 2.5rem;
+}
+
+.locked .icon-wrapper .MuiSvgIcon-root {
+  color: #ffffff !important;
+}
+
+.unlocked .trophy-icon {
+  color: #ffd700 !important;
+}
+
+.unlocked .diamond-icon {
+  color: #00e5ff !important;
+}
+
+.unlocked .fire-icon {
+  color: #ff6b35 !important;
+}
+
+.unlocked .sword-icon {
+  color: #64c8ff !important;
+}
+
+.unlocked .star-icon {
+  color: #ffff00 !important;
+}
+
+.unlocked .achievement-icon-unlocked {
+  color: #ffff00 !important;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  margin-bottom: 12px;
+  z-index: 10;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: rgba(30, 41, 59, 0.95);
+}
+
+.tooltip-content {
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 12px 16px;
+  min-width: 160px;
+  text-align: center;
+  color: white !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.achievement-item:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.achievement-item:hover .icon-wrapper {
+  transform: scale(1.1);
+}
+
+.achievements-empty-state {
+  text-align: center;
+  margin: 80px 0;
+}
+
+.achievements-empty-icon {
+  font-size: 80px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  margin-bottom: 24px;
+}
+
+.achievements-empty-title {
+  color: white !important;
+  font-weight: 600;
+  margin-bottom: 12px !important;
+}
+
+.achievements-empty-subtitle {
+  color: var(--text-muted) !important;
+}
+
+/* Chatbot */
+.MuiDialog-paper {
+  background: var(--dialog-bg) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--primary-subtle);
+  border-radius: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+}
+
+.chat-message-bot {
+  align-self: flex-start;
+  background: var(--primary-subtle) !important;
+  border-radius: 1.5rem 1.5rem 1.5rem 0;
+  padding: 12px 16px;
+  max-width: 80%;
+  margin: 8px 0;
+  color: #ffffff !important;
+}
+
+.chat-message-user {
+  align-self: flex-end;
+  background: var(--primary) !important;
+  color: white !important;
+  border-radius: 1.5rem 1.5rem 0 1.5rem;
+  padding: 12px 16px;
+  max-width: 80%;
+  margin: 8px 0;
+}
+
+.chat-message-bot .MuiTypography-root,
+.chat-message-user .MuiTypography-root {
+  color: #ffffff !important;
+}
+
+.chat-input-container {
+  background: var(--chat-input-bg);
+  border-top: 1px solid var(--border-subtle);
+  padding: 16px;
+}
+
+.chat-input .MuiInputBase-root {
+  background: var(--input-bg);
+  border-radius: 2rem;
+  padding: 12px 20px;
+}
+
+.chat-input .MuiInputBase-input {
+  color: #ffffff !important;
+}
+
+.chat-input .MuiInputBase-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.chat-send-button {
+  background: var(--primary) !important;
+  color: white !important;
+}
+
+.chat-title {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Friends & Notifications */
+.notification-card {
+  background: var(--frosted-glass-dark) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.notification-card:hover {
+  background: var(--frosted-glass-dark-hover) !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--primary-shadow);
+}
+
+.notification-content {
+  color: #ffffff !important;
+}
+
+.MuiButton-root:disabled {
+  background-color: var(--primary) !important;
+  color: white !important;
+  opacity: 0.8;
+}
+
+.MuiButton-contained {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+/* Admin Games Page */
+.admin-page-title {
+  color: white !important;
+  font-weight: 600;
+}
+
+.admin-search-field {
+  & .MuiInputBase-input {
+    color: white;
+    font-size: var(--font-lg);
+  }
+
+  & .MuiInputBase-input::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+  }
+
+  & .MuiOutlinedInput-root {
+    border-radius: 12px;
+    background-color: var(--input-bg);
+
+    & fieldset {
+      border-color: var(--border-subtle);
+    }
+
+    &:hover fieldset {
+      border-color: var(--border-hover);
+    }
+
+    &.Mui-focused fieldset {
+      border-color: white;
+      border-width: 2px;
+    }
+  }
+
+  & .MuiSvgIcon-root {
+    color: white;
+  }
+}
+
+.admin-games-list .admin-game-item {
+  background-color: var(--card-subtle);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: var(--card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .MuiListItemButton-root {
+    padding: 20px;
+  }
+
+  .MuiListItemText-primary {
+    color: white !important;
+    font-weight: 500;
+  }
+
+  .MuiButton-containedSuccess {
+    background-color: var(--success);
+
+    &:hover {
+      background-color: var(--success-dark);
+    }
+  }
+
+  .MuiButton-outlinedError {
+    border-color: var(--error);
+    color: var(--error);
+
+    &:hover {
+      background-color: var(--error-hover);
+      border-color: var(--error);
+    }
+  }
+}
+
+/* Admin Dashboard Page */
+.admin-dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-loading-indicator {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+}
+
+.no-results-container .no-results-title {
+  color: white;
+  font-weight: 500;
+}
+
+.admin-data-table-container {
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: var(--card-subtle);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  .table-header-cell {
+    background-color: var(--card-subtle-dark);
+    color: white !important;
+    font-weight: 600;
+    font-size: var(--font-lg);
+    padding: 24px 20px;
+  }
+
+  .table-body-cell {
+    color: white !important;
+    padding: 24px 20px;
+    font-size: 1.05rem;
+  }
+
+  .admin-data-row {
+    transition: background-color 0.25s ease;
+
+    &:hover {
+      background-color: var(--card-hover) !important;
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+.trigger-ai-button {
+  background: var(--primary);
+  padding: 14px 36px !important;
+  font-size: var(--font-lg);
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: none;
+
+  &:hover {
+    background: var(--primary);
+    transform: translateY(-3px);
+  }
+}
+
+/* Profile Page */
+.profile-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 80vh;
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--profile-glass);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.profile-card-content {
+  padding: 48px 40px;
+}
+
+.profile-avatar {
+  width: 140px !important;
+  height: 140px !important;
+  font-size: 4rem !important;
+  background-color: var(--avatar-bg);
+  color: white;
+  border: 4px solid var(--border-subtle);
+}
+
+.profile-username {
+  color: white !important;
+  font-weight: 600;
+  margin-top: 16px !important;
+}
+
+.profile-fields .profile-textfield {
+  & .MuiInputLabel-root {
+    color: var(--text-muted);
+  }
+
+  & .MuiInputBase-input {
+    color: white;
+    font-size: 1.05rem;
+  }
+
+  & .MuiOutlinedInput-root {
+    border-radius: 12px;
+    background-color: var(--input-bg);
+
+    &.Mui-disabled {
+      background-color: var(--input-disabled);
+
+      & .MuiOutlinedInput-notchedOutline {
+        border-color: var(--border-subtle);
+      }
+    }
+
+    & fieldset {
+      border-color: var(--border-subtle);
+    }
+
+    &:hover fieldset {
+      border-color: var(--border-hover);
+    }
+
+    &.Mui-focused fieldset {
+      border-color: white;
+      border-width: 2px;
+    }
+  }
+}
+
+.profile-edit-button,
+.profile-update-button {
+  border-radius: 12px;
+  text-transform: none;
+  font-weight: 600;
+  padding: 10px 28px;
+}
+
+.profile-edit-button {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+
+  &:hover {
+    background-color: var(--accent-blue-hover);
+    border-color: var(--accent-blue);
+  }
+}
+
+.profile-update-button {
+  background-color: var(--accent-blue);
+
+  &:hover {
+    background-color: var(--accent-blue-dark);
+    box-shadow: 0 6px 20px var(--accent-blue-shadow);
+  }
+}
+
+/* Landing Page */
+.landing-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+.landing-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.landing-content {
+  padding: 48px 40px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    padding: 40px 32px;
+  }
+}
+
+.landing-title {
+  color: white !important;
+  font-weight: 800 !important;
+  letter-spacing: 3px;
+  font-size: 2rem !important;
+
+  @media (min-width: 600px) {
+    font-size: 2.5rem !important;
+  }
+}
+
+.landing-subtitle {
+  color: var(--text-muted) !important;
+  font-weight: 500;
+  font-size: 1rem !important;
+}
+
+.landing-login-button {
+  background: var(--primary) !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+  font-size: 1rem !important;
+  font-weight: 600;
+  text-transform: none;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+
+  &:hover {
+    background: var(--primary-dark) !important;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+.landing-register-button {
+  border: 2px solid var(--primary) !important;
+  color: var(--primary) !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+  font-size: 1rem !important;
+  font-weight: 600;
+  text-transform: none;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
+  }
+}
+
+.landing-footer {
+  color: var(--text-muted) !important;
+  font-size: 0.9rem !important;
+  margin-top: 24px !important;
+}
+
+/* Notifications Page */
+.notifications-page-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.notifications-search-field {
+  margin-bottom: 32px !important;
+
+  & .MuiInputBase-input {
+    font-size: 1.1rem;
+    color: white;
+  }
+
+  & .MuiInputBase-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+  }
+
+  & .MuiOutlinedInput-root {
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.08);
+
+    & fieldset {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:hover fieldset {
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    &.Mui-focused fieldset {
+      border-color: white;
+      border-width: 2px;
+    }
+  }
+
+  & .MuiSvgIcon-root {
+    color: white;
+  }
+}
+
+.notifications-title {
+  color: white !important;
+  font-weight: 600;
+  margin-bottom: 24px !important;
+}
+
+.notifications-error-alert {
+  margin-bottom: 24px !important;
+  background-color: rgba(211, 47, 47, 0.2);
+  color: white;
+}
+
+.notifications-list-container {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.notification-item {
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.notification-button {
+  padding: 20px !important;
+}
+
+.notification-avatar {
+  background-color: var(--primary) !important;
+}
+
+.notification-text {
+  & .MuiListItemText-primary {
+    color: white !important;
+    font-size: 1.05rem;
+  }
+}
+
+.notifications-loading,
+.notifications-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.notifications-empty .MuiTypography-root {
+  font-size: 1.2rem;
+}
+
+/* Game Details Page */
+.game-details-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.game-details-title {
+  color: white !important;
+  font-weight: 600 !important;
+  margin-bottom: 32px !important;
+  font-size: 2.2rem !important;
+
+  @media (max-width: 600px) {
+    font-size: 1.8rem !important;
+  }
+}
+
+.game-details-grid {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  margin-bottom: 48px !important;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+.game-details-image {
+  width: 70% !important;
+  height: auto !important;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.game-details-actions {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.game-details-button {
+  border-radius: 12px !important;
+  padding: 12px 24px !important;
+  font-size: 1rem !important;
+  font-weight: 600;
+  text-transform: none;
+  border: 2px solid var(--primary) !important;
+  color: var(--primary) !important;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+  }
+}
+
+.game-details-overview {
+  margin-bottom: 48px;
+}
+
+.game-details-section-title {
+  color: white !important;
+  font-weight: 600;
+  margin-bottom: 12px !important;
+  font-size: 1.4rem !important;
+}
+
+.game-details-description {
+  color: var(--text-muted) !important;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.game-details-play-button-container {
+  text-align: right;
+}
+
+.game-details-play-button {
+  background: var(--primary) !important;
+  border-radius: 16px !important;
+  padding: 14px 36px !important;
+  font-size: 1.2rem !important;
+  font-weight: 600;
+  text-transform: none;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+
+  &:hover {
+    background: var(--primary-dark) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+  }
 }

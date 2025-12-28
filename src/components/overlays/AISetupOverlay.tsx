@@ -1,5 +1,6 @@
 import {useState} from 'react';
-import './AISetupOverlay.scss';
+import {Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, TextField, IconButton, Typography, Stack, Box} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import type {DataGenerationConfig} from "../../model/types.ts";
 
 interface AISetupOverlayProps {
@@ -10,75 +11,58 @@ interface AISetupOverlayProps {
 
 const games = ['Tic Tac Toe'];
 
-export default function AISetupOverlay({isOpen, onClose, mutate}: AISetupOverlayProps) {
+export default function AISetupOverlay({ isOpen, onClose, mutate }: AISetupOverlayProps) {
     const [selectedGame, setSelectedGame] = useState('Tic Tac Toe');
     const [numberOfGames, setNumberOfGames] = useState(100);
 
     const handleStart = () => {
         const config: DataGenerationConfig = {
             game: selectedGame,
-            plays: numberOfGames
+            plays: numberOfGames,
         };
-
         mutate(config);
         onClose();
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="overlay ai-setup-overlay">
-            <div className="overlay-backdrop" onClick={onClose}/>
-            <div className="overlay-container">
-                <div className="overlay-header">
-                    <div className="header-content">
-                        <h3 className="title">AI vs AI</h3>
-                        <button className="btn-close" onClick={onClose} aria-label="Close">
-                            ✕
-                        </button>
-                    </div>
-                </div>
+        <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6">AI vs AI</Typography>
+                    <IconButton onClick={onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+            </DialogTitle>
+            <DialogContent dividers>
+                <Stack spacing={3} mt={1}>
+                    <FormControl fullWidth>
+                        <InputLabel>Game</InputLabel>
+                        <Select
+                            value={selectedGame}
+                            label="Game"
+                            onChange={(e) => setSelectedGame(e.target.value as string)}
+                        >
+                            {games.map((game) => (
+                                <MenuItem key={game} value={game}>{game}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                <div className="overlay-content">
-                    <div className="form-content">
-                        {/* Game Selection */}
-                        <div className="form-group">
-                            <label className="form-label">Game</label>
-                            <div className="select-wrapper">
-                                <select
-                                    value={selectedGame}
-                                    onChange={(e) => setSelectedGame(e.target.value)}
-                                    className="form-select"
-                                >
-                                    {games.map((game) => (
-                                        <option key={game} value={game}>
-                                            {game}
-                                        </option>
-                                    ))}
-                                </select>
-                                <span className="select-icon">▼</span>
-                            </div>
-                        </div>
-
-                        {/* Number of Simulations */}
-                        <div className="form-group">
-                            <label className="form-label">Runs</label>
-                            <input
-                                type="number"
-                                value={numberOfGames}
-                                onChange={(e) => setNumberOfGames(Number(e.target.value))}
-                                className="form-input"
-                                min="1"
-                            />
-                        </div>
-
-                        {/* Start Button */}
-                        <button className="btn-start" onClick={handleStart}>
-                            Start
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <TextField
+                        label="Runs"
+                        type="number"
+                        value={numberOfGames}
+                        onChange={(e) => setNumberOfGames(Number(e.target.value))}
+                        fullWidth
+                    />
+                </Stack>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleStart} variant="contained" size="large">
+                    Start
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 }

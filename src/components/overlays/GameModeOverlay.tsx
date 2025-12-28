@@ -1,4 +1,7 @@
-import './GameModeOverlay.scss';
+import {Dialog, DialogTitle, DialogContent, Button, Typography, Box, IconButton, Stack} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import PersonIcon from '@mui/icons-material/Person';
 
 interface GameModeOverlayProps {
     isOpen: boolean;
@@ -7,50 +10,49 @@ interface GameModeOverlayProps {
     onClose: () => void;
 }
 
-export default function GameModeOverlay({ isOpen, showLobby, url, onClose }: GameModeOverlayProps) {
-
+export default function GameModeOverlay({isOpen, showLobby, url, onClose}: GameModeOverlayProps) {
     const handleAgainstAI = () => {
-        console.log('Starting game against AI...');
         window.location.href = `${url}?mode=ai`;
         onClose();
     };
 
     const handleHumanGame = () => {
-        console.log('Starting human game...');
         showLobby();
-        // window.location.href = `${url}?mode=friend`;
         onClose();
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="overlay">
-            <div className="overlay-backdrop" onClick={onClose} />
-            <div className="overlay-container">
-                <div className="overlay-header">
-                    <div className="header-content">
-                        <h3 className="title">Mode</h3>
-                        <button className="btn-close" onClick={onClose} aria-label="Close">
-                            ✕
-                        </button>
-                    </div>
-                </div>
-
-                <div className="overlay-content">
-                    <div className="buttons">
-                        <button className="btn" onClick={handleAgainstAI}>
-                            <span className="btn-icon">🤖</span>
-                            <span className="btn-label">Against AI</span>
-                        </button>
-
-                        <button className="btn" onClick={handleHumanGame}>
-                            <span className="btn-icon">👤</span>
-                            <span className="btn-label">Against another person</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <Dialog open={isOpen} onClose={onClose} maxWidth="xs" fullWidth>
+            <DialogTitle>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6">Mode</Typography>
+                    <IconButton onClick={onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+            </DialogTitle>
+            <DialogContent>
+                <Stack spacing={2} mt={1}>
+                    <Button
+                        variant="contained"
+                        startIcon={<SmartToyIcon />}
+                        onClick={handleAgainstAI}
+                        fullWidth
+                        size="large"
+                    >
+                        Against AI
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        startIcon={<PersonIcon />}
+                        onClick={handleHumanGame}
+                        fullWidth
+                        size="large"
+                    >
+                        Against another person
+                    </Button>
+                </Stack>
+            </DialogContent>
+        </Dialog>
     );
-};
+}

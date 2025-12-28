@@ -1,35 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
-import './ChatbotOverlay.scss';
-import { chatbotApi, type ChatResponse } from '../../services/chatbotApi.ts';
+import React, {useState, useRef, useEffect} from 'react';
+import {Dialog, DialogTitle, DialogContent, Box, Typography, IconButton, TextField, Stack, CircularProgress} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {chatbotApi, type ChatResponse} from '../../services/chatbotApi.ts';
 
 interface Message {
     id: string;
     text: string;
     sender: 'user' | 'bot';
     timestamp: Date;
-    sources?: string[];
-    confidence?: number;
 }
 
-interface ChatbotOverlayProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-export default function ChatbotOverlay({ isOpen, onClose }: ChatbotOverlayProps) {
+export default function ChatbotOverlay({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: 'Hello! I\'m your game rules assistant. Ask me anything about chess or  tic-tac-toe',
+            text: 'Hello! I\'m your game rules assistant. Ask me anything about games or the platform',
             sender: 'bot',
             timestamp: new Date(),
         },
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const chatMessagesRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,7 +34,7 @@ export default function ChatbotOverlay({ isOpen, onClose }: ChatbotOverlayProps)
     }, [messages]);
 
     const handleSendMessage = async () => {
-        if (inputValue.trim() === '') return;
+        if (!inputValue.trim()) return;
 
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -50,33 +44,23 @@ export default function ChatbotOverlay({ isOpen, onClose }: ChatbotOverlayProps)
         };
 
         setMessages((prev) => [...prev, userMessage]);
-        const messageText = inputValue;
+        const text = inputValue;
         setInputValue('');
         setIsTyping(true);
-        setError(null);
 
         try {
-            // Call the chatbot API
-            const response: ChatResponse = await chatbotApi.sendMessage(messageText);
-
+            const response: ChatResponse = await chatbotApi.sendMessage(text);
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 text: response.content,
                 sender: 'bot',
                 timestamp: new Date(),
-                sources: response.sources,
-                confidence: response.confidence,
             };
-
             setMessages((prev) => [...prev, botMessage]);
-        } catch (err) {
-            setError('Failed to get response from chatbot. Please make sure the server is running.');
-            console.error('Error calling chatbot API:', err);
-
-            // Add error message to chat
+        } catch {
             const errorMessage: Message = {
                 id: (Date.now() + 1).toString(),
-                text: ' Sorry, I encountered an error. Please try again by rephrasing or make sure the chatbot server is running.',
+                text: 'Sorry, I encountered an error. Please try again.',
                 sender: 'bot',
                 timestamp: new Date(),
             };
@@ -87,21 +71,15 @@ export default function ChatbotOverlay({ isOpen, onClose }: ChatbotOverlayProps)
     };
 
     const handleReset = async () => {
-        try {
-            await chatbotApi.resetConversation();
-            setMessages([
-                {
-                    id: '1',
-                    text: '👋 Conversation reset! Ask me anything about game rules.',
-                    sender: 'bot',
-                    timestamp: new Date(),
-                },
-            ]);
-            setError(null);
-        } catch (err) {
-            setError('Failed to reset conversation.');
-            console.error('Error resetting conversation:', err);
-        }
+        await chatbotApi.resetConversation();
+        setMessages([
+            {
+                id: '1',
+                text: 'Conversation reset! Ask me anything about game rules or the game platform.',
+                sender: 'bot',
+                timestamp: new Date(),
+            },
+        ]);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -111,111 +89,64 @@ export default function ChatbotOverlay({ isOpen, onClose }: ChatbotOverlayProps)
         }
     };
 
-    // const getConfidenceColor = (confidence?: number): string => {
-    //     if (!confidence) return '';
-    //     if (confidence > 0.6) return 'high-confidence';
-    //     if (confidence > 0.3) return 'medium-confidence';
-    //     return 'low-confidence';
-    // };
-    //
-    // const formatConfidence = (confidence?: number): string => {
-    //     if (!confidence) return '';
-    //     return `${Math.round(confidence * 100)}% confident`;
-    // };
-
-    if (!isOpen) return null;
-
     return (
-        <div className="overlay">
-            <div className="overlay-backdrop" onClick={onClose} />
-            <div className="overlay-container">
-                <div className="overlay-header">
-                    <div className="header-content">
-                        <h3 className="chatbot-title"> Game Rules Assistant</h3>
-                        <div className="header-actions">
-                            <button
-                                className="btn-reset"
-                                onClick={handleReset}
-                                aria-label="Reset conversation"
-                                title="Reset conversation"
-                            >
-                                🔄
-                            </button>
-                            <button
-                                className="btn-close"
-                                onClick={onClose}
-                                aria-label="Close chat"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitle className="chat-title">
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6">Game Rules Assistant</Typography>
+                    <Box>
+                        <IconButton onClick={handleReset}>
+                            <RefreshIcon />
+                        </IconButton>
+                        <IconButton onClick={onClose}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                </Box>
+            </DialogTitle>
 
-                {error && (
-                    <div className="error-banner">
-                         {error}
-                    </div>
-                )}
-
-                <div className="chatbot-messages" ref={chatMessagesRef}>
-                    {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
+            <DialogContent dividers>
+                <Stack spacing={2} className="chat-messages" maxHeight="60vh" overflow="auto">
+                    {messages.map((msg) => (
+                        <Box
+                            key={msg.id}
+                            className={msg.sender === 'user' ? 'chat-message-user' : 'chat-message-bot'}
                         >
-                            <div className="message-bubble">
-                                {message.text}
-
-                                {/*/!* Show confidence and sources for bot messages *!/*/}
-                                {/*{message.sender === 'bot' && message.confidence !== undefined && (*/}
-                                {/*    <div className="message-meta">*/}
-                                {/*        <span className={`confidence-badge ${getConfidenceColor(message.confidence)}`}>*/}
-                                {/*            {formatConfidence(message.confidence)}*/}
-                                {/*        </span>*/}
-                                {/*    </div>*/}
-                                {/*)}*/}
-
-                                {/*{message.sender === 'bot' && message.sources && message.sources.length > 0 && (*/}
-                                {/*    <div className="message-sources">*/}
-                                {/*        <small> {message.sources.join(', ')}</small>*/}
-                                {/*    </div>*/}
-                                {/*)}*/}
-                            </div>
-                        </div>
+                            <Typography variant="body1" whiteSpace="pre-wrap">
+                                {msg.text}
+                            </Typography>
+                        </Box>
                     ))}
                     {isTyping && (
-                        <div className="message bot-message">
-                            <div className="message-bubble typing-indicator">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </div>
+                        <Box alignSelf="flex-start">
+                            <CircularProgress size={24} />
+                        </Box>
                     )}
                     <div ref={messagesEndRef} />
-                </div>
+                </Stack>
+            </DialogContent>
 
-                <div className="chatbot-input-container">
-                    <input
-                        type="text"
+            <Box className="chat-input-container">
+                <Box display="flex" gap={2} alignItems="center">
+                    <TextField
+                        fullWidth
                         placeholder="Ask about game rules..."
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        className="chat-input"
                         disabled={isTyping}
+                        className="chat-input"
+                        variant="outlined"
                     />
-                    <button
-                        className="btn-send"
+                    <IconButton
+                        className="chat-send-button"
                         onClick={handleSendMessage}
-                        disabled={isTyping || inputValue.trim() === ''}
-                        aria-label="Send message"
+                        disabled={isTyping || !inputValue.trim()}
                     >
-
-                    </button>
-                </div>
-            </div>
-        </div>
+                        <SendIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+        </Dialog>
     );
 }

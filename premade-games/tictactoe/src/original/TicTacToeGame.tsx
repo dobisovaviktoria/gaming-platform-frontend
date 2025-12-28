@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { createPythonGame } from '../pythonApi.ts';
+import { createPythonGame } from '../tictactoeApi.ts';
 import { socket } from '../../../../src/services/socket.ts';
 import { type PythonGameState } from '../../../../src/model/types.ts';
 import GameEndOverlay from '../../../../src/components/overlays/GameEndOverlay';

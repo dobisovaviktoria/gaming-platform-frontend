@@ -1,41 +1,29 @@
-import { useState } from 'react';
-import './Achievement.scss';
+import {Box, Paper} from '@mui/material';
+import React from "react";
 
 interface AchievementProps {
-    icon: string;
+    icon: React.ReactNode;
     name: string;
     description?: string;
     achieved: boolean;
-    onClick?: () => void;
 }
 
-export default function Achievement({icon, name, description, achieved, onClick } : AchievementProps)   {
-    const [showTooltip, setShowTooltip] = useState(false);
-
-    const handleClick = () => {
-        setShowTooltip(!showTooltip);
-        if (onClick) {
-            onClick();
-        }
-    };
-    const displayIcon = (icon === '' || icon === null) ? '🏆' : icon;
-
+export default function Achievement({icon, name, description, achieved}: AchievementProps) {
     return (
-        <div
-            className={`achievement ${achieved ? 'achieved' : 'locked'}`}
-            onClick={handleClick}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-        >
-            <span className="achievement-icon">{displayIcon}</span>
-
-            {showTooltip && (
-                <div className="achievement-tooltip">
-                    <h4>{name}</h4>
-                    {description && <p>{description}</p>}
-                    {!achieved && <span className="locked-badge">🔒 Locked</span>}
-                </div>
-            )}
-        </div>
+        <Paper elevation={achieved ? 12 : 4} className={`achievement-item ${achieved ? 'unlocked' : 'locked'}`}>
+            <Box className="icon-wrapper">
+                {icon}
+            </Box>
+            <Box className="tooltip">
+                <Box className="tooltip-content">
+                    <Box fontWeight="bold" color="white">{name}</Box>
+                    {description && (
+                        <Box>
+                            {description}
+                        </Box>
+                    )}
+                </Box>
+            </Box>
+        </Paper>
     );
-};
+}

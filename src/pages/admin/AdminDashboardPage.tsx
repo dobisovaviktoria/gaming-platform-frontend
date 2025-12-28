@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import './AdminDashboardPage.scss';
+import {useState} from 'react';
+import {Box, Typography, TextField, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, CircularProgress} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import Navbar from "../../components/Navbar.tsx";
 import SideMenu from "../../components/overlays/SideMenu.tsx";
-import {useSearch} from "../../hooks/useSearch.ts";
 import AISetupOverlay from "../../components/overlays/AISetupOverlay.tsx";
 import LoadingOverlay from "../../components/overlays/LoadingOverlay.tsx";
+import ResultsOverlay from "../../components/overlays/ResultsOverlay.tsx";
+import {useSearch} from "../../hooks/useSearch.ts";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {postGeneratedData, getGeneratedData, deleteGeneratedData} from "../../services/game.ts";
-import ResultsOverlay from "../../components/overlays/ResultsOverlay.tsx";
 import type {DataGenerationResponse} from "../../model/types.ts";
 
 export default function AdminDashboardPage() {
@@ -15,31 +16,53 @@ export default function AdminDashboardPage() {
     const [isConfigOpen, setIsConfigOpen] = useState(false);
     const [isResultsOpen, setIsResultsOpen] = useState(false);
     const [isRequestLoading, setIsRequestLoading] = useState(false);
+
     const [results, setResults] = useState<DataGenerationResponse>({
         file: "",
         game: "",
         wins: 0,
         draws: 0,
         losses: 0,
-
     });
 
-    const { data: queriedData, isLoading: isLoadingData } = useQuery<DataGenerationResponse[], Error>({
+    const queryClient = useQueryClient();
+
+    const {data: queriedData, isLoading: isLoadingData} = useQuery<DataGenerationResponse[], Error>({
         queryKey: ['generatedData'],
-        queryFn: getGeneratedData
+        queryFn: getGeneratedData,
     });
 
-    const handleTriggerAI = () => {
-        setIsConfigOpen(true);
-    };
+    const {searchQuery, searchResults, handleSearch} = useSearch<DataGenerationResponse>({
+        data: queriedData || [],
+        searchField: 'game',
+    });
+
+    const generateMutate = useMutation({
+        mutationFn: postGeneratedData,
+        onMutate: () => setIsRequestLoading(true),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['generatedData'] });
+            setResults(data);
+            setIsRequestLoading(false);
+            setIsResultsOpen(true);
+        },
+    });
+
+    const deleteMutate = useMutation({
+        mutationFn: deleteGeneratedData,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['generatedData'] });
+        },
+    });
+
+    const handleTriggerAI = () => setIsConfigOpen(true);
 
     const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
+        setIsMenuOpen(prev => {
+            const newState = !prev;
+            document.body.classList.toggle('menu-open', newState);
+            return newState;
+        });
     };
 
     const handleMenuClose = () => {
@@ -52,125 +75,120 @@ export default function AdminDashboardPage() {
         document.body.classList.remove('menu-open');
     };
 
-    const handleSave = () => {
-        console.log('Saving file...');
-        setIsResultsOpen(false);
+    const handleDataClick = (data: DataGenerationResponse) => {
+        setResults(data);
+        setIsResultsOpen(true);
     };
 
-    const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<DataGenerationResponse>({
-        data: queriedData || [],
-        searchField: 'game',
-    });
-
-
-    const queryClient = useQueryClient();
-
-    const generateMutate = useMutation({
-        mutationFn: postGeneratedData,
-        onMutate: () => {
-            setIsRequestLoading(true)
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ['generatedData']});
-            setResults(data)
-            setIsRequestLoading(false)
-            setIsResultsOpen(true);
-        }
-    });
-
-    const deleteMutate = useMutation({
-        mutationFn: deleteGeneratedData,
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['generatedData']});
-            setIsResultsOpen(false);
-        }
-    });
-
-    const handleDataClick = (data: DataGenerationResponse) => {
-        setResults(data)
-        setIsResultsOpen(true)
-    }
-
-    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
+    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0;
 
     return (
-        <div className="page admin-dashboard">
-            <Navbar onMenuToggle={handleMenuToggle}/>
+        <Box>
+            <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
-            <div className="search-input-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Example"
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    autoFocus
-                />
-                {(isLoading || isLoadingData) && <span className="loading-spinner">⏳</span>}
-            </div>
+            <Box p={4} className="admin-dashboard-content">
+                <Box mb={5} position="relative">
+                    <TextField
+                        fullWidth
+                        placeholder="Search games..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        autoFocus
+                        className="admin-search-field"
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                    {(isLoadingData || generateMutate.isPending) && (
+                        <Box className="search-loading-indicator">
+                            <CircularProgress size={28} thickness={4} />
+                        </Box>
+                    )}
+                </Box>
 
-            {error && (
-                <div className="error-message">
-                    <p>{error}</p>
-                </div>
-            )}
+                <Typography variant="h4" gutterBottom className="admin-page-title">
+                    Data
+                </Typography>
 
-            {showNoResults && (
-                <div className="no-results">
-                    <div className="sad-face">☹️</div>
-                    <h2>No results found</h2>
-                    <p>Try again...</p>
-                </div>
-            )}
+                {showNoResults && (
+                    <Box textAlign="center" my={12} className="no-results-container">
+                        <Typography variant="h5" className="no-results-title">
+                            No results found
+                        </Typography>
+                        <Typography color="text.secondary" mt={2}>
+                            Try a different search term.
+                        </Typography>
+                    </Box>
+                )}
 
-            {searchResults.length > 0 && (
-
-                <main className="dashboard-content">
-                    <section className="data-section">
-                        <h2 className="section-title">Data</h2>
-                        <div className="data-table-wrapper">
-                            <table className="data-table">
-                                <thead>
-                                <tr>
-                                    <th>Game</th>
-                                    <th>Wins & Losses</th>
-                                    <th>Draws</th>
-                                </tr>
-                                </thead>
-                                <tbody>
+                {searchResults.length > 0 && (
+                    <TableContainer component={Paper} className="admin-data-table-container">
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell className="table-header-cell">Game</TableCell>
+                                    <TableCell align="center" className="table-header-cell">
+                                        Wins & Losses
+                                    </TableCell>
+                                    <TableCell align="center" className="table-header-cell">
+                                        Draws
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
                                 {searchResults.map((item) => (
-                                    <tr key={Math.random()} className="data-row" onClick={() => handleDataClick(item)}>
-                                        <td className="item-label">{item.game}</td>
-                                        <td className="item-value">{item.wins + item.losses}</td>
-                                        <td className="item-value">{item.draws}</td>
-                                    </tr>
+                                    <TableRow
+                                        key={item.file}
+                                        hover
+                                        onClick={() => handleDataClick(item)}
+                                        className="admin-data-row"
+                                    >
+                                        <TableCell className="table-body-cell">{item.game}</TableCell>
+                                        <TableCell align="center" className="table-body-cell">
+                                            {item.wins + item.losses}
+                                        </TableCell>
+                                        <TableCell align="center" className="table-body-cell">
+                                            {item.draws}
+                                        </TableCell>
+                                    </TableRow>
                                 ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </main>
-            )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
 
-            <footer className="dashboard-footer">
-                <button className="trigger-ai-btn" onClick={handleTriggerAI}>
-                    Trigger AI vs AI
-                </button>
-            </footer>
-            <AISetupOverlay isOpen={isConfigOpen} onClose={handleOverlayClose} mutate={generateMutate.mutate}/>
-            <LoadingOverlay
-                isOpen={isRequestLoading}
-                message="Generating data..."
+                <Box mt={8} textAlign="right">
+                    <Button
+                        variant="contained"
+                        size="large"
+                        onClick={handleTriggerAI}
+                        className="trigger-ai-button"
+                    >
+                        Trigger AI vs AI
+                    </Button>
+                </Box>
+            </Box>
+
+            <AISetupOverlay
+                isOpen={isConfigOpen}
+                onClose={handleOverlayClose}
+                mutate={generateMutate.mutate}
             />
+            <LoadingOverlay isOpen={isRequestLoading} message="Generating data..." />
             <ResultsOverlay
                 isOpen={isResultsOpen}
                 onClose={() => setIsResultsOpen(false)}
                 results={results}
                 onDelete={(file: string) => deleteMutate.mutate(file)}
-                onSave={handleSave}
+                onSave={() => console.log('Saving file...')}
             />
-        </div>
-
+        </Box>
     );
 }

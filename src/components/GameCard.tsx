@@ -1,7 +1,9 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import type { Game } from '../model/types';
-import './GameCard.scss';
+import {Card, CardContent, CardActions, Typography, Button, Box, Avatar} from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import type {Game} from '../model/types';
+import {useNavigate} from 'react-router-dom';
+import React from "react";
 
 interface GameCardProps {
     game: Game;
@@ -9,10 +11,8 @@ interface GameCardProps {
     onToggleFavorite?: (gameId: string, isFavorite: boolean) => void;
 }
 
-export default function GameCard({ game, isFavorite = false, onToggleFavorite } : GameCardProps) {
+export default function GameCard({game, isFavorite = false, onToggleFavorite}: GameCardProps) {
     const navigate = useNavigate();
-
-    console.log(game)
 
     const handlePlayClick = () => {
         navigate(`/game/${game.id}`);
@@ -26,29 +26,37 @@ export default function GameCard({ game, isFavorite = false, onToggleFavorite } 
     };
 
     return (
-        <div className="game-card">
-            <span 
-                className="favorite-star" 
-                onClick={handleFavoriteClick}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            >
-                {isFavorite ? '⭐' : '☆'}
-            </span>
-            <div className="game-image">
-                {/* Placeholder image - replace with actual game image source */}
-                <div className="image-placeholder">
-                    <img className="game-image" src={game.pictureUrl} alt={game.name} />
-                </div>
-            </div>
-            <h3 className="game-name">{game.name}</h3>
-            <p className="game-players">{game.maxPlayers} players</p>
-            <button
-                className="btn-play"
-                onClick={handlePlayClick}
-            >
-                Play
-            </button>
-        </div>
+        <Card>
+            <Box position="relative">
+                <Box position="absolute" top={8} right={8} zIndex={1}>
+                    <Button onClick={handleFavoriteClick} size="small" variant="text">
+                        {isFavorite ? <StarIcon color="warning" /> : <StarBorderIcon />}
+                    </Button>
+                </Box>
+                <Box height={200} bgcolor="action.hover" display="flex" alignItems="center" justifyContent="center">
+                    <Avatar
+                        src={game.pictureUrl}
+                        alt={game.name}
+                        variant="rounded"
+                        sx={{width: '100%', height: '100%'}}
+                    >
+                        <Typography variant="h4">{game.name.charAt(0)}</Typography>
+                    </Avatar>
+                </Box>
+            </Box>
+            <CardContent>
+                <Typography variant="h6" align="center" gutterBottom>
+                    {game.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                    {game.maxPlayers} players
+                </Typography>
+            </CardContent>
+            <CardActions>
+                <Button variant="contained" fullWidth onClick={handlePlayClick}>
+                    Play
+                </Button>
+            </CardActions>
+        </Card>
     );
-};
+}

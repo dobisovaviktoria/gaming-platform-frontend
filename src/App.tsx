@@ -20,6 +20,8 @@ import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminGamesPage from "./pages/admin/AdminGamesPage.tsx";
 import ChatbotOverlay from "./components/overlays/ChatbotOverlay.tsx";
 import {useState} from "react";
+import Fab from '@mui/material/Fab';
+import ChatIcon from '@mui/icons-material/Chat';
 
 const queryClient = new QueryClient();
 
@@ -54,8 +56,21 @@ function AuthenticatedRouting() {
                     <Route path="games" element={<AdminGamesPage/>} />
                 </Route>
             </Routes>
-            <button className="chatbot-fab" onClick={() => setChatOpen(true)}>💬</button>
-            <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)}/>
+            <Fab
+                color="primary"
+                aria-label="open chatbot"
+                onClick={() => setChatOpen(true)}
+                style={{
+                    position: 'fixed',
+                    bottom: '32px',
+                    right: '32px',
+                    zIndex: 1300,
+                }}
+            >
+                <ChatIcon />
+            </Fab>
+
+            <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)} />
         </BrowserRouter>
     );
 }

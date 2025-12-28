@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 
 interface UseSearchOptions<T> {
     data: T[];
@@ -14,38 +14,27 @@ interface UseSearchReturn<T> {
     clearSearch: () => void;
 }
 
-export function useSearch<T extends Record<string, any>>(
-    { data, searchField }: UseSearchOptions<T>
-): UseSearchReturn<T> {
+export function useSearch<T extends object>({data, searchField,}: UseSearchOptions<T>): UseSearchReturn<T> {
     const [searchQuery, setSearchQuery] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [isLoading] = useState(false);
+    const [error] = useState<string | null>(null);
 
-    // Derived each render, no memo
-    const trimmedQuery = searchQuery.trim();
-    let searchResults: T[];
+    const trimmedQuery = searchQuery.trim().toLowerCase();
 
-    if (!trimmedQuery) {
-        searchResults = data;
-    } else {
-        const q = trimmedQuery.toLowerCase();
-        searchResults = data.filter((item) => {
+    const searchResults = !trimmedQuery
+        ? data
+        : data.filter((item) => {
             const value = item[searchField];
             if (value == null) return false;
-            return String(value).toLowerCase().includes(q);
+            return String(value).toLowerCase().includes(trimmedQuery);
         });
-    }
 
-    // Plain functions; identity changes each render, but that’s fine
     const handleSearch = (query: string) => {
         setSearchQuery(query);
-        setError(null);
-        setIsLoading(false);
     };
 
     const clearSearch = () => {
         setSearchQuery('');
-        setError(null);
     };
 
     return {
