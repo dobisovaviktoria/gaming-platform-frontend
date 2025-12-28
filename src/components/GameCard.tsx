@@ -9,17 +9,19 @@ interface GameCardProps {
     onToggleFavorite?: (gameId: string, isFavorite: boolean) => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false, onToggleFavorite }) => {
+export default function GameCard({ game, isFavorite = false, onToggleFavorite } : GameCardProps) {
     const navigate = useNavigate();
 
+    console.log(game)
+
     const handlePlayClick = () => {
-        navigate(`/game/${game.gameId}`);
+        navigate(`/game/${game.id}`);
     };
 
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (onToggleFavorite) {
-            onToggleFavorite(game.gameId, isFavorite);
+            onToggleFavorite(game.id, isFavorite);
         }
     };
 
@@ -36,20 +38,17 @@ const GameCard: React.FC<GameCardProps> = ({ game, isFavorite = false, onToggleF
             <div className="game-image">
                 {/* Placeholder image - replace with actual game image source */}
                 <div className="image-placeholder">
-                    <span className="game-icon">🎮</span>
+                    <img className="game-image" src={game.pictureUrl} alt={game.name} />
                 </div>
             </div>
-            <h3 className="game-name">{game.gameId}</h3>
+            <h3 className="game-name">{game.name}</h3>
             <p className="game-players">{game.maxPlayers} players</p>
             <button
                 className="btn-play"
                 onClick={handlePlayClick}
-                disabled={!game.isAvailable}
             >
                 Play
             </button>
         </div>
     );
 };
-
-export default GameCard;

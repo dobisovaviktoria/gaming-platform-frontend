@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Navbar.scss';
 
@@ -6,7 +5,7 @@ interface NavbarProps {
     onMenuToggle: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onMenuToggle }) => {
+export default function Navbar ({ onMenuToggle } : NavbarProps) {
     const navigate = useNavigate();
     const user = {
         avatarUrl: "/path-to-avatar.jpg",
@@ -32,6 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuToggle }) => {
             </button>
 
             <div className="navbar-right">
+
                 <div className="profile-avatar">
                     <img
                         src={user?.avatarUrl || '/default-avatar.png'}
@@ -49,5 +49,3 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuToggle }) => {
         </header>
     );
 };
-
-export default Navbar;

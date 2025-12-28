@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Achievement.scss';
 
 interface AchievementProps {
@@ -9,13 +9,7 @@ interface AchievementProps {
     onClick?: () => void;
 }
 
-const Achievement: React.FC<AchievementProps> = ({
-                                                     icon,
-                                                     name,
-                                                     description,
-                                                     achieved,
-                                                     onClick
-                                                 }) => {
+export default function Achievement({icon, name, description, achieved, onClick } : AchievementProps)   {
     const [showTooltip, setShowTooltip] = useState(false);
 
     const handleClick = () => {
@@ -45,5 +39,3 @@ const Achievement: React.FC<AchievementProps> = ({
         </div>
     );
 };
-
-export default Achievement;

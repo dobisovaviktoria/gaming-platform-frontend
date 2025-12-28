@@ -1,8 +1,20 @@
 export interface Game {
-    gameId: string;
-    maxPlayers: number;
+    id: string;
+    name: string;
+    url: string;
+    pictureUrl: string;
     description: string;
-    isAvailable: boolean;
+    rules: string;
+    maxPlayers: number;
+}
+
+export interface NewGame {
+    name: string;
+    url: string;
+    pictureUrl: string;
+    description: string;
+    rules: string;
+    maxPlayers: number;
 }
 
 export interface Player {
@@ -44,4 +56,30 @@ export interface GameWithAchievements {
     gameId: string;
     gameName: string;
     achievements: Achievement[];
+}
+
+export interface PythonGameState {
+  gameId: string;
+  boardCells: string[];
+  currentTurn: 'X' | 'O';
+  winner: 'X' | 'O' | null;
+  isDraw: boolean;
+  status: 'in_progress' | 'win' | 'draw' | 'waiting_for_opponent';
+  player_x_id: string;
+  player_o_id: string | null;
+  currentPlayerWinProbability: number | null;
+
+}
+
+export interface DataGenerationConfig {
+    game: string;
+    plays: number;
+}
+
+export interface DataGenerationResponse {
+    file: string;
+    game: string;
+    wins: number;
+    draws: number;
+    losses: number;
 }

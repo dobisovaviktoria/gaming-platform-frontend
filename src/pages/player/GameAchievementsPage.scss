@@ -1,0 +1,25 @@
+@use "../PageGeneral";
+
+.page {
+
+  .achievements-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    .achievement-section {
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+      }
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 1.25rem;
+      }
+    }
+  }
+}

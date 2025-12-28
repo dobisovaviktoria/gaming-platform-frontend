@@ -1,12 +1,14 @@
-// components/ChatbotOverlay.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatbotOverlay.scss';
+import { chatbotApi, type ChatResponse } from '../../services/chatbotApi.ts';
 
 interface Message {
     id: string;
     text: string;
     sender: 'user' | 'bot';
     timestamp: Date;
+    sources?: string[];
+    confidence?: number;
 }
 
 interface ChatbotOverlayProps {
@@ -14,17 +16,18 @@ interface ChatbotOverlayProps {
     onClose: () => void;
 }
 
-const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
+export default function ChatbotOverlay({ isOpen, onClose }: ChatbotOverlayProps) {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: 'Hello! How can I help you today?',
+            text: 'Hello! I\'m your game rules assistant. Ask me anything about chess or  tic-tac-toe',
             sender: 'bot',
             timestamp: new Date(),
         },
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const chatMessagesRef = useRef<HTMLDivElement>(null);
 
@@ -47,28 +50,58 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
         };
 
         setMessages((prev) => [...prev, userMessage]);
+        const messageText = inputValue;
         setInputValue('');
         setIsTyping(true);
+        setError(null);
 
-        // Simulate API call with delay
-        setTimeout(() => {
-            // TODO: Replace with actual API call
-            // const response = await fetch('/api/chatbot', {
-            //   method: 'POST',
-            //   body: JSON.stringify({ message: inputValue })
-            // });
-            // const data = await response.json();
+        try {
+            // Call the chatbot API
+            const response: ChatResponse = await chatbotApi.sendMessage(messageText);
 
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
-                text: 'This is a default response. I will be connected to an API soon!',
+                text: response.content,
                 sender: 'bot',
                 timestamp: new Date(),
+                sources: response.sources,
+                confidence: response.confidence,
             };
 
             setMessages((prev) => [...prev, botMessage]);
+        } catch (err) {
+            setError('Failed to get response from chatbot. Please make sure the server is running.');
+            console.error('Error calling chatbot API:', err);
+
+            // Add error message to chat
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                text: ' Sorry, I encountered an error. Please try again by rephrasing or make sure the chatbot server is running.',
+                sender: 'bot',
+                timestamp: new Date(),
+            };
+            setMessages((prev) => [...prev, errorMessage]);
+        } finally {
             setIsTyping(false);
-        }, 1000);
+        }
+    };
+
+    const handleReset = async () => {
+        try {
+            await chatbotApi.resetConversation();
+            setMessages([
+                {
+                    id: '1',
+                    text: '👋 Conversation reset! Ask me anything about game rules.',
+                    sender: 'bot',
+                    timestamp: new Date(),
+                },
+            ]);
+            setError(null);
+        } catch (err) {
+            setError('Failed to reset conversation.');
+            console.error('Error resetting conversation:', err);
+        }
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -78,20 +111,52 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
         }
     };
 
+    // const getConfidenceColor = (confidence?: number): string => {
+    //     if (!confidence) return '';
+    //     if (confidence > 0.6) return 'high-confidence';
+    //     if (confidence > 0.3) return 'medium-confidence';
+    //     return 'low-confidence';
+    // };
+    //
+    // const formatConfidence = (confidence?: number): string => {
+    //     if (!confidence) return '';
+    //     return `${Math.round(confidence * 100)}% confident`;
+    // };
+
     if (!isOpen) return null;
 
     return (
-        <div className="chatbot-overlay">
-            <div className="chatbot-backdrop" onClick={onClose} />
-            <div className="chatbot-container">
-                <div className="chatbot-header">
+        <div className="overlay">
+            <div className="overlay-backdrop" onClick={onClose} />
+            <div className="overlay-container">
+                <div className="overlay-header">
                     <div className="header-content">
-                        <h3 className="chatbot-title">😊 Your AI Companion</h3>
-                        <button className="btn-close" onClick={onClose} aria-label="Close chat">
-                            ✕
-                        </button>
+                        <h3 className="chatbot-title"> Game Rules Assistant</h3>
+                        <div className="header-actions">
+                            <button
+                                className="btn-reset"
+                                onClick={handleReset}
+                                aria-label="Reset conversation"
+                                title="Reset conversation"
+                            >
+                                🔄
+                            </button>
+                            <button
+                                className="btn-close"
+                                onClick={onClose}
+                                aria-label="Close chat"
+                            >
+                                ✕
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {error && (
+                    <div className="error-banner">
+                         {error}
+                    </div>
+                )}
 
                 <div className="chatbot-messages" ref={chatMessagesRef}>
                     {messages.map((message) => (
@@ -101,6 +166,21 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
                         >
                             <div className="message-bubble">
                                 {message.text}
+
+                                {/*/!* Show confidence and sources for bot messages *!/*/}
+                                {/*{message.sender === 'bot' && message.confidence !== undefined && (*/}
+                                {/*    <div className="message-meta">*/}
+                                {/*        <span className={`confidence-badge ${getConfidenceColor(message.confidence)}`}>*/}
+                                {/*            {formatConfidence(message.confidence)}*/}
+                                {/*        </span>*/}
+                                {/*    </div>*/}
+                                {/*)}*/}
+
+                                {/*{message.sender === 'bot' && message.sources && message.sources.length > 0 && (*/}
+                                {/*    <div className="message-sources">*/}
+                                {/*        <small> {message.sources.join(', ')}</small>*/}
+                                {/*    </div>*/}
+                                {/*)}*/}
                             </div>
                         </div>
                     ))}
@@ -117,28 +197,25 @@ const ChatbotOverlay: React.FC<ChatbotOverlayProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="chatbot-input-container">
-                    <button className="btn-attachment" aria-label="Attach file">
-                        📎
-                    </button>
                     <input
                         type="text"
-                        placeholder="Input field"
+                        placeholder="Ask about game rules..."
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
                         className="chat-input"
+                        disabled={isTyping}
                     />
                     <button
                         className="btn-send"
                         onClick={handleSendMessage}
+                        disabled={isTyping || inputValue.trim() === ''}
                         aria-label="Send message"
                     >
-                        ✈️
+
                     </button>
                 </div>
             </div>
         </div>
     );
-};
-
-export default ChatbotOverlay;
+}

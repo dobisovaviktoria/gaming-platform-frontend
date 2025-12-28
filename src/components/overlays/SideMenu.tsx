@@ -1,4 +1,3 @@
-import React from 'react';
 import './SideMenu.scss';
 import { Link } from "react-router";
 import {useKeycloak} from "../../contexts/AuthContext.tsx";
@@ -8,8 +7,8 @@ interface SideMenuProps {
     onClose: () => void;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
-    const { logout } = useKeycloak();
+export default function SideMenu({ isOpen, onClose } : SideMenuProps) {
+    const { logout, user: { realm_access: { roles } } } = useKeycloak();
 
     const menuItems = [
         { label: 'Dashboard', path: '/' },
@@ -17,6 +16,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         { label: 'Add Your Game', path: '/add-game' },
         { label: 'Achievements', path: '/achievements' },
         { label: 'Profile', path: '/profile' },
+    ];
+    const adminMenuItems = [
+        { label: 'Admin Dashboard', path: '/admin/' },
+        { label: 'Waiting Games', path: '/admin/games' },
     ];
 
     const handleLogout = () => {
@@ -45,7 +48,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
                     <ul>
                         {menuItems.map((item, index) => (
                             <li key={index}>
-                                <Link to={item.path} className="link-btn" key={item.label}>
+                                <Link to={item.path} className="link-btn" key={item.label} onClick={onClose}>
+                                    {item.label}
+                                </Link>
+                            </li>
+                        ))}
+                        {roles.includes('admin') && adminMenuItems.map((item, index) => (
+                            <li key={index}>
+                                <Link to={item.path} className="link-btn" key={item.label} onClick={onClose}>
                                     {item.label}
                                 </Link>
                             </li>
@@ -60,5 +70,3 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         </>
     );
 };
-
-export default SideMenu;
