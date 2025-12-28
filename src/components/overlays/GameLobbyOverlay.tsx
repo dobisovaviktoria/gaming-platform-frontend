@@ -152,6 +152,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
                         clearInterval(pollingInterval);
                         navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
                     } else if (response.status === 'WAITING') {
+                        // Continue waiting - polling will check again
                     }
                 } catch (error) {
                     console.error('Failed to check lobby status:', error);
