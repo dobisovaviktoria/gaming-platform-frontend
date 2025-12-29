@@ -117,6 +117,7 @@ export default function GameDetailsPage({isEnd = false}: {isEnd?: boolean}) {
                 isOpen={showLobbyOverlay}
                 gameName={game?.name || ''}
                 gameId={game?.id || ''}
+                url={game?.url || ''}
                 maxPlayers={game?.maxPlayers || 2}
                 onClose={() => setShowLobbyOverlay(false)}
             />

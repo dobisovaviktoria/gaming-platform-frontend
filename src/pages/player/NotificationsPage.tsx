@@ -25,7 +25,7 @@ export default function NotificationsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const navigate = useNavigate();
+    useNavigate();
     const namesCache = useRef<{ [key: string]: string }>({});
     const [playerId, setPlayerId] = useState<string | null>(null);
 
@@ -111,17 +111,19 @@ export default function NotificationsPage() {
         if (!selectedInvitation || !playerId) return;
 
         const invitationId = selectedInvitation.invitationId;
+        const url = selectedInvitation.url;
         setSelectedInvitation(null);
 
         try {
             const response = await respondToInvitation(invitationId, playerId, accept);
+            console.log(response);
 
             setNotifications((prev) => prev.filter((n) => n.id !== invitationId));
 
             if (accept && response && typeof response === 'object' && 'sessionId' in response) {
-                navigate(`/game/${response.gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                window.location.href = `${url}?mode=friend&sessionId=${response.sessionId}`;
             } else if (accept) {
-                navigate(`/game/${selectedInvitation.gameId}/play?mode=friend`);
+                window.location.href = `${url}?mode=friend`;
             }
         } catch (err: any) {
             console.error('Failed to respond to invitation:', err);
