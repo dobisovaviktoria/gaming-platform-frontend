@@ -9,6 +9,7 @@ import {getCurrentPlayer} from '../../../../src/services/player.ts';
 
 const AI_PLAYER_ID = "00000000-0000-0000-0000-000000000001";
 type GameMode = 'ai' | 'friend';
+const TICTACTOE_ID = '123e4567-e89b-12d3-a456-426614174000';
 
 function TicTacToeGame() {
     const navigate = useNavigate();
@@ -183,6 +184,11 @@ function TicTacToeGame() {
             <button onClick={handleBackClick}>Go Back</button>
         </div>
     );
+
+    if (gameId !== TICTACTOE_ID) {
+        navigate(`/`);
+        alert("invalid url")
+    }
 
     return (
         <div className="tic-tac-toe-game">
