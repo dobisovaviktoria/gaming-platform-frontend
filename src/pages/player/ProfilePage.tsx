@@ -1,38 +1,28 @@
-import { useState } from 'react';
+import {useState} from 'react';
+import {Box, Typography, Avatar, Stack, Paper, CircularProgress, Alert} from '@mui/material';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
-import './ProfilePage.scss';
-
-interface ProfileData {
-    email: string;
-    phone: string;
-    location: string;
-    password: string;
-}
+import {useQuery} from '@tanstack/react-query';
+import {getCurrentPlayer} from '../../services/player.ts';
 
 export default function ProfilePage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const user = {
-        avatarUrl: "example.png",
-        username: "Brittany Dinan",
-    };
 
-    const [profileData, setProfileData] = useState<ProfileData>({
-        email: 'email@email.com',
-        phone: '(+123) 000 111 222 333',
-        location: 'New York, USA',
-        password: '************',
+    const {
+        data: player,
+        isLoading,
+        error,
+    } = useQuery({
+        queryKey: ['currentPlayer'],
+        queryFn: getCurrentPlayer,
     });
 
-    const [isEditing, setIsEditing] = useState(false);
-
     const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
+        setIsMenuOpen((prev) => {
+            const newState = !prev;
+            document.body.classList.toggle('menu-open', newState);
+            return newState;
+        });
     };
 
     const handleMenuClose = () => {
@@ -40,96 +30,51 @@ export default function ProfilePage() {
         document.body.classList.remove('menu-open');
     };
 
-    const handleInputChange = (field: keyof ProfileData, value: string) => {
-        setProfileData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
+    if (isLoading) {
+        return (
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="80vh"
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
 
-    const handleUpdate = () => {
-        console.log('Updating profile:', profileData);
-        // Add API call to update profile
-        setIsEditing(false);
-    };
+    if (error || !player) {
+        return (
+            <Box p={4} textAlign="center">
+                <Alert severity="error">
+                    Failed to load profile. Please try again later.
+                </Alert>
+            </Box>
+        );
+    }
+
+    const avatarLetter = player.username.charAt(0).toUpperCase();
 
     return (
-        <div className="page">
+        <Box>
             <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
-            <div className="profile-content">
-                <div className="profile-card">
-                    <div className="profile-avatar-section">
-                        <div className="profile-avatar">
-                            <img
-                                src={user?.avatarUrl || '/default-avatar.png'}
-                                alt={user?.username || 'User'}
-                            />
-                        </div>
-                        <h2 className="profile-name">{user?.username || 'Brittany Dinan'}</h2>
-                    </div>
+            <Box className="profile-page-container">
+                <Paper elevation={6} className="profile-card">
+                    <Box className="profile-card-content">
+                        <Stack spacing={4} alignItems="center">
+                            <Avatar className="profile-avatar">
+                                {avatarLetter}
+                            </Avatar>
 
-                    <div className="profile-fields">
-                        <div className="profile-field">
-                            <label>Email</label>
-                            <input
-                                type="email"
-                                value={profileData.email}
-                                onChange={(e) => handleInputChange('email', e.target.value)}
-                                disabled={!isEditing}
-                            />
-                        </div>
-
-                        <div className="profile-field">
-                            <label>Phone</label>
-                            <input
-                                type="tel"
-                                value={profileData.phone}
-                                onChange={(e) => handleInputChange('phone', e.target.value)}
-                                disabled={!isEditing}
-                            />
-                        </div>
-
-                        <div className="profile-field">
-                            <label>Location</label>
-                            <input
-                                type="text"
-                                value={profileData.location}
-                                onChange={(e) => handleInputChange('location', e.target.value)}
-                                disabled={!isEditing}
-                            />
-                        </div>
-
-                        <div className="profile-field">
-                            <label>Change password</label>
-                            <input
-                                type="password"
-                                value={profileData.password}
-                                onChange={(e) => handleInputChange('password', e.target.value)}
-                                disabled={!isEditing}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="profile-actions">
-                        {!isEditing ? (
-                            <button className="btn-edit" onClick={() => setIsEditing(true)}>
-                                Edit
-                            </button>
-                        ) : (
-                            <>
-                                <button className="btn-cancel" onClick={() => setIsEditing(false)}>
-                                    Cancel
-                                </button>
-                                <button className="btn-update" onClick={handleUpdate}>
-                                    Update
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
+                            <Typography variant="h5" className="profile-username">
+                                {player.username}
+                            </Typography>
+                        </Stack>
+                    </Box>
+                </Paper>
+            </Box>
+        </Box>
     );
-};
+}

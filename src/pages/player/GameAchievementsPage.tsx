@@ -1,20 +1,28 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import {useNavigate, useParams} from 'react-router-dom';
+import {useQuery} from '@tanstack/react-query';
+import {Box, Typography, Button, Stack, Grid, Paper} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import StarIcon from '@mui/icons-material/Star';
+import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts';
+import DiamondIcon from '@mui/icons-material/Diamond';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import Achievement from '../../components/Achievement.tsx';
-import { getCurrentPlayer } from '../../services/player.ts';
-import { getPlayerAchievementsForGame } from '../../services/achievements.ts';
-import './GameAchievementsPage.scss';
+import {getCurrentPlayer} from '../../services/player.ts';
+import {getPlayerAchievementsForGame} from '../../services/achievements.ts';
 
 export default function GameAchievementsPage() {
     const navigate = useNavigate();
-    const { gameId } = useParams<{ gameId: string }>();
+    const {gameId} = useParams<{gameId: string}>();
 
-    const { data: player } = useQuery({
+    const {data: player} = useQuery({
         queryKey: ['player'],
         queryFn: getCurrentPlayer
     });
 
-    const { data: achievementsData, isLoading } = useQuery({
+    const {data: achievementsData, isLoading} = useQuery({
         queryKey: ['gameAchievements', player?.playerId, gameId],
         queryFn: () => {
             if (!player || !gameId) throw new Error('Missing player or gameId');
@@ -27,100 +35,97 @@ export default function GameAchievementsPage() {
         navigate(`/game/${gameId}/`);
     };
 
-    const handleAchievementClick = (achievementId: string) => {
-        console.log('Achievement clicked:', achievementId);
+    const achievements = achievementsData?.achievements || [];
+    const achievedBadges = achievements.filter((a: any) => a.unlocked);
+    const lockedBadges = achievements.filter((a: any) => !a.unlocked);
+
+    const getAchievementIcon = (achievement: any) => {
+        try {
+            const criteria = JSON.parse(achievement.criteria);
+            const iconMap: Record<string, React.ReactNode> = {
+                'WINS_COUNT': <MilitaryTechIcon className="trophy-icon" />,
+                'WIN_STREAK': <WhatshotIcon className="fire-icon" />,
+                'GAMES_PLAYED': <SportsEsportsIcon />,
+                'SCORE_THRESHOLD': <StarIcon className="star-icon" />,
+                'KILLS_COUNT': <SportsMartialArtsIcon className="sword-icon" />,
+                'PERFECT_GAME': <DiamondIcon className="diamond-icon" />,
+            };
+            return iconMap[criteria.type] || <EmojiEventsIcon />;
+        } catch {
+            return <EmojiEventsIcon />;
+        }
     };
 
-    if (isLoading) {
-        return (
-            <div className="game-achievements-page">
-                <div className="page-header">
-                    <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
-                        ←
-                    </button>
-                    <h1>Achievements</h1>
-                </div>
-                <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
-                    Loading achievements...
-                </p>
-            </div>
-        );
-    }
-
-    const achievements = achievementsData?.achievements || [];
-    const achievedBadges = achievements.filter(a => a.unlocked);
-    const lockedBadges = achievements.filter(a => !a.unlocked);
-
     return (
-        <div className="page">
-            <div className="page-header">
-                <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
-                    ←
-                </button>
-                <h1>Achievements</h1>
-            </div>
+        <Box className="game-achievements-container">
+            <Box className="achievements-header">
+                <Button
+                    onClick={handleBackClick}
+                    startIcon={<ArrowBackIcon />}
+                    className="achievements-back-button"
+                >
+                    Back
+                </Button>
+                <Typography variant="h4" className="achievements-title">
+                    Achievements
+                </Typography>
+            </Box>
 
-            {achievements.length === 0 ? (
-                <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
+            {isLoading ? (
+                <Typography textAlign="center" className="achievements-loading">
+                    Loading achievements...
+                </Typography>
+            ) : achievements.length === 0 ? (
+                <Typography textAlign="center" color="text.secondary">
                     No achievements available for this game yet.
-                </p>
+                </Typography>
             ) : (
-                <div className="achievements-sections">
+                <Stack spacing={6}>
                     {achievedBadges.length > 0 && (
-                        <div className="achievement-section">
-                            <h2>My badges ({achievedBadges.length}/{achievements.length})</h2>
-                            <div className="achievements-grid">
-                                {achievedBadges.map((achievement) => (
-                                    <Achievement
-                                        key={achievement.id}
-                                        icon={getAchievementIcon(achievement)}
-                                        name={achievement.name}
-                                        description={achievement.description}
-                                        achieved={achievement.unlocked}
-                                        onClick={() => handleAchievementClick(achievement.id)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        <Paper elevation={4} className="achievements-section unlocked">
+                            <Box className="achievements-section-content">
+                                <Typography variant="h6" className="achievements-section-title">
+                                    My badges ({achievedBadges.length}/{achievements.length})
+                                </Typography>
+                                <Grid container spacing={3} justifyContent="center">
+                                    {achievedBadges.map((achievement: any) => (
+                                        <Grid key={achievement.id}>
+                                            <Achievement
+                                                icon={getAchievementIcon(achievement)}
+                                                name={achievement.name}
+                                                description={achievement.description}
+                                                achieved={true}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        </Paper>
                     )}
 
                     {lockedBadges.length > 0 && (
-                        <div className="achievement-section">
-                            <h2>To Be Achieved</h2>
-                            <div className="achievements-grid">
-                                {lockedBadges.map((achievement) => (
-                                    <Achievement
-                                        key={achievement.id}
-                                        icon={getAchievementIcon(achievement)}
-                                        name={achievement.name}
-                                        description={achievement.description}
-                                        achieved={achievement.unlocked}
-                                        onClick={() => handleAchievementClick(achievement.id)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        <Paper elevation={4} className="achievements-section locked">
+                            <Box className="achievements-section-content">
+                                <Typography variant="h6" className="achievements-section-title">
+                                    To Be Achieved
+                                </Typography>
+                                <Grid container spacing={3} justifyContent="center">
+                                    {lockedBadges.map((achievement: any) => (
+                                        <Grid key={achievement.id}>
+                                            <Achievement
+                                                icon={getAchievementIcon(achievement)}
+                                                name={achievement.name}
+                                                description={achievement.description}
+                                                achieved={false}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        </Paper>
                     )}
-                </div>
+                </Stack>
             )}
-        </div>
+        </Box>
     );
-};
-
-// Helper function to map achievement criteria to icons
-function getAchievementIcon(achievement: any): string {
-    try {
-        const criteria = JSON.parse(achievement.criteria);
-        const iconMap: Record<string, string> = {
-            'WINS_COUNT': '🏆',
-            'WIN_STREAK': '🔥',
-            'GAMES_PLAYED': '🎮',
-            'SCORE_THRESHOLD': '⭐',
-            'KILLS_COUNT': '⚔️',
-            'PERFECT_GAME': '💎'
-        };
-        return iconMap[criteria.type] || '🏅';
-    } catch {
-        return '🏅';
-    }
 }

@@ -1,156 +1,133 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getGame } from '../../services/game.ts';
-import type { Game } from '../../model/types.ts';
-import './GameDetailsPage.scss';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import {useState} from 'react';
+import {useParams, useNavigate} from 'react-router-dom';
+import {useQuery} from '@tanstack/react-query';
+import {Box, Typography, Button, Stack, Avatar, Grid} from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import {useState} from "react";
-import GameModeOverlay from "../../components/overlays/GameModeOverlay.tsx";
+import BarChartIcon from '@mui/icons-material/BarChart';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import Navbar from "../../components/Navbar.tsx";
 import SideMenu from "../../components/overlays/SideMenu.tsx";
+import GameModeOverlay from "../../components/overlays/GameModeOverlay.tsx";
 import GameLobbyOverlay from "../../components/overlays/GameLobbyOverlay.tsx";
 import GameEndOverlay from "../../components/overlays/GameEndOverlay.tsx";
+import {getGame} from '../../services/game.ts';
 
-const gameResult = "win";
-interface GameDetailsPageProps {
-    isEnd?: boolean;
-}
-
-export default function GameDetails({ isEnd = false }: GameDetailsPageProps) {
+export default function GameDetailsPage({isEnd = false}: {isEnd?: boolean}) {
     const [showModeOverlay, setShowModeOverlay] = useState(false);
-    const [showLobbyOverlay, setShowLobbyOverlay] = useState<boolean>(false);
+    const [showLobbyOverlay, setShowLobbyOverlay] = useState(false);
     const [showEndOverlay, setShowEndOverlay] = useState(isEnd);
-    const { gameId } = useParams<{ gameId: string }>();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const {gameId} = useParams<{gameId: string}>();
     const navigate = useNavigate();
 
-    const { data: game, isLoading } = useQuery<Game, Error>({
-        queryKey: [gameId || ''],
-        queryFn: () => getGame(gameId || '')
+    const {data: game} = useQuery({
+        queryKey: ['game', gameId],
+        queryFn: () => getGame(gameId!),
     });
-    console.log(game);
-    const handleStatsClick = () => {
-        navigate(`/game/${gameId}/statistics`);
-    };
-
-    const handleAchievementsClick = () => {
-        navigate(`/game/${gameId}/achievements`);
-    };
 
     const handlePlayClick = () => {
-        console.log(`Playing game: ${game?.name}, URL: ${game?.url}`);
-        if (game?.name === 'Chess' && game?.url) {
+        if (game?.name === 'Chess') {
             window.location.href = game.url;
         } else {
             setShowModeOverlay(true);
         }
     };
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const handleStatsClick = () => navigate(`/game/${gameId}/statistics`);
+    const handleAchievementsClick = () => navigate(`/game/${gameId}/achievements`);
 
-    const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
-    };
-
-    const handleMenuClose = () => {
-        setIsMenuOpen(false);
-        document.body.classList.remove('menu-open');
-    };
-
-    if (isLoading) {
-        return <div className="page">Loading...</div>;
-    }
-
-    if (!game) {
-        return (
-            <div className="page">
-                <h2>Game not found</h2>
-                <button onClick={() => navigate('/')}>Back to Dashboard</button>
-            </div>
-        );
-    }
-
-    // Mock data for now
-    const leaderboard = [
-        { rank: 1, user: 'PlayerOne', score: 2500 },
-        { rank: 2, user: 'PlayerTwo', score: 2350 },
-        { rank: 3, user: 'PlayerThree', score: 2100 },
-        { rank: 4, user: 'PlayerFour', score: 1900 },
-    ];
+    const handleMenuToggle = () => setIsMenuOpen(prev => !prev);
 
     return (
-        <div className="page">
+        <Box>
             <Navbar onMenuToggle={handleMenuToggle} />
-            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
-            <header>
-                <h1>{game.name}</h1>
-                <StarBorderIcon className="star-icon" />
-            </header>
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-            <div className="top-section">
-                <div className="game-image">
-                    <img src={game.pictureUrl}  alt={game.name}/>
-                </div>
-                <div className="buttons">
-                    <button onClick={handleAchievementsClick}>Achievements</button>
-                    <button onClick={handleStatsClick}>Stats</button>
-                </div>
-            </div>
+            <Box className="game-details-container">
+                <Typography variant="h3" className="game-details-title">
+                    {game?.name}
+                </Typography>
 
-            <div className="overview-section">
-                <h2>Overview</h2>
-                <p>
-                    {game.description}.<br/>
-                    Max players: {game.maxPlayers}.
-                </p>
-            </div>
+                <Grid container spacing={4} className="game-details-grid">
+                    <Grid size={{xs: 12, md: 7}} className="game-details-image-wrapper">
+                        <Avatar
+                            src={game?.pictureUrl}
+                            alt={game?.name}
+                            variant="rounded"
+                            className="game-details-image"
+                        />
+                    </Grid>
 
-            <div className="leaderboard-section">
-                <h2>Leaderboard <EmojiEventsIcon /></h2>
-                <ul className="leaderboard-list">
-                    {leaderboard.map((entry) => (
-                        <li key={entry.rank}>
-                            <span><span className="rank">#{entry.rank}</span> {entry.user}</span>
-                            <span>{entry.score}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                    <Grid size={{xs: 12, md: 5}} className="game-details-actions-wrapper">
+                        <Stack spacing={3} className="game-details-actions">
+                            <Button
+                                variant="outlined"
+                                startIcon={<EmojiEventsIcon />}
+                                onClick={handleAchievementsClick}
+                                className="game-details-button"
+                            >
+                                Achievements
+                            </Button>
 
-            <div className="footer-actions">
-                <button className="play-button" onClick={handlePlayClick}>
-                    Play <PlayArrowIcon />
-                </button>
-            </div>
+                            <Button
+                                variant="outlined"
+                                startIcon={<BarChartIcon />}
+                                onClick={handleStatsClick}
+                                className="game-details-button"
+                            >
+                                Stats
+                            </Button>
+                        </Stack>
+                    </Grid>
+                </Grid>
+
+                <Box className="game-details-overview">
+                    <Typography variant="h5" className="game-details-section-title">
+                        Overview
+                    </Typography>
+                    <Typography variant="body1" className="game-details-description">
+                        {game?.description}
+                        <br />
+                        Max players: {game?.maxPlayers}
+                    </Typography>
+                </Box>
+
+                <Box className="game-details-play-button-container">
+                    <Button
+                        variant="contained"
+                        size="large"
+                        endIcon={<PlayArrowIcon />}
+                        onClick={handlePlayClick}
+                        className="game-details-play-button"
+                    >
+                        Play
+                    </Button>
+                </Box>
+            </Box>
+
             <GameModeOverlay
                 isOpen={showModeOverlay}
-                url={game.url || ''}
+                url={game?.url || ''}
                 showLobby={() => setShowLobbyOverlay(true)}
                 onClose={() => setShowModeOverlay(false)}
             />
+
             <GameLobbyOverlay
                 isOpen={showLobbyOverlay}
-                gameName={game.name}
-                gameId={game.id}
-                maxPlayers={game.maxPlayers}
+                gameName={game?.name || ''}
+                gameId={game?.id || ''}
+                maxPlayers={game?.maxPlayers || 2}
                 onClose={() => setShowLobbyOverlay(false)}
             />
+
             <GameEndOverlay
                 isOpen={showEndOverlay}
-                result={gameResult}
-                gameId={gameId ? gameId : ""}
+                result="win"
+                gameId={gameId || ''}
                 onPlayAgain={handlePlayClick}
-                onClose={() => {
-                    navigate(`/game/${gameId}`);
-                    setShowEndOverlay(false);
-                }}
+                onClose={() => setShowEndOverlay(false)}
             />
-        </div>
+        </Box>
     );
 }

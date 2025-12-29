@@ -1,51 +1,32 @@
-import { useNavigate } from 'react-router-dom';
-import './Navbar.scss';
+import {Box, IconButton, Avatar, Badge, Paper} from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import MenuIcon from '@mui/icons-material/Menu';
+import {useNavigate} from 'react-router-dom';
 
 interface NavbarProps {
     onMenuToggle: () => void;
+    notificationCount?: number;
 }
 
-export default function Navbar ({ onMenuToggle } : NavbarProps) {
+export default function Navbar({onMenuToggle, notificationCount = 0}: NavbarProps) {
     const navigate = useNavigate();
-    const user = {
-        avatarUrl: "/path-to-avatar.jpg",
-        username: "testUser"
-    };
-
-    const handleNotificationClick = () => {
-        navigate('/notifications');
-    };
-
-    const handleMenuClick = () => {
-        onMenuToggle();
-    };
 
     return (
-        <header className="navbar">
-            <button
-                className="btn-notification"
-                aria-label="Notifications"
-                onClick={handleNotificationClick}
-            >
-                🔔
-            </button>
+        <Paper elevation={4}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+                <IconButton onClick={() => navigate('/notifications')} size="large">
+                    <Badge badgeContent={notificationCount} color="error" overlap="circular">
+                        <NotificationsIcon fontSize="large" />
+                    </Badge>
+                </IconButton>
 
-            <div className="navbar-right">
-
-                <div className="profile-avatar">
-                    <img
-                        src={user?.avatarUrl || '/default-avatar.png'}
-                        alt={user?.username || 'User profile'}
-                    />
-                </div>
-                <button
-                    className="btn-menu"
-                    aria-label="Menu"
-                    onClick={handleMenuClick}
-                >
-                    ☰
-                </button>
-            </div>
-        </header>
+                <Box display="flex" alignItems="center" gap={2}>
+                    <Avatar />
+                    <IconButton onClick={onMenuToggle} size="large">
+                        <MenuIcon fontSize="large" />
+                    </IconButton>
+                </Box>
+            </Box>
+        </Paper>
     );
-};
+}

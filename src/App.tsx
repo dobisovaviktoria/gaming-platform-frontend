@@ -12,7 +12,7 @@ import ProfilePage from "./pages/player/ProfilePage.tsx";
 import GameAchievementsPage from "./pages/player/GameAchievementsPage.tsx";
 import GameStatsPage from "./pages/player/GameStatsPage.tsx";
 import AddFriendsPage from "./pages/player/AddFriendsPage.tsx";
-import AddingGamePage from "./pages/player/AddingGamePage.tsx";
+import AddGameFormPage from "./pages/player/AddGameFormPage.tsx";
 import Dashboard2 from "./pages/player/Dashboard.tsx";
 import GameDetailsPage from "./pages/player/GameDetailsPage.tsx";
 import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame.tsx";
@@ -20,6 +20,8 @@ import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminGamesPage from "./pages/admin/AdminGamesPage.tsx";
 import ChatbotOverlay from "./components/overlays/ChatbotOverlay.tsx";
 import {useState} from "react";
+import Fab from '@mui/material/Fab';
+import ChatIcon from '@mui/icons-material/Chat';
 
 const queryClient = new QueryClient();
 
@@ -38,7 +40,7 @@ function AuthenticatedRouting() {
                 </Route>
                 <Route path="/add-game">
                     <Route path="" element={<AddGamePage/>} />
-                    <Route path="new" element={<AddingGamePage />} />
+                    <Route path="new" element={<AddGameFormPage />} />
                 </Route>
                 <Route path="/achievements" element={<AchievementsPage/>} />
                 <Route path="/profile" element={<ProfilePage/>} />
@@ -54,8 +56,21 @@ function AuthenticatedRouting() {
                     <Route path="games" element={<AdminGamesPage/>} />
                 </Route>
             </Routes>
-            <button className="chatbot-fab" onClick={() => setChatOpen(true)}>💬</button>
-            <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)}/>
+            <Fab
+                color="primary"
+                aria-label="open chatbot"
+                onClick={() => setChatOpen(true)}
+                style={{
+                    position: 'fixed',
+                    bottom: '32px',
+                    right: '32px',
+                    zIndex: 1300,
+                }}
+            >
+                <ChatIcon />
+            </Fab>
+
+            <ChatbotOverlay isOpen={chatOpen} onClose={() => setChatOpen(false)} />
         </BrowserRouter>
     );
 }

@@ -1,127 +1,113 @@
-import { useState } from 'react';
-import './AdminGamesPage.scss';
-import {useSearch} from "../../hooks/useSearch.ts";
+import {useState} from 'react';
+import {Box, Typography, TextField, InputAdornment, List, ListItem, ListItemButton, ListItemText, Stack, Button, Paper} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import Navbar from "../../components/Navbar.tsx";
 import SideMenu from "../../components/overlays/SideMenu.tsx";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {approveGame, getWaitingGames, rejectGame} from "../../services/game.ts";
 import type {Game} from "../../model/types.ts";
+import {useSearch} from "../../hooks/useSearch.ts";
 
 export default function AdminGamesPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: games, isLoading: isLoadingGames } = useQuery<Game[], Error>({
+    const { data: games } = useQuery<Game[], Error>({
         queryKey: ['waitingGames'],
-        queryFn: getWaitingGames
+        queryFn: getWaitingGames,
     });
 
-    const approveMutate = useMutation({
-        mutationFn: approveGame,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['waitingGames'] });
-        }
-    });
-
-    const rejectMutate = useMutation({
-        mutationFn: rejectGame,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['waitingGames'] });
-        }
-    });
-
-    const handleApprove = (gameId: string) => {
-        approveMutate.mutate(gameId)
-    };
-
-    const handleReject = (gameId: string) => {
-        rejectMutate.mutate(gameId)
-    };
-
-    const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
-    };
-
-    const handleMenuClose = () => {
-        setIsMenuOpen(false);
-        document.body.classList.remove('menu-open');
-    };
-
-    const { searchQuery, searchResults, isLoading: isLoadingSearch, error, handleSearch } = useSearch<Game>({
+    const { searchQuery, searchResults, handleSearch } = useSearch<Game>({
         data: games || [],
         searchField: 'name',
     });
 
-    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
+    const approveMutate = useMutation({
+        mutationFn: approveGame,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['waitingGames'] }),
+    });
 
-    const isLoading = isLoadingGames || isLoadingSearch;
+    const rejectMutate = useMutation({
+        mutationFn: rejectGame,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['waitingGames'] }),
+    });
+
+    const handleApprove = (gameId: string) => approveMutate.mutate(gameId);
+    const handleReject = (gameId: string) => rejectMutate.mutate(gameId);
+    const handleMenuToggle = () => setIsMenuOpen(prev => !prev);
 
     return (
-        <div className="page pending-games">
-            <Navbar onMenuToggle={handleMenuToggle}/>
-            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
+        <Box>
+            <Navbar onMenuToggle={handleMenuToggle} />
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-            <div className="search-input-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Example"
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    autoFocus
-                />
-                {isLoading && <span className="loading-spinner">⏳</span>}
-            </div>
+            <Box p={4}>
+                <Box mb={5}>
+                    <TextField
+                        fullWidth
+                        placeholder="Search games..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        autoFocus
+                        className="admin-search-field"
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                </Box>
 
-            <main className="games-content">
-                <h2 className="section-title">Games</h2>
+                <Typography variant="h4" gutterBottom className="admin-page-title">
+                    Pending Games
+                </Typography>
 
-                {error && (
-                    <div className="error-message">
-                        <p>{error}</p>
-                    </div>
-                )}
-
-                {showNoResults && (
-                    <div className="no-results">
-                        <div className="sad-face">☹️</div>
-                        <h2>No results found</h2>
-                        <p>Try again...</p>
-                    </div>
-                )}
-
-                <div className="games-list">
+                <List className="admin-games-list">
                     {searchResults.map((game) => (
-                        <div key={game.id} className="game-item">
-                            <div className="game-info">
-                <span className="game-players">
-                  {game.name}
-                </span>
-                            </div>
+                        <Paper key={game.id} elevation={3} className="admin-game-item">
+                            <ListItem disablePadding>
+                                <ListItemButton>
+                                    <ListItemText
+                                        primary={game.name}
+                                        primaryTypographyProps={{ variant: 'h6' }}
+                                    />
+                                </ListItemButton>
 
-                            <div className="game-actions">
-                                <button
-                                    className="btn-approve"
-                                    onClick={() => handleApprove(game.id)}
-                                >
-                                    Approve
-                                </button>
-                                <button
-                                    className="btn-reject"
-                                    onClick={() => handleReject(game.id)}
-                                >
-                                    Reject
-                                </button>
-                            </div>
-                        </div>
+                                <Stack direction="row" spacing={2} pr={3}>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        onClick={() => handleApprove(game.id)}
+                                        size="medium"
+                                    >
+                                        Approve
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={() => handleReject(game.id)}
+                                        size="medium"
+                                    >
+                                        Reject
+                                    </Button>
+                                </Stack>
+                            </ListItem>
+                        </Paper>
                     ))}
-                </div>
-            </main>
-        </div>
+                </List>
+
+                {searchResults.length === 0 && (
+                    <Box textAlign="center" mt={8}>
+                        <Typography variant="h6" color="text.secondary">
+                            No pending games found
+                        </Typography>
+                    </Box>
+                )}
+            </Box>
+        </Box>
     );
 }

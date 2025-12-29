@@ -1,4 +1,4 @@
-import './PersonCard.scss';
+import {Avatar, Typography, Box} from '@mui/material';
 
 interface PersonCardProps {
     id: string;
@@ -7,7 +7,7 @@ interface PersonCardProps {
     onClick?: (id: string) => void;
 }
 
-export default function PersonCard({ id, username, avatarUrl, onClick } : PersonCardProps) {
+export default function PersonCard({id, username, avatarUrl, onClick}: PersonCardProps) {
     const handleClick = () => {
         if (onClick) {
             onClick(id);
@@ -15,11 +15,9 @@ export default function PersonCard({ id, username, avatarUrl, onClick } : Person
     };
 
     return (
-        <div className="person-card" onClick={handleClick}>
-            <div className="person-avatar">
-                <img src={avatarUrl} alt={username} />
-            </div>
-            <p className="person-name">{username}</p>
-        </div>
+        <Box textAlign="center" onClick={handleClick} sx={{cursor: 'pointer', width: 100, overflow: 'hidden'}}>
+            <Avatar src={avatarUrl} alt={username} sx={{width: 100, height: 100, mb: 1}} />
+            <Typography variant="body1">{username}</Typography>
+        </Box>
     );
-};
+}

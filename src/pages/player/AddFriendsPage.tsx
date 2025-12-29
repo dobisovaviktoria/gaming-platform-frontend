@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { getAllPlayers, addFriend, type PlayerSearchResponse } from '../../services/player.ts';
-import { useSearch } from '../../hooks/useSearch.ts';
-import './AddFriendsPage.scss';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useQuery, useMutation} from '@tanstack/react-query';
+import {Box, Typography, TextField, InputAdornment, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Button, Paper} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SearchIcon from '@mui/icons-material/Search';
+import {getAllPlayers, addFriend} from '../../services/player.ts';
 
 interface User {
     id: string;
@@ -12,44 +13,29 @@ interface User {
     alreadyConnected: boolean;
 }
 
-export default function AddFriendsPage()  {
+export default function AddFriendsPage() {
     const navigate = useNavigate();
     const [addedFriends, setAddedFriends] = useState<Set<string>>(new Set());
+    const [search, setSearch] = useState('');
 
-    const { data: players, isLoading, error } = useQuery<PlayerSearchResponse[], Error>({
+    const { data: players } = useQuery({
         queryKey: ['players'],
-        queryFn: getAllPlayers
+        queryFn: getAllPlayers,
     });
 
-    const allUsers: User[] = players?.map(p => ({
-        id: p.playerId,
-        username: p.username,
-        avatarUrl: '/avatars/default.jpg',
-        alreadyConnected: p.alreadyConnected
-    })) || [];
-
-    const { searchQuery, searchResults, handleSearch } = useSearch<User>({
-        data: allUsers,
-        searchField: 'username',
-    });
-
-    const handleBackClick = () => {
-        navigate('/friends');
-    };
+    const allUsers: User[] =
+        players?.map((p) => ({
+            id: p.playerId,
+            username: p.username,
+            avatarUrl: '/avatars/default.jpg',
+            alreadyConnected: p.alreadyConnected,
+        })) || [];
 
     const addFriendMutation = useMutation({
         mutationFn: addFriend,
         onSuccess: (_, variables) => {
-            setAddedFriends((prev) => {
-                const newSet = new Set(prev);
-                newSet.add(variables);
-                return newSet;
-            });
+            setAddedFriends((prev) => new Set(prev).add(variables));
         },
-        onError: (error) => {
-            console.error('Failed to send friend request:', error);
-            alert('Failed to send friend request. Please try again.');
-        }
     });
 
     const handleAddFriend = (userId: string) => {
@@ -57,70 +43,78 @@ export default function AddFriendsPage()  {
         addFriendMutation.mutate(userId);
     };
 
-    const shouldShowResults = searchQuery.trim().length > 2;
+    const handleBackClick = () => {
+        navigate('/friends');
+    };
+
+    const shouldShowResults = true;
 
     return (
-        <div className="page">
-            <div className="page-header">
-                <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
-                    ←
-                </button>
-                <h1>People</h1>
-            </div>
+        <Box>
+            <Box p={3}>
+                <Box display="flex" alignItems="center" gap={2} mb={3}>
+                    <Button onClick={handleBackClick} startIcon={<ArrowBackIcon />}>
+                        Back
+                    </Button>
+                    <Typography variant="h5">People</Typography>
+                </Box>
 
-            <div className="search-input-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Search"
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
-                {isLoading && <span className="loading-spinner">⏳</span>}
-            </div>
+                <Box position="relative" mb={4}>
+                    <TextField
+                        fullWidth
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                </Box>
 
-            {error && <div className="error-message">Error loading players: {error.message}</div>}
+                {shouldShowResults && (
+                    <List>
+                        {allUsers
+                            .filter((user) =>
+                                user.username
+                                    .toLowerCase()
+                                    .includes(search.toLowerCase())
+                            )
+                            .map((user) => {
+                                const isAdded = addedFriends.has(user.id);
 
-            {shouldShowResults && (
-                <div className="users-list">
-                    {searchResults.length === 0 ? (
-                        <div className="no-results">
-                            <p>No users found</p>
-                        </div>
-                    ) : (
-                        searchResults.map((user) => {
-                            const isAdded = addedFriends.has(user.id);
+                                return (
+                                    <Paper key={user.id} elevation={2} sx={{mb: 2}}>
+                                        <ListItem disablePadding>
+                                            <ListItemButton>
+                                                <ListItemAvatar>
+                                                    <Avatar src={user.avatarUrl} />
+                                                </ListItemAvatar>
+                                                <ListItemText primary={user.username} />
+                                            </ListItemButton>
 
-                            return (
-                                <div key={user.id} className="user-item">
-                                    <div className="user-info">
-                                        <div className="user-avatar">
-                                            <img src={user.avatarUrl} alt={user.username} />
-                                        </div>
-                                        <span className="user-name">{user.username}</span>
-                                    </div>
-                                    {!user.alreadyConnected && (
-                                        <button
-                                            className={`btn-add ${isAdded ? 'added' : ''}`}
-                                            onClick={() => handleAddFriend(user.id)}
-                                            disabled={isAdded || addFriendMutation.isPending}
-                                            aria-label={isAdded ? 'Friend request sent' : 'Add friend'}
-                                        >
-                                            {isAdded ? 'Sent' : '+'}
-                                        </button>
-                                    )}
-                                </div>
-                            );
-                        })
-                    )}
-                </div>
-            )}
-
-            {!shouldShowResults && searchQuery.trim().length > 0 && (
-                <div className="search-hint">
-                    <p>Type at least 3 characters to search</p>
-                </div>
-            )}
-        </div>
+                                            {!user.alreadyConnected && (
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={() => handleAddFriend(user.id)}
+                                                    disabled={isAdded}
+                                                    sx={{mr: 2}}
+                                                >
+                                                    {isAdded ? 'Sent' : '+'}
+                                                </Button>
+                                            )}
+                                        </ListItem>
+                                    </Paper>
+                                );
+                            })}
+                    </List>
+                )}
+            </Box>
+        </Box>
     );
-};
+}
