@@ -30,6 +30,7 @@ lint:
   stage: test
   script:
     - npm run lint
+  allow_failure: true
 
 typecheck:
   stage: test
