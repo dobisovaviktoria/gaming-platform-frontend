@@ -25,7 +25,7 @@ export default function NotificationsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const navigate = useNavigate();
+    useNavigate();
     const namesCache = useRef<{ [key: string]: string }>({});
     const [playerId, setPlayerId] = useState<string | null>(null);
 
