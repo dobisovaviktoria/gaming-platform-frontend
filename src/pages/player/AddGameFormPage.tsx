@@ -13,7 +13,7 @@ interface GameFormData {
     maxPlayers: number;
 }
 
-export default function AddingGamePage() {
+export default function AddGameFormPage() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState<GameFormData>({
         name: '',

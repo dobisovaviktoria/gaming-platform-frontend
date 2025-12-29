@@ -12,7 +12,7 @@ import ProfilePage from "./pages/player/ProfilePage.tsx";
 import GameAchievementsPage from "./pages/player/GameAchievementsPage.tsx";
 import GameStatsPage from "./pages/player/GameStatsPage.tsx";
 import AddFriendsPage from "./pages/player/AddFriendsPage.tsx";
-import AddingGamePage from "./pages/player/AddingGamePage.tsx";
+import AddGameFormPage from "./pages/player/AddGameFormPage.tsx";
 import Dashboard2 from "./pages/player/Dashboard.tsx";
 import GameDetailsPage from "./pages/player/GameDetailsPage.tsx";
 import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame.tsx";
@@ -40,7 +40,7 @@ function AuthenticatedRouting() {
                 </Route>
                 <Route path="/add-game">
                     <Route path="" element={<AddGamePage/>} />
-                    <Route path="new" element={<AddingGamePage />} />
+                    <Route path="new" element={<AddGameFormPage />} />
                 </Route>
                 <Route path="/achievements" element={<AchievementsPage/>} />
                 <Route path="/profile" element={<ProfilePage/>} />
