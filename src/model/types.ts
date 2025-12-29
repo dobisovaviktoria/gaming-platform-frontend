@@ -83,3 +83,27 @@ export interface DataGenerationResponse {
     draws: number;
     losses: number;
 }
+
+export interface Level {
+    level: number;
+    name: string;
+    description: string
+    requirements: {
+        games: number;
+        achievements: number;
+        friends: number;
+    };
+}
+
+export const LEVELS: Level[] = [
+    {level: 1, name: 'Novice', description: 'Just starting your gaming journey', requirements: {games: 1, achievements: 0, friends: 0}},
+    {level: 2, name: 'Explorer', description: 'Venturing into new territories', requirements: {games: 10, achievements: 1, friends: 0}},
+    {level: 3, name: 'Adventurer', description: 'Growing confidence in gaming', requirements: {games: 30, achievements: 5, friends: 0}},
+    {level: 4, name: 'Challenger', description: 'Embracing new challenges', requirements: {games: 50, achievements: 10, friends: 0}},
+    {level: 5, name: 'Master', description: 'Mastering the fundamentals', requirements: {games: 100, achievements: 20, friends: 1}},
+    {level: 6, name: 'Elite', description: 'Standing among the best', requirements: {games: 150, achievements: 25, friends: 5}},
+    {level: 7, name: 'Legend', description: 'Your name echoes through the games', requirements: {games: 200, achievements: 30, friends: 10}},
+    {level: 8, name: 'Mythic', description: 'Nearly unstoppable force', requirements: {games: 250, achievements: 50, friends: 20}},
+    {level: 9, name: 'Ascendant', description: 'Transcending normal limits', requirements: {games: 500, achievements: 100, friends: 30}},
+    {level: 10, name: 'Eternal', description: 'The pinnacle of gaming mastery', requirements: {games: 1000, achievements: 100, friends: 50}},
+];

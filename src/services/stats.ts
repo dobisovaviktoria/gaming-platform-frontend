@@ -10,3 +10,8 @@ export const getPlayerGameStats = async (
     );
     return response.data;
 };
+
+export const getPlayerAllStats = async (playerId: string): Promise<PlayerGameStats[]> => {
+    const response = await api.get<PlayerGameStats[]>(`/api/players/${playerId}/stats`);
+    return response.data;
+};
