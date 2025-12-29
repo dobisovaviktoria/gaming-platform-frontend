@@ -98,7 +98,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, url, maxPlay
             if (response.status === 'WAITING') {
                 setIsWaitingForMatch(true);
             } else if (response.status === 'MATCHED' && response.sessionId) {
-                navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
+                window.location.href = `${url}?mode=friend&sessionId=${response.sessionId}`;
             }
         } catch (error) {
             console.error('Failed to join lobby:', error);
@@ -114,7 +114,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, url, maxPlay
                     if (response.status === 'MATCHED' && response.sessionId) {
                         setIsWaitingForMatch(false);
                         clearInterval(interval);
-                        navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
+                        window.location.href = `${url}?mode=friend&sessionId=${response.sessionId}`;
                     }
                 } catch (error) {
                     console.error('Lobby status check failed:', error);
@@ -136,7 +136,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, url, maxPlay
                         setIsWaitingForInvitation(false);
                         setPendingInvitationId(null);
                         clearInterval(interval);
-                        navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
+                        window.location.href = `${url}?mode=friend&sessionId=${response.sessionId}`;
                     } else if (response.status === 'REJECTED') {
                         setIsWaitingForInvitation(false);
                         setPendingInvitationId(null);

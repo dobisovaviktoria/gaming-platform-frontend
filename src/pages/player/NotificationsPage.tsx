@@ -121,9 +121,9 @@ export default function NotificationsPage() {
             setNotifications((prev) => prev.filter((n) => n.id !== invitationId));
 
             if (accept && response && typeof response === 'object' && 'sessionId' in response) {
-                navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
+                window.location.href = `${url}?mode=friend&sessionId=${response.sessionId}`;
             } else if (accept) {
-                navigate(`${url}?mode=friend`);
+                window.location.href = `${url}?mode=friend`;
             }
         } catch (err: any) {
             console.error('Failed to respond to invitation:', err);
