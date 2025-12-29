@@ -15,7 +15,7 @@ import AddFriendsPage from "./pages/player/AddFriendsPage.tsx";
 import AddGameFormPage from "./pages/player/AddGameFormPage.tsx";
 import Dashboard2 from "./pages/player/Dashboard.tsx";
 import GameDetailsPage from "./pages/player/GameDetailsPage.tsx";
-import TicTacToeGame from "../premade-games/tictactoe/src/original/TicTacToeGame.tsx";
+import TicTacToeGame from "./pages/player/TicTacToeGame.tsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
 import AdminGamesPage from "./pages/admin/AdminGamesPage.tsx";
 import ChatbotOverlay from "./components/overlays/ChatbotOverlay.tsx";
