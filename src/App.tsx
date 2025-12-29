@@ -46,7 +46,7 @@ function AuthenticatedRouting() {
                 <Route path="/profile" element={<ProfilePage/>} />
                 <Route path="/game/:gameId">
                     <Route path="" element={<GameDetailsPage />} />
-                    <Route path="end" element={<GameDetailsPage isEnd={true} />} />
+                    <Route path="end" element={<GameDetailsPage />} />
                     <Route path="achievements" element={<GameAchievementsPage />} />
                     <Route path="statistics" element={<GameStatsPage />} />
                     <Route path="play" element={<TicTacToeGame />} />
