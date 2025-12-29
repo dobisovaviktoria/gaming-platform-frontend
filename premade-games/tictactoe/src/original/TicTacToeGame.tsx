@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {useNavigate, useSearchParams} from 'react-router-dom';
+import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import {createPythonGame} from '../tictactoeApi.ts';
 import {socket} from '../../../../src/services/socket.ts';
 import {type PythonGameState} from '../../../../src/model/types.ts';
@@ -15,7 +15,7 @@ function TicTacToeGame() {
     const [searchParams] = useSearchParams();
 
     // Component State
-    const [gameId, setGameId] = useState<string | null>(null);
+    const [sessionId, setSessionId] = useState<string | null>(null);
     const [game, setGame] = useState<PythonGameState | null>(null);
     const [player, setPlayer] = useState<{ playerId: string } | null>(null);
     const [playerSymbol, setPlayerSymbol] = useState<'X' | 'O' | null>(null);
@@ -24,6 +24,7 @@ function TicTacToeGame() {
     const [isCreatingGame, setIsCreatingGame] = useState(false);
     const [myWinProbability, setMyWinProbability] = useState<number | null>(null);
 
+    const {gameId} = useParams<{gameId: string}>();
     const gameMode = (searchParams.get('mode') as GameMode);
 
     // Current player info on load
@@ -33,13 +34,13 @@ function TicTacToeGame() {
 
     // Game creation
     useEffect(() => {
-        if (!gameMode || !player || gameId) return;
+        if (!gameMode || !player || sessionId) return;
 
         const handleAiGame = async () => {
             setIsCreatingGame(true);
             try {
                 const newGame = await createPythonGame(player.playerId, AI_PLAYER_ID, 'ai');
-                setGameId(newGame.gameId);
+                setSessionId(newGame.gameId);
             } catch (error) {
                 console.error('Failed to create AI game:', error);
                 alert('Failed to create AI game. Is the Python server running?');
@@ -51,7 +52,7 @@ function TicTacToeGame() {
         const handleFriendGame = () => {
             const sessionId = searchParams.get('sessionId');
             if (sessionId) {
-                setGameId(sessionId);
+                setSessionId(sessionId);
             } else {
                 alert('Session ID missing for friend game.');
             }
@@ -62,18 +63,18 @@ function TicTacToeGame() {
         } else if (gameMode === 'friend') {
             handleFriendGame();
         }
-    }, [gameMode, player, gameId, searchParams]);
+    }, [gameMode, player, sessionId, searchParams]);
 
     // WebSocket connection
     useEffect(() => {
-        if (!gameId || !player) return;
+        if (!sessionId || !player) return;
 
         socket.connect();
 
         function onConnect() {
             console.log('Connected to WebSocket!');
-            console.log('Attempting to join game with game_id:', gameId, 'and player_id:', player?.playerId);
-            socket.emit('join_game', {game_id: gameId, player_id: player?.playerId});
+            console.log('Attempting to join game with game_id:', sessionId, 'and player_id:', player?.playerId);
+            socket.emit('join_game', {game_id: sessionId, player_id: player?.playerId});
         }
 
         function onGameStateUpdate(newGameState: PythonGameState) {
@@ -98,7 +99,7 @@ function TicTacToeGame() {
             socket.off('game_state_update', onGameStateUpdate);
             socket.disconnect();
         };
-    }, [gameId, player]);
+    }, [sessionId, player]);
 
     // Calculate my win probability when game state changes
     useEffect(() => {
@@ -133,7 +134,7 @@ function TicTacToeGame() {
     }, [game, playerSymbol, showEndOverlay]);
 
     const handleCellClick = (index: number) => {
-        if (!gameId || !game || !player) return;
+        if (!sessionId || !game || !player) return;
 
         let currentSymbol: 'X' | 'O' | null = null;
         if (game.player_x_id === player.playerId) {
@@ -148,17 +149,17 @@ function TicTacToeGame() {
             return;
         }
 
-        socket.emit('make_move', { game_id: gameId, position: index + 1 });
+        socket.emit('make_move', { game_id: sessionId, position: index + 1 });
     };
 
     const handleNewGame = async () => {
         setShowEndOverlay(false);
         setGame(null);
-        setGameId(null);
+        setSessionId(null);
         setMyWinProbability(null);
     };
 
-    const handleBackClick = () => navigate('/game/tic-tac-toe');
+    const handleBackClick = () => navigate(`/game/${gameId}`);
 
     const getPlayerStatus = () => {
         if (!game) return 'N/A';

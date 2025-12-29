@@ -111,17 +111,19 @@ export default function NotificationsPage() {
         if (!selectedInvitation || !playerId) return;
 
         const invitationId = selectedInvitation.invitationId;
+        const url = selectedInvitation.url;
         setSelectedInvitation(null);
 
         try {
             const response = await respondToInvitation(invitationId, playerId, accept);
+            console.log(response);
 
             setNotifications((prev) => prev.filter((n) => n.id !== invitationId));
 
             if (accept && response && typeof response === 'object' && 'sessionId' in response) {
-                navigate(`/game/${response.gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
             } else if (accept) {
-                navigate(`/game/${selectedInvitation.gameId}/play?mode=friend`);
+                navigate(`${url}?mode=friend`);
             }
         } catch (err: any) {
             console.error('Failed to respond to invitation:', err);

@@ -21,11 +21,12 @@ interface GameLobbyOverlayProps {
     isOpen: boolean;
     gameName: string;
     gameId: string;
+    url: string;
     maxPlayers: number;
     onClose: () => void;
 }
 
-export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, onClose}: GameLobbyOverlayProps) {
+export default function GameLobbyOverlay({isOpen, gameName, gameId, url, maxPlayers, onClose}: GameLobbyOverlayProps) {
     const { user } = useKeycloak();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
@@ -81,7 +82,8 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
     const handleInviteToggle = async (friend: Player) => {
         try {
             const inviter = await getCurrentPlayer();
-            const response = await sendInvitation(inviter.playerId, friend.id, gameId);
+            console.log(url)
+            const response = await sendInvitation(inviter.playerId, friend.id, gameId, url);
             setInvitedPlayers((prev) => [...prev, { ...friend, status: 'invited' }]);
             setPendingInvitationId(response.invitationId);
             setIsWaitingForInvitation(true);
@@ -96,7 +98,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
             if (response.status === 'WAITING') {
                 setIsWaitingForMatch(true);
             } else if (response.status === 'MATCHED' && response.sessionId) {
-                navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
             }
         } catch (error) {
             console.error('Failed to join lobby:', error);
@@ -112,7 +114,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
                     if (response.status === 'MATCHED' && response.sessionId) {
                         setIsWaitingForMatch(false);
                         clearInterval(interval);
-                        navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                        navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
                     }
                 } catch (error) {
                     console.error('Lobby status check failed:', error);
@@ -134,7 +136,7 @@ export default function GameLobbyOverlay({isOpen, gameName, gameId, maxPlayers, 
                         setIsWaitingForInvitation(false);
                         setPendingInvitationId(null);
                         clearInterval(interval);
-                        navigate(`/game/${gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+                        navigate(`${url}?mode=friend&sessionId=${response.sessionId}`);
                     } else if (response.status === 'REJECTED') {
                         setIsWaitingForInvitation(false);
                         setPendingInvitationId(null);
