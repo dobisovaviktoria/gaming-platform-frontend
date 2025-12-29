@@ -59,7 +59,11 @@ export default function AchievementsPage() {
     const toggleGame = (gameId: string) => {
         setExpandedGames((prev) => {
             const newSet = new Set(prev);
-            newSet.has(gameId) ? newSet.delete(gameId) : newSet.add(gameId);
+            if (newSet.has(gameId)) {
+                newSet.delete(gameId);
+            } else {
+                newSet.add(gameId);
+            }
             return newSet;
         });
     };
