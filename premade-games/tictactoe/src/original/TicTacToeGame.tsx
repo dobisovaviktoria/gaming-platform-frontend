@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { createPythonGame } from '../tictactoeApi.ts';
-import { socket } from '../../../../src/services/socket.ts';
-import { type PythonGameState } from '../../../../src/model/types.ts';
+import {useState, useEffect} from 'react';
+import {useNavigate, useSearchParams} from 'react-router-dom';
+import {createPythonGame} from '../tictactoeApi.ts';
+import {socket} from '../../../../src/services/socket.ts';
+import {type PythonGameState} from '../../../../src/model/types.ts';
 import GameEndOverlay from '../../../../src/components/overlays/GameEndOverlay';
 import './TicTacToeGame.scss';
-import { getCurrentPlayer } from '../../../../src/services/player.ts';
+import {getCurrentPlayer} from '../../../../src/services/player.ts';
 
 const AI_PLAYER_ID = "00000000-0000-0000-0000-000000000001";
 type GameMode = 'ai' | 'friend';
@@ -73,7 +73,7 @@ function TicTacToeGame() {
         function onConnect() {
             console.log('Connected to WebSocket!');
             console.log('Attempting to join game with game_id:', gameId, 'and player_id:', player?.playerId);
-            socket.emit('join_game', { game_id: gameId, player_id: player?.playerId });
+            socket.emit('join_game', {game_id: gameId, player_id: player?.playerId});
         }
 
         function onGameStateUpdate(newGameState: PythonGameState) {
@@ -232,6 +232,7 @@ function TicTacToeGame() {
 
                             {game.status === 'in_progress' && myWinProbability !== null && (
                                 <div className="probability-bar-container">
+                                    <span className="info-label">Win Probability:</span>
                                     <div className="probability-bar-labels">
                                         <span>0%</span>
                                         <span className="current-prob">{formatProbability(myWinProbability)}</span>
