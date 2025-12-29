@@ -37,7 +37,7 @@ export default function ProfileLevelSystem() {
                             <Typography variant="body2">{level.description}</Typography>
                             <Typography variant="body2">
                                 <strong>Requirements:</strong>
-                                {` ${level.requirements.games} games, ${level.requirements.achievements} achievements, ${level.requirements.friends} friends`}
+                                {` ${level.requirements.games} game${level.requirements.games==1 ? "" : "s"}, ${level.requirements.achievements} achievement${level.requirements.achievements==1 ? "" : "s"}, ${level.requirements.friends} friend${level.requirements.friends==1 ? "" : "s"}`}
                             </Typography>
                         </Box>
                     ))}
