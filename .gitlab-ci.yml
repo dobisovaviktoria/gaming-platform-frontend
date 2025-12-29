@@ -1,7 +1,6 @@
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-    - if: $CI_COMMIT_BRANCH == "ci-pipeline"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 stages:
@@ -59,7 +58,7 @@ package:
     - echo "Building Docker image with commit SHA $CI_COMMIT_SHORT_SHA"
     - docker build -t $IMAGE_TAG -t $IMAGE_LATEST .
     - |
-      if [ "$CI_COMMIT_BRANCH" == "ci-pipeline" ]; then
+      if [ "$CI_COMMIT_BRANCH" == "main" ]; then
         echo "Authenticating to GitLab Container Registry"
         echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         echo "Tagging and pushing image"
