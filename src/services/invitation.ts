@@ -11,18 +11,21 @@ export interface InvitationResponse {
 export interface InvitationSessionResponse {
     sessionId: string;
     gameId: string;
+    url: string;
     playerIds: string[];
 }
 
 export const sendInvitation = async (
     inviterId: string,
     inviteeId: string,
-    gameId: string
+    gameId: string,
+    url: string
 ): Promise<InvitationResponse> => {
-    console.log(`Sending invitation: inviterId=${inviterId}, inviteeId=${inviteeId}, gameId=${gameId}`);
+    console.log(`Sending invitation: inviterId=${inviterId}, inviteeId=${inviteeId}, gameId=${gameId}, url=${url}`);
     const response = await api.post<InvitationResponse>(`/api/invitations/${inviterId}`, {
         inviteeId,
         gameId,
+        url,
     });
     console.log('Invitation sent response:', response.data);
     return response.data;
@@ -53,6 +56,7 @@ export interface InvitationStatusResponse {
     invitationId: string;
     status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
     sessionId: string | null;
+    url: string | null;
 }
 
 export const getInvitationStatus = async (invitationId: string): Promise<InvitationStatusResponse> => {
