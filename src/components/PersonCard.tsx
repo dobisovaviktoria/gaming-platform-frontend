@@ -15,9 +15,9 @@ export default function PersonCard({id, username, avatarUrl, onClick}: PersonCar
     };
 
     return (
-        <Box textAlign="center" onClick={handleClick} sx={{cursor: 'pointer'}}>
+        <Box textAlign="center" onClick={handleClick} sx={{cursor: 'pointer', width: 100, overflow: 'hidden'}}>
             <Avatar src={avatarUrl} alt={username} sx={{width: 100, height: 100, mb: 1}} />
-            <Typography variant="subtitle1">{username}</Typography>
+            <Typography variant="body1">{username}</Typography>
         </Box>
     );
 }
