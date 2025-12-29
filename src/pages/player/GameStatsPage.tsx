@@ -1,19 +1,20 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getCurrentPlayer } from '../../services/player.ts';
-import { getPlayerGameStats } from '../../services/stats.ts';
-import './GameStatsPage.scss';
+import {useNavigate, useParams} from 'react-router-dom';
+import {useQuery} from '@tanstack/react-query';
+import {Box, Typography, Button, Paper, List, ListItem, ListItemText} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {getCurrentPlayer} from '../../services/player.ts';
+import {getPlayerGameStats} from '../../services/stats.ts';
 
 export default function GameStatsPage() {
     const navigate = useNavigate();
-    const { gameId } = useParams<{ gameId: string }>();
+    const {gameId} = useParams<{gameId: string}>();
 
-    const { data: player } = useQuery({
+    const {data: player} = useQuery({
         queryKey: ['player'],
         queryFn: getCurrentPlayer
     });
 
-    const { data: stats, isLoading } = useQuery({
+    const {data: stats, isLoading} = useQuery({
         queryKey: ['gameStats', player?.playerId, gameId],
         queryFn: () => {
             if (!player || !gameId) throw new Error('Missing player or gameId');
@@ -26,114 +27,63 @@ export default function GameStatsPage() {
         navigate(`/game/${gameId}`);
     };
 
-    if (isLoading) {
-        return (
-            <div className="game-stats-page">
-                <div className="page-header">
-                    <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
-                        ←
-                    </button>
-                    <h1>Statistics</h1>
-                </div>
-                <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
-                    Loading statistics...
-                </p>
-            </div>
-        );
-    }
-
     const winRate = stats && stats.gamesPlayed > 0
         ? ((stats.wins / stats.gamesPlayed) * 100).toFixed(1)
         : '0.0';
 
     return (
-        <div className="page">
-            <div className="page-header">
-                <button className="btn-back" onClick={handleBackClick} aria-label="Go back">
-                    ←
-                </button>
-                <h1>Statistics</h1>
-            </div>
+        <Box p={3}>
+            <Box display="flex" alignItems="center" gap={2} mb={4}>
+                <Button onClick={handleBackClick} startIcon={<ArrowBackIcon />}>
+                    Back
+                </Button>
+                <Typography variant="h5">Statistics</Typography>
+            </Box>
 
-            <div className="stats-section">
-                <h2>My Statistics</h2>
+            <Paper elevation={3}>
+                <Box p={4}>
+                    <Typography variant="h6" mb={3}>My Statistics</Typography>
 
-                {!stats || stats.gamesPlayed === 0 ? (
-                    <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
-                        No games played yet. Start playing to see your statistics!
-                    </p>
-                ) : (
-                    <div className="stats-list">
-                        <div className="stat-item">
-                            <div className="stat-icon">🎮</div>
-                            <div className="stat-info">
-                                <span className="stat-label">Games Played</span>
-                                <span className="stat-value">{stats.gamesPlayed}</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-item">
-                            <div className="stat-icon">🏆</div>
-                            <div className="stat-info">
-                                <span className="stat-label">Wins</span>
-                                <span className="stat-value">{stats.wins}</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-item">
-                            <div className="stat-icon">❌</div>
-                            <div className="stat-info">
-                                <span className="stat-label">Losses</span>
-                                <span className="stat-value">{stats.losses}</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-item">
-                            <div className="stat-icon">📊</div>
-                            <div className="stat-info">
-                                <span className="stat-label">Win Rate</span>
-                                <span className="stat-value">{winRate}%</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-item">
-                            <div className="stat-icon">🔥</div>
-                            <div className="stat-info">
-                                <span className="stat-label">Current Win Streak</span>
-                                <span className="stat-value">{stats.currentWinStreak}</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-item">
-                            <div className="stat-icon">⭐</div>
-                            <div className="stat-info">
-                                <span className="stat-label">Total Score</span>
-                                <span className="stat-value">{stats.totalScore}</span>
-                            </div>
-                        </div>
-
-                        {stats.totalKills > 0 && (
-                            <div className="stat-item">
-                                <div className="stat-icon">⚔️</div>
-                                <div className="stat-info">
-                                    <span className="stat-label">Total Kills</span>
-                                    <span className="stat-value">{stats.totalKills}</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {stats.perfectGames > 0 && (
-                            <div className="stat-item">
-                                <div className="stat-icon">💎</div>
-                                <div className="stat-info">
-                                    <span className="stat-label">Perfect Games</span>
-                                    <span className="stat-value">{stats.perfectGames}</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-        </div>
+                    {isLoading ? (
+                        <Typography textAlign="center">Loading statistics...</Typography>
+                    ) : !stats || stats.gamesPlayed === 0 ? (
+                        <Typography textAlign="center" color="text.secondary">
+                            No games played yet. Start playing to see your statistics!
+                        </Typography>
+                    ) : (
+                        <List>
+                            <ListItem>
+                                <ListItemText primary="Games Played" secondary={stats.gamesPlayed} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Wins" secondary={stats.wins} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Losses" secondary={stats.losses} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Win Rate" secondary={`${winRate}%`} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Current Win Streak" secondary={stats.currentWinStreak} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Total Score" secondary={stats.totalScore} />
+                            </ListItem>
+                            {stats.totalKills > 0 && (
+                                <ListItem>
+                                    <ListItemText primary="Total Kills" secondary={stats.totalKills} />
+                                </ListItem>
+                            )}
+                            {stats.perfectGames > 0 && (
+                                <ListItem>
+                                    <ListItemText primary="Perfect Games" secondary={stats.perfectGames} />
+                                </ListItem>
+                            )}
+                        </List>
+                    )}
+                </Box>
+            </Paper>
+        </Box>
     );
-};
+}

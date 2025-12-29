@@ -1,49 +1,61 @@
-import { useState, useEffect, useRef } from 'react';
-import Navbar from '../../components/Navbar';
-import SideMenu from '../../components/overlays/SideMenu';
-import Notification from '../../components/Notification';
-import ConfirmationDialog from '../../components/overlays/ConfirmationDialog';
-import './NotificationsPage.scss';
-import { useSearch } from "../../hooks/useSearch";
-import { getCurrentPlayer, getPlayerProfile } from '../../services/player';
-import { getGame } from '../../services/game';
-import { getPendingInvitations, respondToInvitation, type InvitationResponse } from '../../services/invitation';
-import { useNavigate } from 'react-router-dom';
+import {useState, useEffect, useRef} from 'react';
+import {Box, Typography, TextField, InputAdornment, List, ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, Alert, CircularProgress} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import GameControllerIcon from '@mui/icons-material/VideogameAsset';
+import Navbar from '../../components/Navbar.tsx';
+import SideMenu from '../../components/overlays/SideMenu.tsx';
+import ConfirmationDialog from '../../components/overlays/ConfirmationDialog.tsx';
+import {getCurrentPlayer, getPlayerProfile} from '../../services/player.ts';
+import {getGame} from '../../services/game.ts';
+import {getPendingInvitations, respondToInvitation} from '../../services/invitation.ts';
+import {useNavigate} from 'react-router-dom';
 
 interface NotificationData {
     id: string;
     message: string;
-    icon?: string;
-    originalData?: InvitationResponse;
+    originalData: any;
 }
 
 export default function NotificationsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationData[]>([]);
-    const [internalPlayerId, setInternalPlayerId] = useState<string | null>(null);
-    const [selectedInvitation, setSelectedInvitation] = useState<InvitationResponse | null>(null);
-    const navigate = useNavigate();
+    const [filteredNotifications, setFilteredNotifications] = useState<NotificationData[]>([]);
+    const [selectedInvitation, setSelectedInvitation] = useState<any>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
+    const navigate = useNavigate();
     const namesCache = useRef<{ [key: string]: string }>({});
+    const [playerId, setPlayerId] = useState<string | null>(null);
 
     useEffect(() => {
+        const init = async () => {
+            try {
+                const player = await getCurrentPlayer();
+                setPlayerId(player.playerId);
+            } catch (err) {
+                setError('Failed to load player data.');
+                setLoading(false);
+            }
+        };
+        init();
+    }, []);
+
+    useEffect(() => {
+        if (!playerId) return;
+
         const fetchNotifications = async () => {
             try {
-                let playerId = internalPlayerId;
-                if (!playerId) {
-                    const player = await getCurrentPlayer();
-                    playerId = player.playerId;
-                    setInternalPlayerId(playerId);
-                }
+                setLoading(true);
+                const invitations = await getPendingInvitations(playerId);
 
-                if (playerId) {
-                    const invitations = await getPendingInvitations(playerId);
-                    
-                    const formattedNotifications = await Promise.all(invitations.map(async (inv) => {
+                const formatted = await Promise.all(
+                    invitations.map(async (inv: any) => {
                         if (!namesCache.current[inv.inviterId]) {
                             try {
                                 const profile = await getPlayerProfile(inv.inviterId);
-                                namesCache.current[inv.inviterId] = profile.username;
+                                namesCache.current[inv.inviterId] = profile.username || 'Unknown Player';
                             } catch {
                                 namesCache.current[inv.inviterId] = 'Unknown Player';
                             }
@@ -52,7 +64,7 @@ export default function NotificationsPage() {
                         if (!namesCache.current[inv.gameId]) {
                             try {
                                 const game = await getGame(inv.gameId);
-                                namesCache.current[inv.gameId] = game.name;
+                                namesCache.current[inv.gameId] = game.name || 'Unknown Game';
                             } catch {
                                 namesCache.current[inv.gameId] = 'Unknown Game';
                             }
@@ -64,75 +76,69 @@ export default function NotificationsPage() {
                         return {
                             id: inv.invitationId,
                             message: `Game Invitation: ${inviterName} has invited you to play ${gameName}`,
-                            icon: '🎮',
-                            originalData: inv
+                            originalData: inv,
                         };
-                    }));
-                    
-                    setNotifications(formattedNotifications);
-                }
-            } catch (error) {
-                console.error("Failed to fetch notifications:", error);
+                    })
+                );
+
+                setNotifications(formatted);
+                setError(null);
+            } catch (err) {
+                console.error('Failed to fetch notifications:', err);
+                setError('Failed to load notifications.');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchNotifications();
-        
         const interval = setInterval(fetchNotifications, 5000);
         return () => clearInterval(interval);
-    }, [internalPlayerId]);
+    }, [playerId]);
 
     useEffect(() => {
-        console.log('Selected Invitation State Changed:', selectedInvitation);
-    }, [selectedInvitation]);
-
-    useEffect(() => {
-        console.log('Notifications List Updated:', notifications);
-    }, [notifications]);
-
-    const { searchQuery, searchResults, isLoading, error, handleSearch } = useSearch<NotificationData>({
-        data: notifications,
-        searchField: 'message',
-    });
-
-    const handleNotificationClick = (id: string) => {
-        console.log('Notification clicked:', id);
-        const notification = notifications.find(n => n.id === id);
-        if (notification?.originalData) {
-            console.log('Clicked Invitation Details:', notification.originalData);
-            setSelectedInvitation(notification.originalData);
+        if (!searchQuery.trim()) {
+            setFilteredNotifications(notifications);
+        } else {
+            const lowerQuery = searchQuery.toLowerCase();
+            setFilteredNotifications(
+                notifications.filter((n) => n.message.toLowerCase().includes(lowerQuery))
+            );
         }
-    };
+    }, [searchQuery, notifications]);
 
     const handleRespond = async (accept: boolean) => {
-        if (!selectedInvitation || !internalPlayerId) return;
+        if (!selectedInvitation || !playerId) return;
+
+        const invitationId = selectedInvitation.invitationId;
+        setSelectedInvitation(null);
 
         try {
-            console.log(`Responding to invitation ${selectedInvitation.invitationId} with accept=${accept}`);
-            const response = await respondToInvitation(selectedInvitation.invitationId, internalPlayerId, accept);
-            console.log('Response result:', response);
+            const response = await respondToInvitation(invitationId, playerId, accept);
 
-            setNotifications(prev => prev.filter(n => n.id !== selectedInvitation.invitationId));
-            setSelectedInvitation(null);
+            setNotifications((prev) => prev.filter((n) => n.id !== invitationId));
 
             if (accept && response && typeof response === 'object' && 'sessionId' in response) {
-                console.log('Invitation accepted, navigating to game session:', response.sessionId);
                 navigate(`/game/${response.gameId}/play?mode=friend&sessionId=${response.sessionId}`);
+            } else if (accept) {
+                navigate(`/game/${selectedInvitation.gameId}/play?mode=friend`);
             }
-        } catch (error) {
-            console.error("Failed to respond to invitation:", error);
-            alert("Failed to respond to invitation.");
-            setSelectedInvitation(null);
+        } catch (err: any) {
+            console.error('Failed to respond to invitation:', err);
+            const msg =
+                err.response?.data?.message ||
+                err.message ||
+                'Failed to respond to invitation. Please try again.';
+            alert(msg);
         }
     };
 
     const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
+        setIsMenuOpen((prev) => {
+            const newState = !prev;
+            document.body.classList.toggle('menu-open', newState);
+            return newState;
+        });
     };
 
     const handleMenuClose = () => {
@@ -140,58 +146,76 @@ export default function NotificationsPage() {
         document.body.classList.remove('menu-open');
     };
 
-    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !error;
+    const unreadCount = notifications.length;
 
     return (
-        <div className="page">
-            <Navbar
-                onMenuToggle={handleMenuToggle}
-            />
-
+        <Box>
+            <Navbar onMenuToggle={handleMenuToggle} notificationCount={unreadCount} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
-            <div className="search-input-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
+            <Box className="notifications-page-content">
+                <TextField
+                    fullWidth
                     placeholder="Search notifications..."
                     value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    autoFocus
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="notifications-search-field"
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
                 />
-                {isLoading && <span className="loading-spinner">⏳</span>}
-            </div>
 
-            <div className="search-results">
+                <Typography variant="h5" className="notifications-title">
+                    Notifications
+                </Typography>
+
                 {error && (
-                    <div className="error-message">
-                        <p>{error}</p>
-                    </div>
+                    <Alert severity="error" className="notifications-error-alert" onClose={() => setError(null)}>
+                        {error}
+                    </Alert>
                 )}
 
-                {showNoResults && (
-                    <div className="no-results">
-                        <div className="sad-face">☹️</div>
-                        <h2>No results found</h2>
-                        <p>Try again...</p>
-                    </div>
-                )}
-
-                {searchResults.length > 0 ? (
-                    <div className="notifications-list">
-                        {searchResults.map((notification) => (
-                            <Notification
-                                key={notification.id}
-                                message={notification.message}
-                                icon={notification.icon}
-                                onClick={() => handleNotificationClick(notification.id)}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    !isLoading && !searchQuery && <div className="no-results"><p>No new notifications.</p></div>
-                )}
-            </div>
+                <Paper elevation={3} className="notifications-list-container">
+                    {loading ? (
+                        <Box className="notifications-loading">
+                            <CircularProgress />
+                        </Box>
+                    ) : filteredNotifications.length > 0 ? (
+                        <List>
+                            {filteredNotifications.map((notif) => (
+                                <ListItem key={notif.id} disablePadding className="notification-item">
+                                    <ListItemButton
+                                        onClick={() => setSelectedInvitation(notif.originalData)}
+                                        className="notification-button"
+                                    >
+                                        <ListItemAvatar>
+                                            <Avatar className="notification-avatar">
+                                                <GameControllerIcon />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={notif.message}
+                                            className="notification-text"
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                    ) : (
+                        <Box className="notifications-empty">
+                            <Typography variant="body1">
+                                {searchQuery ? 'No notifications match your search.' : 'No new notifications.'}
+                            </Typography>
+                        </Box>
+                    )}
+                </Paper>
+            </Box>
 
             {selectedInvitation && (
                 <ConfirmationDialog
@@ -200,6 +224,6 @@ export default function NotificationsPage() {
                     onCancel={() => handleRespond(false)}
                 />
             )}
-        </div>
+        </Box>
     );
-};
+}

@@ -1,5 +1,6 @@
-import './SideMenu.scss';
-import { Link } from "react-router";
+import {Drawer, Box, IconButton, Typography, List, ListItem, ListItemButton, ListItemText, Divider, Button} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import {Link} from "react-router-dom";
 import {useKeycloak} from "../../contexts/AuthContext.tsx";
 
 interface SideMenuProps {
@@ -7,19 +8,20 @@ interface SideMenuProps {
     onClose: () => void;
 }
 
-export default function SideMenu({ isOpen, onClose } : SideMenuProps) {
-    const { logout, user: { realm_access: { roles } } } = useKeycloak();
+export default function SideMenu({isOpen, onClose}: SideMenuProps) {
+    const {logout, user: {realm_access: {roles}}} = useKeycloak();
 
     const menuItems = [
-        { label: 'Dashboard', path: '/' },
-        { label: 'Friends', path: '/friends' },
-        { label: 'Add Your Game', path: '/add-game' },
-        { label: 'Achievements', path: '/achievements' },
-        { label: 'Profile', path: '/profile' },
+        {label: 'Dashboard', path: '/'},
+        {label: 'Friends', path: '/friends'},
+        {label: 'Add Your Game', path: '/add-game'},
+        {label: 'Achievements', path: '/achievements'},
+        {label: 'Profile', path: '/profile'},
     ];
+
     const adminMenuItems = [
-        { label: 'Admin Dashboard', path: '/admin/' },
-        { label: 'Waiting Games', path: '/admin/games' },
+        {label: 'Admin Dashboard', path: '/admin/'},
+        {label: 'Waiting Games', path: '/admin/games'},
     ];
 
     const handleLogout = () => {
@@ -28,45 +30,37 @@ export default function SideMenu({ isOpen, onClose } : SideMenuProps) {
     };
 
     return (
-        <>
-            {/* Backdrop overlay */}
-            <div
-                className={`menu-backdrop ${isOpen ? 'open' : ''}`}
-                onClick={onClose}
-            />
-
-            {/* Side menu */}
-            <div className={`side-menu ${isOpen ? 'open' : ''}`}>
-                <div className="menu-header">
-                    <h3>Menu</h3>
-                    <button className="btn-close" onClick={onClose} aria-label="Close menu">
-                        ✕
-                    </button>
-                </div>
-
-                <nav className="menu-content">
-                    <ul>
-                        {menuItems.map((item, index) => (
-                            <li key={index}>
-                                <Link to={item.path} className="link-btn" key={item.label} onClick={onClose}>
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                        {roles.includes('admin') && adminMenuItems.map((item, index) => (
-                            <li key={index}>
-                                <Link to={item.path} className="link-btn" key={item.label} onClick={onClose}>
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <button className="btn-logout" onClick={handleLogout}>
+        <Drawer anchor="right" open={isOpen} onClose={onClose}>
+            <Box width={300} role="presentation">
+                <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+                    <Typography variant="h6">Menu</Typography>
+                    <IconButton onClick={onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                <Divider />
+                <List>
+                    {menuItems.map((item) => (
+                        <ListItem key={item.label} disablePadding>
+                            <ListItemButton component={Link} to={item.path} onClick={onClose}>
+                                <ListItemText primary={item.label} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                    {roles.includes('admin') && adminMenuItems.map((item) => (
+                        <ListItem key={item.label} disablePadding>
+                            <ListItemButton component={Link} to={item.path} onClick={onClose}>
+                                <ListItemText primary={item.label} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <Box p={2}>
+                    <Button variant="outlined" color="error" onClick={handleLogout} fullWidth>
                         Logout
-                    </button>
-                </nav>
-            </div>
-        </>
+                    </Button>
+                </Box>
+            </Box>
+        </Drawer>
     );
-};
+}

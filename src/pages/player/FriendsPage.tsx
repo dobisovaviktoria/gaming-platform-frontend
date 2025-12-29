@@ -1,31 +1,29 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getFriends, getFriendRequests, acceptFriendRequest, rejectFriendRequest, type PlayerBasicInfo, type FriendRequest } from '../../services/player.ts';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {Box, Typography, TextField, InputAdornment, Grid, Paper, Stack, Button, CircularProgress} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import Navbar from '../../components/Navbar.tsx';
 import SideMenu from '../../components/overlays/SideMenu.tsx';
 import PersonCard from '../../components/PersonCard.tsx';
-import { useSearch } from '../../hooks/useSearch.ts';
-import './FriendsPage.scss';
-import { Link } from "react-router";
-
-interface Friend {
-    id: string;
-    username: string;
-    avatarUrl: string;
-}
+import {getFriends, getFriendRequests, acceptFriendRequest, rejectFriendRequest} from '../../services/player.ts';
 
 export default function FriendsPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const queryClient = useQueryClient();
+    const [search, setSearch] = useState('');
 
-    const { data: friends, isLoading: isLoadingFriends, error: friendsError } = useQuery<PlayerBasicInfo[], Error>({
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
+
+    const {data: friends, isLoading: isLoadingFriends} = useQuery({
         queryKey: ['friends'],
-        queryFn: getFriends
+        queryFn: getFriends,
     });
 
-    const { data: requests, isLoading: isLoadingRequests } = useQuery<FriendRequest[], Error>({
+    const {data: requests} = useQuery({
         queryKey: ['friendRequests'],
-        queryFn: getFriendRequests
+        queryFn: getFriendRequests,
     });
 
     const acceptMutation = useMutation({
@@ -33,148 +31,129 @@ export default function FriendsPage() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['friends'] });
             queryClient.invalidateQueries({ queryKey: ['friendRequests'] });
-        }
+        },
     });
 
     const rejectMutation = useMutation({
         mutationFn: rejectFriendRequest,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['friendRequests'] });
-        }
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['friendRequests'] }),
     });
 
-    const friendsData: Friend[] = friends?.map(f => ({
-        id: f.playerId,
-        username: f.username,
-        avatarUrl: '/avatars/default.jpg'
-    })) || [];
-
-    const { searchQuery, searchResults, handleSearch } = useSearch<Friend>({
-        data: friendsData,
-        searchField: 'username',
-    });
-
-    const handleMenuToggle = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            document.body.classList.add('menu-open');
-        } else {
-            document.body.classList.remove('menu-open');
-        }
-    };
-
-    const handleMenuClose = () => {
-        setIsMenuOpen(false);
-        document.body.classList.remove('menu-open');
-    };
-
-    const handleFriendClick = (friendId: string) => {
-        console.log('Friend clicked:', friendId);
-        // Navigate to friend profile
-    };
-
-    const handleAccept = (friendshipId: string) => {
+    const handleAccept = (friendshipId: string) =>
         acceptMutation.mutate(friendshipId);
-    };
 
-    const handleReject = (friendshipId: string) => {
+    const handleReject = (friendshipId: string) =>
         rejectMutation.mutate(friendshipId);
-    };
 
-    const showNoResults = searchQuery.trim().length > 0 && searchResults.length === 0 && !friendsError;
+    const handleMenuToggle = () => setIsMenuOpen(!isMenuOpen);
 
     return (
-        <div className="page">
+        <Box>
             <Navbar onMenuToggle={handleMenuToggle} />
-            <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
+            <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-            <div className="search-input-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    onChange={(e) => handleSearch(e.target.value)}
-                    autoFocus
+            <Box p={3}>
+                <TextField
+                    fullWidth
+                    placeholder="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
                 />
-                {isLoadingFriends && <span className="loading-spinner">⏳</span>}
-            </div>
 
-            {!isLoadingRequests && requests && requests.length > 0 && (
-                <div className="friend-requests-section">
-                    <h2>Friend Requests</h2>
-                    <div className="requests-list">
-                        {requests.map((req) => (
-                            <div key={req.friendshipId} className="request-item">
-                                <div className="request-info">
-                                    <div className="request-avatar">
-                                        <img src="/avatars/default.jpg" alt={req.requesterName} />
-                                    </div>
-                                    <span className="request-name">{req.requesterName}</span>
-                                </div>
-                                <div className="request-actions">
-                                    <button 
-                                        className="btn-accept"
-                                        onClick={() => handleAccept(req.friendshipId)}
-                                        disabled={acceptMutation.isPending}
+                {requests && requests.length > 0 && (
+                    <Box mt={4}>
+                        <Typography variant="h6">Friend Requests</Typography>
+                        <Stack spacing={2} mt={2}>
+                            {requests.map((req) => (
+                                <Paper key={req.friendshipId} elevation={2}>
+                                    <Box
+                                        display="flex"
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                        p={2}
                                     >
-                                        Accept
-                                    </button>
-                                    <button 
-                                        className="btn-reject"
-                                        onClick={() => handleReject(req.friendshipId)}
-                                        disabled={rejectMutation.isPending}
-                                    >
-                                        Reject
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            <div className="search-results">
-                {friendsError && (
-                    <div className="error-message">
-                        <p>{friendsError.message}</p>
-                    </div>
+                                        <Typography>{req.requesterName}</Typography>
+                                        <Stack direction="row" spacing={1}>
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                onClick={() => handleAccept(req.friendshipId)}
+                                            >
+                                                Accept
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                onClick={() => handleReject(req.friendshipId)}
+                                            >
+                                                Reject
+                                            </Button>
+                                        </Stack>
+                                    </Box>
+                                </Paper>
+                            ))}
+                        </Stack>
+                    </Box>
                 )}
 
-                <div className="friends-header">
-                    <h1>My Friends</h1>
-                    <Link className="btn-add" to="/friends/add" >
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mt={4}
+                    mb={2}
+                >
+                    <Typography variant="h5">My Friends</Typography>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => navigate('/friends/add')}
+                    >
                         Add
-                    </Link>
-                </div>
+                    </Button>
+                </Box>
 
-                {showNoResults && (
-                    <div className="no-results">
-                        <div className="sad-face">☹️</div>
-                        <h2>No friends found</h2>
-                        <p>Try a different search...</p>
-                    </div>
-                )}
-
-
-                {searchResults.length > 0 ? (
-                    <div className="friends-grid">
-                        {searchResults.map((friend) => (
-                            <PersonCard
-                                key={friend.id}
-                                id={friend.id}
-                                username={friend.username}
-                                avatarUrl={friend.avatarUrl}
-                                onClick={handleFriendClick}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    !showNoResults && !isLoadingFriends && (
-                        <div className="no-friends-placeholder">
-                            <p>You haven't added any friends yet.</p>
-                        </div>
-                    )
-                )}
-            </div>
-        </div>
+                <Grid container spacing={3}>
+                    {isLoadingFriends ? (
+                        <Box textAlign="center" width="100%" my={4}>
+                            <CircularProgress />
+                        </Box>
+                    ) : friends?.length ? (
+                        friends
+                            .filter((friend) =>
+                                friend.username
+                                    .toLowerCase()
+                                    .includes(search.toLowerCase())
+                            )
+                            .map((friend) => (
+                                <Grid
+                                    size={{ xs: 6, sm: 4, md: 3 }}
+                                    key={friend.playerId}
+                                >
+                                    <PersonCard
+                                        id={friend.playerId}
+                                        username={friend.username}
+                                        avatarUrl="/avatars/default.jpg"
+                                    />
+                                </Grid>
+                            ))
+                    ) : (
+                        <Typography color="text.secondary">
+                            You haven't added any friends yet.
+                        </Typography>
+                    )}
+                </Grid>
+            </Box>
+        </Box>
     );
-};
+}
