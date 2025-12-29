@@ -273,7 +273,7 @@ function TicTacToeGame() {
                     <GameEndOverlay
                         isOpen={showEndOverlay}
                         result={gameResult}
-                        gameId={gameId}
+                        gameId={gameId!}
                         onPlayAgain={handleNewGame}
                         onClose={() => setShowEndOverlay(false)}
                     />

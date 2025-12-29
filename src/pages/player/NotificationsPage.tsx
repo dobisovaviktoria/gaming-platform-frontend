@@ -34,7 +34,7 @@ export default function NotificationsPage() {
             try {
                 const player = await getCurrentPlayer();
                 setPlayerId(player.playerId);
-            } catch (err) {
+            } catch {
                 setError('Failed to load player data.');
                 setLoading(false);
             }
