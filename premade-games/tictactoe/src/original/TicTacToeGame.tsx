@@ -155,10 +155,9 @@ function TicTacToeGame() {
     };
 
     const handleNewGame = async () => {
-        setShowEndOverlay(false);
-        setGame(null);
-        setSessionId(null);
-        setMyWinProbability(null);
+        navigate(`/game/${gameId}`, {
+            state: { openLobby: true }
+        });
     };
 
     const handleBackClick = () => navigate(`/game/${gameId}`);
