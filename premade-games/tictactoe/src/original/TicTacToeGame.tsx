@@ -33,6 +33,11 @@ function TicTacToeGame() {
         getCurrentPlayer().then(setPlayer).catch(() => alert('Failed to load player data.'));
     }, []);
 
+    // Switch AI/ML player
+    const switchMode = (mode: GameMode) => {
+        navigate(`/game/${gameId}/play?mode=${mode}`);
+    };
+
     // Game creation
     useEffect(() => {
         if (!gameMode || !player || sessionId) return;
@@ -195,6 +200,22 @@ function TicTacToeGame() {
         <div className="tic-tac-toe-game">
             <div className="game-container-wrapper">
                 <div className="game-header"><div className="decorative-pattern" /></div>
+                <div className="mode-switch">
+                    <button
+                        onClick={() => switchMode('ai')}
+                        disabled={gameMode === 'ai'}
+                    >
+                        Play vs AI
+                    </button>
+
+                    <button
+                        onClick={() => switchMode('ml')}
+                        disabled={gameMode === 'ml'}
+                    >
+                        Play vs ML
+                    </button>
+                </div>
+
 
                 <div className="game-content">
                     <button className="btn-back" onClick={handleBackClick} aria-label="Go back">←</button>
