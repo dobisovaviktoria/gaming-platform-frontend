@@ -164,7 +164,18 @@ export default function AdminDashboardPage() {
                     </TableContainer>
                 )}
 
-                <Box mt={8} textAlign="right">
+                <Box mt={8} display="flex" justifyContent="flex-end" gap={2}>
+                    <Button
+                        variant="outlined"
+                        size="large"
+                        component="a"
+                        href="http://localhost:8000/analysis/dashboard"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Live Monitoring
+                    </Button>
+
                     <Button
                         variant="contained"
                         size="large"
