@@ -1,11 +1,11 @@
 import {useState, useEffect} from 'react';
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {socket} from '../../services/socket.ts';
-import {type PythonGameState} from '../../model/types.ts';
-import GameEndOverlay from '../../components/overlays/GameEndOverlay.tsx';
+import {createPythonGame} from '../tictactoeApi.ts';
+import {socket} from '../../../../src/services/socket.ts';
+import {type PythonGameState} from '../../../../src/model/types.ts';
+import GameEndOverlay from '../../../../src/components/overlays/GameEndOverlay';
 import './TicTacToeGame.scss';
-import {getCurrentPlayer} from '../../services/player.ts';
-import {createPythonGame} from "../../services/tictactoeApi.ts";
+import {getCurrentPlayer} from '../../../../src/services/player.ts';
 
 const AI_PLAYER_ID = "00000000-0000-0000-0000-000000000001";
 type GameMode = 'ai' | 'friend';
@@ -154,9 +154,10 @@ function TicTacToeGame() {
     };
 
     const handleNewGame = async () => {
-        navigate(`/game/${gameId}`, {
-            state: { openLobby: true }
-        });
+        setShowEndOverlay(false);
+        setGame(null);
+        setSessionId(null);
+        setMyWinProbability(null);
     };
 
     const handleBackClick = () => navigate(`/game/${gameId}`);
