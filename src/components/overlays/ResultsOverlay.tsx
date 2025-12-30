@@ -46,7 +46,10 @@ export default function ResultsOverlay({isOpen, onClose, results, onDelete, onSa
                 <Button
                     variant="outlined"
                     startIcon={<DeleteIcon />}
-                    onClick={() => onDelete(results.file)}
+                    onClick={() => {
+                        onDelete(results.file);
+                        onClose();
+                    }}
                     color="error"
                     fullWidth
                 >
@@ -55,7 +58,10 @@ export default function ResultsOverlay({isOpen, onClose, results, onDelete, onSa
                 <Button
                     variant="contained"
                     startIcon={<CheckCircleIcon />}
-                    onClick={onSave}
+                    onClick={() => {
+                        onSave();
+                        onClose();
+                    }}
                     fullWidth
                 >
                     Done
