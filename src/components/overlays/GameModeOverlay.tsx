@@ -1,6 +1,7 @@
 import {Dialog, DialogTitle, DialogContent, Button, Typography, Box, IconButton, Stack} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import PsychologyIcon from '@mui/icons-material/Psychology';
 import PersonIcon from '@mui/icons-material/Person';
 
 interface GameModeOverlayProps {
@@ -11,8 +12,8 @@ interface GameModeOverlayProps {
 }
 
 export default function GameModeOverlay({isOpen, showLobby, url, onClose}: GameModeOverlayProps) {
-    const handleAgainstAI = () => {
-        window.location.href = `${url}?mode=ai`;
+    const handleAgainstAI = (mode: 'ai' | 'ml') => {
+        window.location.href = `${url}?mode=${mode}`;
         onClose();
     };
 
@@ -36,11 +37,21 @@ export default function GameModeOverlay({isOpen, showLobby, url, onClose}: GameM
                     <Button
                         variant="contained"
                         startIcon={<SmartToyIcon />}
-                        onClick={handleAgainstAI}
+                        onClick={() => handleAgainstAI('ai')}
                         fullWidth
                         size="large"
                     >
-                        Against AI
+                        Play vs AI
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<PsychologyIcon />}
+                        onClick={() => handleAgainstAI('ml')}
+                        fullWidth
+                        size="large"
+                        color="secondary"
+                    >
+                        Play vs ML
                     </Button>
                     <Button
                         variant="outlined"
