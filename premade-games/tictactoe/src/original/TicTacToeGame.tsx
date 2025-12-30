@@ -155,9 +155,16 @@ function TicTacToeGame() {
     };
 
     const handleNewGame = async () => {
-        navigate(`/game/${gameId}`, {
-            state: { openLobby: true }
-        });
+        if (gameMode === "friend") {
+            navigate(`/game/${gameId}`, {
+                state: {openLobby: true}
+            });
+        } else {
+            setShowEndOverlay(false);
+            setGame(null);
+            setSessionId(null);
+            setMyWinProbability(null);
+        }
     };
 
     const handleBackClick = () => navigate(`/game/${gameId}`);
