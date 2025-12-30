@@ -3,7 +3,7 @@ import api from './apiPython';
 export const createPythonGame = async (
     playerXId: string,
     playerOId: string,
-    mode: 'ai' | 'friend'
+    mode: 'ai' | 'friend' | 'ml'
 ): Promise<{ gameId: string }> => {
     const response = await api.post(`/api/python-games`, null, {
         params: {

@@ -1200,3 +1200,40 @@ body.menu-open {
     color: white !important;
   }
 }
+
+/* Game Mode Switch (AI / ML) */
+.mode-switch {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+
+  button {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-transform: none;
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      cursor: default;
+      opacity: 1;
+    }
+  }
+}

@@ -8,7 +8,7 @@ import './TicTacToeGame.scss';
 import {getCurrentPlayer} from '../../../../src/services/player.ts';
 
 const AI_PLAYER_ID = "00000000-0000-0000-0000-000000000001";
-type GameMode = 'ai' | 'friend';
+type GameMode = 'ai' | 'friend' | 'ml';
 const TICTACTOE_ID = '123e4567-e89b-12d3-a456-426614174000';
 
 function TicTacToeGame() {
@@ -33,6 +33,11 @@ function TicTacToeGame() {
         getCurrentPlayer().then(setPlayer).catch(() => alert('Failed to load player data.'));
     }, []);
 
+    // Switch AI/ML player
+    const switchMode = (mode: GameMode) => {
+        navigate(`/game/${gameId}/play?mode=${mode}`);
+    };
+
     // Game creation
     useEffect(() => {
         if (!gameMode || !player || sessionId) return;
@@ -40,7 +45,8 @@ function TicTacToeGame() {
         const handleAiGame = async () => {
             setIsCreatingGame(true);
             try {
-                const newGame = await createPythonGame(player.playerId, AI_PLAYER_ID, 'ai');
+                const modeToSend = (gameMode === 'ml') ? 'ml' : 'ai';
+                const newGame = await createPythonGame(player.playerId, AI_PLAYER_ID, modeToSend);
                 setSessionId(newGame.gameId);
             } catch (error) {
                 console.error('Failed to create AI game:', error);
@@ -59,7 +65,7 @@ function TicTacToeGame() {
             }
         };
 
-        if (gameMode === 'ai') {
+        if (gameMode === 'ai' || gameMode === 'ml') {
             handleAiGame();
         } else if (gameMode === 'friend') {
             handleFriendGame();
@@ -185,7 +191,7 @@ function TicTacToeGame() {
         </div>
     );
 
-    if (gameId !== TICTACTOE_ID) {
+    if (gameId !== TICTACTOE_ID && gameId !== 'tictactoe') {
         navigate(`/`);
         alert("invalid url")
     }
@@ -194,6 +200,22 @@ function TicTacToeGame() {
         <div className="tic-tac-toe-game">
             <div className="game-container-wrapper">
                 <div className="game-header"><div className="decorative-pattern" /></div>
+                <div className="mode-switch">
+                    <button
+                        onClick={() => switchMode('ai')}
+                        disabled={gameMode === 'ai'}
+                    >
+                        Play vs AI
+                    </button>
+
+                    <button
+                        onClick={() => switchMode('ml')}
+                        disabled={gameMode === 'ml'}
+                    >
+                        Play vs ML
+                    </button>
+                </div>
+
 
                 <div className="game-content">
                     <button className="btn-back" onClick={handleBackClick} aria-label="Go back">←</button>
