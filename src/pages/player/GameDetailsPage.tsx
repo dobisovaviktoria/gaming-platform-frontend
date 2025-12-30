@@ -1,5 +1,5 @@
-import {useEffect, useState} from 'react';
-import {useParams, useNavigate, useLocation} from 'react-router-dom';
+import {useState} from 'react';
+import {useParams, useNavigate} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {Box, Typography, Button, Stack, Avatar, Grid} from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -9,16 +9,17 @@ import Navbar from "../../components/Navbar.tsx";
 import SideMenu from "../../components/overlays/SideMenu.tsx";
 import GameModeOverlay from "../../components/overlays/GameModeOverlay.tsx";
 import GameLobbyOverlay from "../../components/overlays/GameLobbyOverlay.tsx";
+import GameEndOverlay from "../../components/overlays/GameEndOverlay.tsx";
 import {getGame} from '../../services/game.ts';
 
-export default function GameDetailsPage() {
+export default function GameDetailsPage({isEnd = false}: {isEnd?: boolean}) {
     const [showModeOverlay, setShowModeOverlay] = useState(false);
     const [showLobbyOverlay, setShowLobbyOverlay] = useState(false);
+    const [showEndOverlay, setShowEndOverlay] = useState(isEnd);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const {gameId} = useParams<{gameId: string}>();
     const navigate = useNavigate();
-    const location = useLocation();
 
     const {data: game} = useQuery({
         queryKey: ['game', gameId],
@@ -32,15 +33,6 @@ export default function GameDetailsPage() {
             setShowModeOverlay(true);
         }
     };
-
-    // Add this useEffect to check for state
-    useEffect(() => {
-        if (location.state?.openLobby) {
-            setShowLobbyOverlay(true);
-            // Optional: Clear the state so it doesn't reopen on refresh
-            navigate(location.pathname, { replace: true, state: {} });
-        }
-    }, [location.state, location.pathname, navigate]);
 
     const handleStatsClick = () => navigate(`/game/${gameId}/statistics`);
     const handleAchievementsClick = () => navigate(`/game/${gameId}/achievements`);
@@ -128,6 +120,14 @@ export default function GameDetailsPage() {
                 url={game?.url || ''}
                 maxPlayers={game?.maxPlayers || 2}
                 onClose={() => setShowLobbyOverlay(false)}
+            />
+
+            <GameEndOverlay
+                isOpen={showEndOverlay}
+                result="win"
+                gameId={gameId || ''}
+                onPlayAgain={handlePlayClick}
+                onClose={() => setShowEndOverlay(false)}
             />
         </Box>
     );
