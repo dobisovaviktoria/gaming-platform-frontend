@@ -148,11 +148,9 @@ export default function NotificationsPage() {
         document.body.classList.remove('menu-open');
     };
 
-    const unreadCount = notifications.length;
-
     return (
         <Box>
-            <Navbar onMenuToggle={handleMenuToggle} notificationCount={unreadCount} />
+            <Navbar onMenuToggle={handleMenuToggle} />
             <SideMenu isOpen={isMenuOpen} onClose={handleMenuClose} />
 
             <Box className="notifications-page-content">
