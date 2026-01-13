@@ -1,6 +1,8 @@
-# Team 7 Bandit Games Project
+# Bandit Games Project
 
-## Team Members:
+This is the frontend part of Game Platform Project. Before running, make sure both backend and AI features are already running.
+
+## Authors
 - Belmans Lucas
 - Dobišová Viktória
 - Ibrahim Wajhudin
